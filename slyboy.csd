@@ -120,6 +120,48 @@ endif
 xout kPitchArr[kactivestep], kTrigArr, kPitchArr
 endop
 
+opcode slyseqtime, kk[], kkkikkk
+/*
+Just like slyboy sequencer but modulates step length instead of pitch.
+Inspired by the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
+[https://aria.dog/modules/]
+
+Syntax:
+kTrigOut, kTrigAtt[] slyseqtime kTimeUnit, kStart, KLoop, iInitIndex, kFnTimes, kFnIncrements, kMaxTime
+
+Initialization:
+iInitIndex: See seqtime manual entry.
+
+Performance:
+kTrigOut: Sequencer trigger output.
+kTrigArr: Trigger array with each index corresponding to a sequencer step.
+
+kTimeUnit, kStart, KLoop, kFnTimes: See seqtime manual entry.
+kFnIncrements: Function table (same length as kFnTimes) containing
+	the values (in TimeUnit) to be added to the length of each step
+	(in kFnTimes) each time it's active.
+kMaxTime: Maximum length of step (in TimeUnit) (up to, but not including)
+*/
+kTimeUnit, kStart, kLoop, iInitIndex, kFnTimes, kFnIncrements, kMaxT xin
+kgoto perf
+kactivestep	=		(iInitIndex-1)%kLoop
+kTrigArr[]	init	i(kLoop)
+perf:
+kTrig 		seqtime	kTimeUnit, kStart, kLoop, iInitIndex, kFnTimes
+
+kTrigArr = 0
+
+if kTrig != 0 then
+	ktmp = tablekt(kactivestep, kFnTimes, 0,0,1)
+	ktmp += tablekt(kactivestep, kFnIncrements, 0,0,1)
+	tablewkt(ktmp%kMaxT, kactivestep, kFnTimes, 0,0,1)
+	kTrigArr[kactivestep] = 1
+	kactivestep = (kactivestep+1)%kLoop
+endif
+
+xout kTrig, kTrigArr
+endop
+
 ;phase modulation oscillator
 opcode Pmoscili, a, akaj
 aamp, kfreq, aphs, ifn xin
@@ -198,6 +240,25 @@ asig	oscili 	0.2*alfo, p4*2^5
 asig	bqrez	asig*aenv, p4*2^5, abs(alfo)
 		out		asig
 endin
+
+;-------------------------------
+gitimes	ftgen 0,0,-8,-2,	1, 1/2, 1, 2, 1/4, 1, 1, 3/4
+giincs	ftgen 0,0,-8,-2,	1/8, -1/8, 1, 1.5, 3/8, 0, 1/3, 0	
+
+instr 4
+ktempo		=		137 ;bpm
+ktimeunit	=		1/(ktempo/60) ;1 whole note at tempo in seconds
+;ktrig, ktrigArr[] slyseqtime ktimeunit, 0,8,0, gitimes, giincs, 3
+ktrig	seqtime	ktimeunit, 0,8,0, gitimes
+
+schedkwhen	ktrig, 0, 0, 5, 0, 0.001
+endin
+
+instr 5 ;hat
+aenv	expsegr	1,p3,1,0.01,0.001
+asig	noise	0.1*aenv, 0
+out		asig
+endin
 ; ------------------------------
 
 </CsInstruments>
@@ -205,7 +266,8 @@ endin
 <CsScore>
 t  0 137	;score tempo 137bpm
 ;i1 0 256	;activate instrument 1 for 256 beats
-i1 0 128
+;i1 0 128
+i4 0 64
 e 
 </CsScore>
 </CsoundSynthesizer>
