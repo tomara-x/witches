@@ -145,6 +145,7 @@ kIncrements[]: 1D array (same length as kTimes) containing the values
 	each time that step is activated.
 kMinLen, kMaxLen: Minimum and maximum length of step (in TimeUnit)
 	(From and including kMinLen, up to, but not including, kMaxLen)
+	This doesn't apply to the first pass of the sequence.
 */
 
 kTimeUnit, kTimes[], kIncrements[], kMinLen[], kMaxLen[] xin
@@ -198,7 +199,7 @@ ktrigseq1	seqtime	1/(4*ktmpo/60), 0, 8, 0, gifn2
 knotes[]	fillarray	0,0,0,0,0,0,0,0
 kincs[]		fillarray	0,-1,2,0,1,0,-3,1
 
-;kreset = kclkd8  ;reset must be 1 k-cycle-long trigger
+;kreset = kclkd8  ;reset must be 1-k-cycle-long trigger
 
 ;if kclkx1 > 0 then ;randomly increment a random step increment!
 ;	krandstep	trandom	kclkx1, 0, lenarray(kincs)
@@ -256,10 +257,10 @@ instr 4
 ktempo		=	137 ;bpm
 ktimeunit	=	1/(ktempo/60) ;1 whole note at tempo in seconds
 
-ktimes[]	fillarray	1/2, 1/2, 1/2, 1/2, 1/2, 1/2, 1/2, 1/2
+ktimes[]	fillarray	2,   1,   1,   1,   1,   1,   1,   1
 kincs[]		fillarray	0,   0,   0,   0,   0,   0,   0,   0
 kminlen[]	fillarray	1/64,1/64,1/64,1/64,1/64,1/64,1/64,1/64
-kmaxlen[]	fillarray	3/4, 3/4, 3/4, 3/4, 3/4, 3/4, 3/4, 3/4
+kmaxlen[]	fillarray	4,   4,   4,   4,   4,   4,   4,   4
 ktrig, ktrigArr[] slyseqtime ktimeunit, ktimes, kincs, kminlen, kmaxlen
 
 schedkwhen	ktrig, 0, 0, 5, 0, 0.001
