@@ -128,7 +128,7 @@ Inspired by the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 
 Syntax:
 kTrigOut, kTrigAtt[] slyseqtime kTimeUnit, kTimes[], kIncrements[],
-	kMinLen, kMaxLen[]
+	kMinLen[], kMaxLen[]
 
 Initialization:
 
