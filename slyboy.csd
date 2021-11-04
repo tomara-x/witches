@@ -120,14 +120,15 @@ endif
 xout kPitchArr[kactivestep], kTrigArr, kPitchArr
 endop
 
-opcode slyseqtime, kk[], kk[]k[]k
+opcode slyseqtime, kk[], kk[]k[]k[]k[]
 /*
 Just like slyboy sequencer but modulates step length instead of pitch.
 Inspired by the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 [https://aria.dog/modules/]
 
 Syntax:
-kTrigOut, kTrigAtt[] slyseqtime kTimeUnit, kTimes[], kIncrements[], kMaxLen
+kTrigOut, kTrigAtt[] slyseqtime kTimeUnit, kTimes[], kIncrements[],
+	kMinLen, kMaxLen[]
 
 Initialization:
 
@@ -142,10 +143,11 @@ kTimes[]: same as the kfn_times for the seqtime opcode, but an array instead
 kIncrements[]: 1D array (same length as kTimes) containing the values
 	(in TimeUnit) to be added to the length of each step (in kTimes)
 	each time that step is activated.
-kMaxLen: Maximum length of step (in TimeUnit) (up to, but not including)
+kMinLen, kMaxLen: Minimum and maximum length of step (in TimeUnit)
+	(From and including kMinLen, up to, but not including, kMaxLen)
 */
 
-kTimeUnit, kTimes[], kIncrements[], kMaxLen xin
+kTimeUnit, kTimes[], kIncrements[], kMinLen[], kMaxLen[] xin
 
 ilen		=		lenarray(kTimes)
 kTrigArr[]	init	ilen
@@ -162,7 +164,8 @@ kTrig 		seqtime		kTimeUnit, 0, ilen, 0, ifntimes
 kTrigArr	=			0
 
 if kTrig != 0 then
-	ktmp[kactivestep] = (ktmp[kactivestep] + kIncrements[kactivestep])%kMaxLen
+	ktmp[kactivestep] = ktmp[kactivestep] + kIncrements[kactivestep]
+	ktmp[kactivestep] = wrap(ktmp[kactivestep], kMinLen[kactivestep], kMaxLen[kactivestep])
 	kactivestep = (kactivestep+1)%ilen
 	kTrigArr[kactivestep] = 1
 endif
@@ -253,16 +256,17 @@ instr 4
 ktempo		=	137 ;bpm
 ktimeunit	=	1/(ktempo/60) ;1 whole note at tempo in seconds
 
-ktimes[]	fillarray	1/4, 1/4, 1/4, 1/4, 1/4, 1/4, 1/4, 1/4
-kincs[]		fillarray	1/8, -1/8, 1, 1.5, 3/8, 0, 1/3, 0	
-
-ktrig, ktrigArr[] slyseqtime ktimeunit, ktimes, kincs, 3
+ktimes[]	fillarray	1/2, 1/2, 1/2, 1/2, 1/2, 1/2, 1/2, 1/2
+kincs[]		fillarray	0,   0,   0,   0,   0,   0,   0,   0
+kminlen[]	fillarray	1/64,1/64,1/64,1/64,1/64,1/64,1/64,1/64
+kmaxlen[]	fillarray	3/4, 3/4, 3/4, 3/4, 3/4, 3/4, 3/4, 3/4
+ktrig, ktrigArr[] slyseqtime ktimeunit, ktimes, kincs, kminlen, kmaxlen
 
 schedkwhen	ktrig, 0, 0, 5, 0, 0.001
 endin
 
 instr 5 ;hat
-aenv	expsegr	1,p3,1,0.02,0.001
+aenv	expsegr	1,p3,1,0.05,0.001
 asig	noise	0.1*aenv, 0
 out		asig
 endin
