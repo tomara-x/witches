@@ -120,7 +120,7 @@ endif
 xout kPitchArr[kactivestep], kTrigArr, kPitchArr
 endop
 
-opcode slyseqtime, kk[], kk[]k[]k[]k[]
+opcode slyseqtime, kk[], kk[]k[]k[]k[]k[]k[]k[]
 /*
 Just like slyboy sequencer but modulates step length instead of pitch.
 Inspired by the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
@@ -128,7 +128,7 @@ Inspired by the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 
 Syntax:
 kTrigOut, kTrigAtt[] slyseqtime kTimeUnit, kTimes[], kIncrements[],
-	kMinLen[], kMaxLen[]
+	kDivs[], kDivIncs[], kMaxDivs[], kMinLen[], kMaxLen[]
 
 Initialization:
 
@@ -140,33 +140,37 @@ kTimeUnit: See seqtime manual entry.
 kTimes[]: same as the kfn_times for the seqtime opcode, but an array instead
 	of a function table. The length of this array controls the length of the
 	sequence, since the kstart and kloop for the seqtime are abstracted.
+	(can be modified from calling instrument)
 kIncrements[]: 1D array (same length as kTimes) containing the values
 	(in TimeUnit) to be added to the length of each step (in kTimes)
 	each time that step is activated.
+kDivs[]: Array defining how many subdivisions in a corresponding step.
+kDivIncs[]: Amounts to increase each step's subdivisions every time
+	it's activated. (can be modified from calling instrument)
+kMaxDivs[]: Maximum number of subdivisions in a step before wraping back to 1.
 kMinLen, kMaxLen: Minimum and maximum length of step (in TimeUnit)
 	(From and including kMinLen, up to, but not including, kMaxLen)
 	This doesn't apply to the first pass of the sequence.
 */
 
-kTimeUnit, kTimes[], kIncrements[], kMinLen[], kMaxLen[] xin
+kTimeUnit, kTimes[], kIncrements[], kDivs[], kDivIncs[], kMaxDivs[], kMinLen[], kMaxLen[] xin
 
 ilen		=		lenarray(kTimes)
 kTrigArr[]	init	ilen
+ktmp[]		init	ilen
 kactivestep	init	ilen-1 ;for the first cycle to be the actual kTimes
 
-kgoto perf
-ktmp[] = kTimes
-
-perf:
+ksum[]		=			ktmp+kTimes
 ifntimes	ftgenonce	0,0, -ilen, -2, 0
-			copya2ftab	ktmp, ifntimes
+			copya2ftab	ksum, ifntimes
 
 kTrig 		seqtime		kTimeUnit, 0, ilen, 0, ifntimes
 kTrigArr	=			0
 
 if kTrig != 0 then
 	ktmp[kactivestep] = ktmp[kactivestep] + kIncrements[kactivestep]
-	ktmp[kactivestep] = wrap(ktmp[kactivestep], kMinLen[kactivestep], kMaxLen[kactivestep])
+	ksum[kactivestep] = wrap(ksum[kactivestep], kMinLen[kactivestep], kMaxLen[kactivestep])
+
 	kactivestep = (kactivestep+1)%ilen
 	kTrigArr[kactivestep] = 1
 endif
@@ -257,11 +261,17 @@ instr 4
 ktempo		=	137 ;bpm
 ktimeunit	=	1/(ktempo/60) ;1 whole note at tempo in seconds
 
-ktimes[]	fillarray	2,   1,   1,   1,   1,   1,   1,   1
-kincs[]		fillarray	0,   0,   0,   0,   0,   0,   0,   0
-kminlen[]	fillarray	1/64,1/64,1/64,1/64,1/64,1/64,1/64,1/64
-kmaxlen[]	fillarray	4,   4,   4,   4,   4,   4,   4,   4
-ktrig, ktrigArr[] slyseqtime ktimeunit, ktimes, kincs, kminlen, kmaxlen
+ktimes[]	fillarray	2,    1,    2,    1,    2,    1,    2,    1
+kincs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
+
+kdivs[]		fillarray	0,    0,    0,    0,    4,    0,    3,    0
+kdivincs[]	fillarray	0,    1,    0,    0,    0,   .1,    0,    0
+kmaxdivs[]	fillarray	8,    8,    8,    8,    8,    8,    8,    8
+
+kminlen[]	fillarray	1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
+kmaxlen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
+ktrig, ktrigArr[] slyseqtime ktimeunit, ktimes, kincs, kdivs, kdivincs, kmaxdivs,
+		kminlen, kmaxlen
 
 schedkwhen	ktrig, 0, 0, 5, 0, 0.001
 endin
