@@ -161,10 +161,12 @@ ktmp[]		init	ilen
 kactivestep	init	ilen-1 ;for the first cycle to be the actual kTimes
 
 ksum[]		=			ktmp+kTimes
-ifntimes	ftgenonce	0,0, -ilen, -2, 0
-			copya2ftab	ksum, ifntimes
+;ifntimes	ftgenonce	0,0, -ilen, -2, 0
+;			copya2ftab	ksum, ifntimes
 
-kTrig 		seqtime		kTimeUnit, 0, ilen, 0, ifntimes
+;kTrig 		seqtime		kTimeUnit, 0, ilen, 0, ifntimes
+
+kTrig		metro		1/(kTimeUnit*ksum[kactivestep]) ;should be +1?
 kTrigArr	=			0
 
 if kTrig != 0 then
