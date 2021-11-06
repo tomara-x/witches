@@ -133,8 +133,10 @@ kTrigOut, kTrigAtt[] slyseqtime kTimeUnit, kTimes[], kIncrements[],
 Initialization:
 
 Performance:
-kTrigOut: Sequencer trigger output.
+kTrigOut: Sequencer trigger output. (amplitude of step=2, subdivisions=1)
 kTrigArr: Trigger array with each index corresponding to a sequencer step.
+	(will output s step and it's subdivisions in the same index)
+	(step=2, subdivisions=1 in amplitude)
 
 kTimeUnit: See seqtime manual entry.
 kTimes[]: same as the kfn_times for the seqtime opcode, but an array instead
@@ -161,23 +163,27 @@ ktmp[]		init	ilen
 kactivestep	init	ilen-1 ;for the first cycle to be the actual kTimes
 
 ksum[]		=			ktmp+kTimes
-;ifntimes	ftgenonce	0,0, -ilen, -2, 0
-;			copya2ftab	ksum, ifntimes
-
-;kTrig 		seqtime		kTimeUnit, 0, ilen, 0, ifntimes
-
-kTrig		metro		1/(kTimeUnit*ksum[kactivestep]) ;should be +1?
 kTrigArr	=			0
 
-if kTrig != 0 then
+kDivs[kactivestep]		=	limit(kDivs[kactivestep], 1, kMaxDivs[kactivestep])
+kfreq		=			1/kTimeUnit
+ktrig		metro		(kfreq/ksum[kactivestep])
+ksubdiv		metro		(kfreq/ksum[kactivestep])*kDivs[kactivestep]
+
+if ktrig != 0 then
 	ktmp[kactivestep] = ktmp[kactivestep] + kIncrements[kactivestep]
 	ksum[kactivestep] = wrap(ksum[kactivestep], kMinLen[kactivestep], kMaxLen[kactivestep])
 
+	kDivs[kactivestep] = kDivs[kactivestep] + kDivIncs[kactivestep]
+
 	kactivestep = (kactivestep+1)%ilen
-	kTrigArr[kactivestep] = 1
 endif
 
-xout kTrig, kTrigArr
+if ksubdiv != 0 then
+	kTrigArr[kactivestep] = ktrig+ksubdiv
+endif
+
+xout ktrig+ksubdiv, kTrigArr
 endop
 
 ;phase modulation oscillator
@@ -263,10 +269,10 @@ instr 4
 ktempo		=	137 ;bpm
 ktimeunit	=	1/(ktempo/60) ;1 whole note at tempo in seconds
 
-ktimes[]	fillarray	2,    1,    2,    1,    2,    1,    2,    1
+ktimes[]	fillarray	2,    2,    2,    2,    2,    2,    2,    2
 kincs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
 
-kdivs[]		fillarray	0,    0,    0,    0,    4,    0,    3,    0
+kdivs[]		fillarray	0,    0,    0,    0,    4,    0,    9,    0
 kdivincs[]	fillarray	0,    1,    0,    0,    0,   .1,    0,    0
 kmaxdivs[]	fillarray	8,    8,    8,    8,    8,    8,    8,    8
 
