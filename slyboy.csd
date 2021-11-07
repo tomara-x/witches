@@ -120,70 +120,71 @@ endif
 xout kPitchArr[kactivestep], kTrigArr, kPitchArr
 endop
 
-opcode slyseqtime, kk[], kk[]k[]k[]k[]k[]k[]k[]
+opcode slyseqtime, kkk[], kk[]k[]k[]k[]k[]k[]k[]
 /*
 Just like slyboy sequencer but modulates step length instead of pitch.
 Inspired by the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 [https://aria.dog/modules/]
 
 Syntax:
-kTrigOut, kTrigAtt[] slyseqtime kTimeUnit, kTimes[], kIncrements[],
+kTrigOut, kSubTrig, kTrigAtt[] slyseqtime kTimeUnit, kTimes[], kIncrements[],
 	kDivs[], kDivIncs[], kMaxDivs[], kMinLen[], kMaxLen[]
 
-Initialization:
-
 Performance:
-kTrigOut: Sequencer trigger output. (amplitude of step=2, subdivisions=1)
+kTrigOut: Step trigger output.
+kSubTrig: Dividied step trigger output
 kTrigArr: Trigger array with each index corresponding to a sequencer step.
-	(will output s step and it's subdivisions in the same index)
-	(step=2, subdivisions=1 in amplitude)
+	(will output only the step trigger without the subdivisions)
 
-kTimeUnit: See seqtime manual entry.
-kTimes[]: same as the kfn_times for the seqtime opcode, but an array instead
-	of a function table. The length of this array controls the length of the
-	sequence, since the kstart and kloop for the seqtime are abstracted.
-	(can be modified from calling instrument)
-kIncrements[]: 1D array (same length as kTimes) containing the values
-	(in TimeUnit) to be added to the length of each step (in kTimes)
-	each time that step is activated.
-kDivs[]: Array defining how many subdivisions in a corresponding step.
-kDivIncs[]: Amounts to increase each step's subdivisions every time
-	it's activated. (can be modified from calling instrument)
+kTimeUnit: Time unit (in seconds/fractions of second) for all the time arrays.
+	Also, see seqtime manual entry.
+kTimes[]: An array defining the length of each step (in kTimeUnit).
+	The length of this array controls the length of the sequence.
+	(can be modified from calling instrument for live performance)
+kIncrements[]: An array (same length as kTimes) containing the values
+	(in TimeUnit) to be added to the length of each step each time
+	that step is activated. (can be negative or fractional)
+kDivs[]: An array defining how many divisions are in a corresponding step.
+	1 is just natural trigger at the beginning, 2 gives you a trigger
+	at the beginning and a trigger in the middle, and so on.
+	(like a multiplied clock) (can be modified from calling instrument)
+kDivIncs[]: Amounts to increase each step's divisions every time
+	it's activated. (this to kDivs is just like kIncrements is to kTimes)
 kMaxDivs[]: Maximum number of subdivisions in a step before wraping back to 1.
-kMinLen, kMaxLen: Minimum and maximum length of step (in TimeUnit)
+kMinLen[], kMaxLen[]: Minimum and maximum length of step (in TimeUnit)
 	(From and including kMinLen, up to, but not including, kMaxLen)
-	This doesn't apply to the first pass of the sequence.
 */
 
 kTimeUnit, kTimes[], kIncrements[], kDivs[], kDivIncs[], kMaxDivs[], kMinLen[], kMaxLen[] xin
 
-ilen		=		lenarray(kTimes)
-kTrigArr[]	init	ilen
-ktmp[]		init	ilen
-kactivestep	init	ilen-1 ;for the first cycle to be the actual kTimes
+ilen			=			lenarray(kTimes)
+kAS				init		0	;active step
+kTrigArr[]		init		ilen
 
-ksum[]		=			ktmp+kTimes
-kTrigArr	=			0
+ktimetmp[]		init		ilen ;accumulating the increments in this
+kdivstmp[]		init		ilen ;accumulating the increments in this
 
-kDivs[kactivestep]		=	limit(kDivs[kactivestep], 1, kMaxDivs[kactivestep])
-kfreq		=			1/kTimeUnit
-ktrig		metro		(kfreq/ksum[kactivestep])
-ksubdiv		metro		(kfreq/ksum[kactivestep])*kDivs[kactivestep]
+ktimesum[]		=			ktimetmp+kTimes
+kdivsum[]		=			kdivstmp+kDivs
+
+kTrigArr		=			0
+
+kdivsum[kAS]	=			wrap(kdivsum[kAS], 1, kMaxDivs[kAS])
+kfreq			=			1/kTimeUnit
+ktrig			metro		(kfreq/ktimesum[kAS])
+ksubdiv			metro		(kfreq/ktimesum[kAS])*kdivsum[kAS]
 
 if ktrig != 0 then
-	ktmp[kactivestep] = ktmp[kactivestep] + kIncrements[kactivestep]
-	ksum[kactivestep] = wrap(ksum[kactivestep], kMinLen[kactivestep], kMaxLen[kactivestep])
+	ktimetmp[kAS] = ktimetmp[kAS] + kIncrements[kAS]
+	ktimesum[kAS] = wrap(ktimesum[kAS], kMinLen[kAS], kMaxLen[kAS])
 
-	kDivs[kactivestep] = kDivs[kactivestep] + kDivIncs[kactivestep]
+	kdivstmp[kAS] = kdivstmp[kAS] + kDivIncs[kAS]
 
-	kactivestep = (kactivestep+1)%ilen
+	kTrigArr[kAS] = 1
+	kAS = (kAS+1)%ilen
 endif
 
-if ksubdiv != 0 then
-	kTrigArr[kactivestep] = ktrig+ksubdiv
-endif
-
-xout ktrig+ksubdiv, kTrigArr
+xout ktrig, ksubdiv, kTrigArr
 endop
 
 ;phase modulation oscillator
@@ -272,20 +273,21 @@ ktimeunit	=	1/(ktempo/60) ;1 whole note at tempo in seconds
 ktimes[]	fillarray	2,    2,    2,    2,    2,    2,    2,    2
 kincs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
 
-kdivs[]		fillarray	0,    0,    0,    0,    4,    0,    9,    0
-kdivincs[]	fillarray	0,    1,    0,    0,    0,   .1,    0,    0
+kdivs[]		fillarray	1,    1,    1,    1,    1,    1,    1,    1
+kdivincs[]	fillarray	2,    0,    0,    0,    0,    0,    0,    0
 kmaxdivs[]	fillarray	8,    8,    8,    8,    8,    8,    8,    8
 
 kminlen[]	fillarray	1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
 kmaxlen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
-ktrig, ktrigArr[] slyseqtime ktimeunit, ktimes, kincs, kdivs, kdivincs, kmaxdivs,
-		kminlen, kmaxlen
 
-schedkwhen	ktrig, 0, 0, 5, 0, 0.001
+ktrig, ksub, ktrigArr[] slyseqtime ktimeunit, ktimes, kincs, kdivs, kdivincs,
+		kmaxdivs, kminlen, kmaxlen
+
+schedkwhen	ksub, 0, 0, 5, 0, 0.001
 endin
 
 instr 5 ;hat
-aenv	expsegr	1,p3,1,0.05,0.001
+aenv	expsegr	1,p3,1,0.02,0.001
 asig	noise	0.1*aenv, 0
 out		asig
 endin
