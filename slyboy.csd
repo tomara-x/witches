@@ -151,12 +151,13 @@ kIncrements[]: An array (same length as kTimes) containing the values
 	(in TimeUnit) to be added to the length of each step each time
 	that step is activated. (can be negative or fractional)
 kDivs[]: An array defining how many divisions are in a corresponding step.
-	1 is just natural trigger at the beginning, 2 gives you a trigger
+	0 or 1 is just natural trigger at the beginning, 2 gives you a trigger
 	at the beginning and a trigger in the middle, and so on.
-	(like a multiplied clock) (can be modified from calling instrument)
+	Like a multiplied clock. (can be modified from calling instrument)
+	(0 and 1 will be treated equally, but have different effects with increments)
 kDivIncs[]: Amounts to increase each step's divisions every time
 	it's activated. (this to kDivs is just like kIncrements is to kTimes)
-kMaxDivs[]: Maximum number of subdivisions in a step before wraping back to 1.
+kMaxDivs[]: Maximum number of subdivisions in a step before wraping around (modulo).
 	(up to, but not including)
 kMinLen[], kMaxLen[]: Minimum and maximum length of step (in TimeUnit)
 	(From and including kMinLen, up to, but not including, kMaxLen)
