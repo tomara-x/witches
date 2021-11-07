@@ -48,11 +48,12 @@ power of the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 [https://aria.dog/modules/]
 
 syntax:
-kPitch, kTrigArr[], kPitchArr[] slyboy kTrig, kInitNotes[],
+kPitch, kTrigArr[], kPitchArr[] slyboy kTrig, kNoteIndx[],
 	kIncrements[], iFn [, iInitStep] [, kReset] [, kRandomMode]
 
 initialization:
-iFn: Function table containing pitch information (using gen51 for example)
+iFn: Function table containing pitch information, or whatever
+		(using gen51 for example)
 iInitStep: First active step in the sequence (defaults to 0)
 
 performance:
@@ -61,69 +62,73 @@ kPitch: Pitch information returned by currently active step.
 kTrigArr[]: An array of triggers with each index corresponding to
 		a step in the sequence. It contains a k-cycle-long trigger
 		that equals 1 when that corresponding step is activated (0 otherwise).
-kPitchArr[]: An array of the pitch information from all the steps.
-kTrig: Trigger signal the runs the sequencer. (metro, metro2, seqtime,...)
+kPitchArr[]: An array of the pitch information of all the steps.
+kTrig: Trigger signal the runs the sequencer.(metro, metro2, seqtime, slyseqtime...)
 		The sequencer advances one step every k-cycle where kTrig != 0
-kInitNotes[]: 1D array the length of which is the length of the sequence.
+kNoteIndx[]: 1D array the length of which is the length of the sequence.
 		It contains index values of the iFn for every sequence
 		step before the sequencer starts to self-modulate.
 		(ie the base index of a gen51)
-		If changed mid-performance, changes won't take effect until
-		a reset trigger is received.
-kIncrements[]: 1D array (same length as kInitNotes.. or not?)
+kIncrements[]: 1D array (same length as kNoteIndx.. or not?)
 		containing the amount for each step to be transposed
 		every time it is active. 2 means every time the step
 		is active, it will be 2 scale degrees higher.
 		(from c to d ... if iFn contains a chromatic c scale)
 		Increments can be negative or fractional values.
 kReset: Reset the sequencer to its original state when non zero.
-		kInitNotes[] and iInitStep wise. (defaults to 0)
+		kNoteIndx[] and iInitStep wise. (defaults to 0)
 kRandomMode: Advance the sequence in random order when non zero.
 		(defaults to 0)
 */
-kTrig, kInitNotes[], kIncrements[], iFn, iInitStep, kReset, kRandMode xin
+kTrig, kNoteIndx[], kIncrements[], iFn, iInitStep, kReset, kRandMode xin
 
-ilen		=		lenarray(kInitNotes)
-ktmp[]		init	ilen
+ilen		=		lenarray(kNoteIndx)
+kmem[]		init	ilen ;storing the initial notes state
+ktmp[]		init	ilen ;for accumulating the increments
+ksum[]		init	ilen ; sum of notes and increments
 kPitchArr[]	init	ilen
 kTrigArr[]	init	ilen
-kactivestep init	(iInitStep-1)%ilen
+kAS			init	iInitStep%ilen ;active step
 
 kgoto perf
-ktmp = kInitNotes
+kmem = kNoteIndx
 
 perf:
 kTrigArr	=	0
+ksum = kNoteIndx+ktmp
 
 if kTrig != 0 then
-	ktmp[kactivestep] = ktmp[kactivestep]+kIncrements[kactivestep]
-	if kRandMode == 0 then
-		kactivestep = (kactivestep+1)%ilen
-	else
-		kactivestep = trandom(kTrig, 0, ilen) 
-	endif
-	
-	kTrigArr[kactivestep] = 1
+	ktmp[kAS] = ktmp[kAS]+kIncrements[kAS]
+	kTrigArr[kAS] = 1
 
+	;update pitch output array
 	kj = 0
 	while kj < ilen do
-		kPitchArr[kj] = table(ktmp[kactivestep], iFn, 0, 0, 1)
+		kPitchArr[kj] = table(ksum[kAS], iFn, 0, 0, 1)
 		kj += 1
 	od
+	kpitch = kPitchArr[kAS]
+
+	if kRandMode == 0 then
+		kAS = (kAS+1)%ilen
+	else
+		kAS = trandom(kTrig, 0, ilen)
+	endif
 endif
 
 if kReset != 0 then
-	ktmp = kInitNotes
-	kactivestep = (iInitStep-1)%ilen
+	ksum	=	kmem
+	kAS		=	iInitStep%ilen
 endif
 
-xout kPitchArr[kactivestep], kTrigArr, kPitchArr
+xout kpitch, kTrigArr, kPitchArr
 endop
 
 opcode slyseqtime, kkk[], kk[]k[]k[]k[]k[]k[]k[]
 /*
-Just like slyboy sequencer but modulates step length instead of pitch.
-Inspired by the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
+Just like slyboy sequencer but modulates time and subdivisions instead of pitch.
+Inspired by the seqtime opcode, the Laundry Soup sequencer by computerscare,
+and the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 [https://aria.dog/modules/]
 
 Syntax:
@@ -151,6 +156,7 @@ kDivs[]: An array defining how many divisions are in a corresponding step.
 kDivIncs[]: Amounts to increase each step's divisions every time
 	it's activated. (this to kDivs is just like kIncrements is to kTimes)
 kMaxDivs[]: Maximum number of subdivisions in a step before wraping back to 1.
+	(up to, but not including)
 kMinLen[], kMaxLen[]: Minimum and maximum length of step (in TimeUnit)
 	(From and including kMinLen, up to, but not including, kMaxLen)
 */
@@ -221,17 +227,13 @@ kincs[]		fillarray	0,-1,2,0,1,0,-3,1
 ;endif
 
 ; run the sequencer
-kpitch,kotrig[],kopitch[] slyboy kclkx4,knotes,kincs,gifn1,0,0,0
+kpitch,kotrig[],kopitch[] slyboy kclkx1,knotes,kincs,gifn1,0,0,0
 
-;patching trig-outs to incs
+;self-patching trig-outs to noteIndex or to incs
 ;if kotrig[5] == 1 then
-;	kincs[0] = 1
-;	kincs[0] = kincs[0] + 1 ;if you wanna have increasing inrements!
-;endif
-
-;using trig-outs to schedule instruments
-;if kotrig[4] == 1 then
-;	schedkwhen	kclkx1, 0, 0, 3, 0, 0.5, kpitch
+;	knotes[1] = knotes[1]-5 ;can access values of other steps this way.
+;							;totally not because the += form doesn't work on arrays!
+;	kincs[0] = kincs[0] + 1 ;if you want increasing inrements!
 ;endif
 
 ; make some noise
@@ -240,7 +242,7 @@ krat	randi		0.25, 2, 0.5, 0, 0.01
 asig	wgbow		0.4, kpitch, 3, 0.13, 5, 0.004
 		out			asig
 ; run another instrument with the same pitch info
-		schedkwhen	kclkx4, 0, 0, 2, 0, 0.4, kpitch/2
+		schedkwhen	kclkx1, 0, 0, 2, 0, 0.4, kpitch/2
 endin
 
 instr 2
@@ -273,8 +275,8 @@ ktimeunit	=	1/(ktempo/60) ;1 whole note at tempo in seconds
 ktimes[]	fillarray	2,    2,    2,    2,    2,    2,    2,    2
 kincs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
 
-kdivs[]		fillarray	1,    1,    1,    1,    1,    1,    1,    1
-kdivincs[]	fillarray	2,    0,    0,    0,    0,    0,    0,    0
+kdivs[]		fillarray	0,    1,    1,    1,    1,    1,    1,    1
+kdivincs[]	fillarray	4,    0,    0,    0,    0,    0,    0,    0
 kmaxdivs[]	fillarray	8,    8,    8,    8,    8,    8,    8,    8
 
 kminlen[]	fillarray	1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
@@ -283,11 +285,11 @@ kmaxlen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
 ktrig, ksub, ktrigArr[] slyseqtime ktimeunit, ktimes, kincs, kdivs, kdivincs,
 		kmaxdivs, kminlen, kmaxlen
 
-schedkwhen	ksub, 0, 0, 5, 0, 0.001
+schedkwhen	ksub, 0, 0, 5, 0, 0.0001
 endin
 
 instr 5 ;hat
-aenv	expsegr	1,p3,1,0.02,0.001
+aenv	expsegr	1,p3,1,0.04,0.001
 asig	noise	0.1*aenv, 0
 out		asig
 endin
@@ -296,10 +298,10 @@ endin
 </CsInstruments>
 ; ==============================================
 <CsScore>
-t  0 137	;score tempo 137bpm
-;i1 0 256	;activate instrument 1 for 256 beats
-;i1 0 128
-i4 0 64
+t		0		137	;score tempo 137bpm
+;i1		0		256	;activate instrument 1 for 256 beats
+;i1		0		128
+i4		0		64
 e 
 </CsScore>
 </CsoundSynthesizer>
