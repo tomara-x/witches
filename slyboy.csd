@@ -176,12 +176,12 @@ kdivsum[]		=			kdivstmp+kDivs
 
 kTrigArr		=			0
 
-kdivsum[kAS]	=			wrap(kdivsum[kAS], 1, kMaxDivs[kAS])
+kdivsum[kAS]	=			wrap(kdivsum[kAS], 0, kMaxDivs[kAS])
 kfreq			=			1/kTimeUnit
 
 if ktimesum[kAS] > 0 then
-	ktrig		metro		(kfreq/ktimesum[kAS])
-	ksubdiv		metro		(kfreq/ktimesum[kAS])*kdivsum[kAS]
+	ktrig		metro	(kfreq/ktimesum[kAS])
+	ksubdiv		metro	(kfreq/ktimesum[kAS])*(kdivsum[kAS] > 0 ? kdivsum[kAS] : 1)
 else
 	ktrig		=			1
 endif
@@ -278,14 +278,14 @@ instr 4
 ktempo		=	137 ;bpm
 ktimeunit	=	1/(ktempo/60) ;1 whole note at tempo in seconds
 
-ktimes[]	fillarray	1,    1,    1,    1,    1,    1,    1,    1
+ktimes[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
 kincs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
 kminlen[]	fillarray	1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
 kmaxlen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
 
-kdivs[]		fillarray	0,    1,    1,    1,    1,    1,    1,    1
-kdivincs[]	fillarray	4,    0,    0,    0,    0,    0,    0,    0
-kmaxdivs[]	fillarray	9,    8,    8,    8,    8,    8,    8,    8
+kdivs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
+kdivincs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
+kmaxdivs[]	fillarray	32,   32,   32,   32,   32,   32,   32,   32
 
 ktrig, ksub, ktrigArr[] slyseqtime ktimeunit, ktimes, kincs, kdivs, kdivincs,
 		kmaxdivs, kminlen, kmaxlen
