@@ -145,6 +145,7 @@ kTimeUnit: Time unit (in seconds/fractions of second) for all the time arrays.
 	Also, see seqtime manual entry.
 kTimes[]: An array defining the length of each step (in kTimeUnit).
 	The length of this array controls the length of the sequence.
+	A value of zero (or negative) will have the length of 1 k-cycle.
 	(can be modified from calling instrument for live performance)
 kIncrements[]: An array (same length as kTimes) containing the values
 	(in TimeUnit) to be added to the length of each step each time
@@ -177,8 +178,13 @@ kTrigArr		=			0
 
 kdivsum[kAS]	=			wrap(kdivsum[kAS], 1, kMaxDivs[kAS])
 kfreq			=			1/kTimeUnit
-ktrig			metro		(kfreq/ktimesum[kAS])
-ksubdiv			metro		(kfreq/ktimesum[kAS])*kdivsum[kAS]
+
+if ktimesum[kAS] > 0 then
+	ktrig		metro		(kfreq/ktimesum[kAS])
+	ksubdiv		metro		(kfreq/ktimesum[kAS])*kdivsum[kAS]
+else
+	ktrig		=			1
+endif
 
 if ktrig != 0 then
 	ktimetmp[kAS] = ktimetmp[kAS] + kIncrements[kAS]
@@ -272,15 +278,14 @@ instr 4
 ktempo		=	137 ;bpm
 ktimeunit	=	1/(ktempo/60) ;1 whole note at tempo in seconds
 
-ktimes[]	fillarray	2,    2,    2,    2,    2,    2,    2,    2
+ktimes[]	fillarray	1,    1,    1,    1,    1,    1,    1,    1
 kincs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
+kminlen[]	fillarray	1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
+kmaxlen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
 
 kdivs[]		fillarray	0,    1,    1,    1,    1,    1,    1,    1
 kdivincs[]	fillarray	4,    0,    0,    0,    0,    0,    0,    0
-kmaxdivs[]	fillarray	8,    8,    8,    8,    8,    8,    8,    8
-
-kminlen[]	fillarray	1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
-kmaxlen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
+kmaxdivs[]	fillarray	9,    8,    8,    8,    8,    8,    8,    8
 
 ktrig, ksub, ktrigArr[] slyseqtime ktimeunit, ktimes, kincs, kdivs, kdivincs,
 		kmaxdivs, kminlen, kmaxlen
