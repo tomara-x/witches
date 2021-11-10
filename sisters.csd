@@ -286,14 +286,6 @@ asig	limit		asig, -0.25, 0.25
 		out			asig
 endin
 
-instr 3
-aenv	linsegr	1, p3, .2, p3/4, 0
-alfo	lfo		1, p4/2
-asig	oscili 	0.2*alfo, p4*2^5
-asig	bqrez	asig*aenv, p4*2^5, abs(alfo)
-		out		asig
-endin
-
 instr 4
 ktempo		=	137 ;bpm
 ktimeunit	=	1/(ktempo/60) ;1 whole note at tempo in seconds
@@ -363,11 +355,10 @@ endin
 ; ==============================================
 <CsScore>
 t		0		137	;score tempo 137bpm
-;i1		0		256	;activate instrument 1 for 256 beats
-;i1		0		128
+;i1		0		128	;activate instrument 1 for 128 beats
 ;i4		0		64
 i6		0		64
-e 
+e
 </CsScore>
 </CsoundSynthesizer>
 
