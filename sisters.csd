@@ -43,6 +43,16 @@ ibasefreq,ibaseindex,
 ; (this is c dorian #4 (ukrainian dorian) in 12-tet)
 
 gifn2 ftgen 0,0,-8,-2, 2,2,1,2,1,2,3,3 ;delta times (16 steps)
+
+;natural minor
+gifn3 ftgen 0,0,-7*4,-51, 7,2,cpspch(6),0,
+2^(0/12),
+2^(2/12),
+2^(3/12),
+2^(5/12),
+2^(7/12),
+2^(8/12),
+2^(10/12)
 ; ------------------------------ 
 
 
@@ -294,7 +304,7 @@ kmaxlen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
 
 kdivs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
 kdivincs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
-kmaxdivs[]	fillarray	32,   32,   32,   32,   32,   32,   32,   32
+kmaxdivs[]	fillarray	256,  256,  256,  256,  256,  256,  256,  256
 
 ktrig, ksub, ktrigArr[] slyseqtime ktimeunit, ktimes, kincs, kdivs, kdivincs,
 		kmaxdivs, kminlen, kmaxlen
@@ -307,6 +317,45 @@ aenv	expsegr	1,p3,1,0.04,0.001
 asig	noise	0.1*aenv, 0
 out		asig
 endin
+
+instr 6
+ktempo		=	137 ;bpm
+ktimeunit	=	1/(ktempo/60) ;1 whole note at ktempo (in seconds)
+
+ktimes[]	fillarray	.5,   1,    1,    1,    1,    1,    1,    1
+ktincs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
+kminlen[]	fillarray	1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
+kmaxlen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
+
+kdivs[]		fillarray	0,    0,    0,    0,    8,    0,    0,    0
+kdivincs[]	fillarray	0,    0,    0,    0,   -2,    0,    0,    0
+kmaxdivs[]	fillarray	32,   32,   32,   32,   16,   16,   16,   16
+
+ktrig, ksub, ktrigArr[] slyseqtime ktimeunit, ktimes, ktincs, kdivs, kdivincs,
+		kmaxdivs, kminlen, kmaxlen
+
+knotes[]	fillarray	0,    5,    0,    3,    2,    7,    0,    0
+kincs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    1
+
+kpitch,kotrig[],kopitch[] slyboy ktrig,knotes,kincs,gifn3
+
+schedkwhen	ksub, 0, 0, 7, 0, 0.0001, kpitch
+endin
+
+instr 7
+iz		init		0.001
+aenv1	expsegr		4,0.1,iz
+aenv2	expsegr		2,0.3,iz
+aenv3	expsegr		1,0.8,iz
+aenv4	expsegr		1,0.5,iz
+amod1	oscili		aenv1,	p4/2
+amod2	oscili		aenv2,	p4
+acar1	Pmoscili	aenv3,	p4,	amod1+amod2
+acar2	Pmoscili 	aenv4,	p4,	amod1+amod2
+asig	limit		acar1+acar2, -0.1, 0.1
+		out			asig
+endin
+
 ; ------------------------------
 
 </CsInstruments>
@@ -315,7 +364,8 @@ endin
 t		0		137	;score tempo 137bpm
 ;i1		0		256	;activate instrument 1 for 256 beats
 ;i1		0		128
-i4		0		64
+;i4		0		64
+i6		0		64
 e 
 </CsScore>
 </CsoundSynthesizer>
