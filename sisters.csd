@@ -59,14 +59,14 @@ gifn3 ftgen 0,0,-7*4,-51, 7,2,cpspch(6),0,
 ; ------------------------------
 ; user defined opcodes
 
-opcode slyboy, kk[]k[], kk[]k[]ioOO
+opcode Taphath, kk[]k[], kk[]k[]ioOO
 /*
-Though the rituals are different, this opcode can summon some of the 
-power of the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
+Different rituals, but can grant you some of the power of the
+Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 [https://aria.dog/modules/]
 
 syntax:
-kPitch, kTrigArr[], kPitchArr[] slyboy kTrig, kNoteIndx[],
+kPitch, kTrigArr[], kPitchArr[] Taphath kTrig, kNoteIndx[],
 	kIncrements[], iFn [, iInitStep] [, kReset] [, kRandomMode]
 
 initialization:
@@ -81,7 +81,7 @@ kTrigArr[]: An array of triggers with each index corresponding to
 		a step in the sequence. It contains a k-cycle-long trigger
 		that equals 1 when that corresponding step is activated (0 otherwise).
 kPitchArr[]: An array of the pitch information of all the steps.
-kTrig: Trigger signal the runs the sequencer.(metro, metro2, seqtime, slyseqtime...)
+kTrig: Trigger signal the runs the sequencer.(metro, metro2, seqtime, Basemath...)
 		The sequencer advances one step every k-cycle where kTrig != 0
 kNoteIndx[]: 1D array the length of which is the length of the sequence.
 		It contains index values of the iFn for every sequence
@@ -142,15 +142,16 @@ endif
 xout kpitch, kTrigArr, kPitchArr
 endop
 
-opcode slyseqtime, kkk[], kk[]k[]k[]k[]k[]k[]k[]
+opcode Basemath, kkk[], kk[]k[]k[]k[]k[]k[]k[]
 /*
-Just like slyboy sequencer but modulates time and subdivisions instead of pitch.
+Sister of Taphath. She modulates time and subdivisions instead of pitch/value.
 Inspired by the seqtime opcode, the Laundry Soup sequencer by computerscare,
-and the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
-[https://aria.dog/modules/]
+and, of course, the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
+computerscare [https://github.com/freddyz]
+Aria [https://aria.dog/modules/]
 
 Syntax:
-kTrigOut, kSubTrig, kTrigAtt[] slyseqtime kTimeUnit, kTimes[], kIncrements[],
+kTrigOut, kSubTrig, kTrigAtt[] Basemath kTimeUnit, kTimes[], kIncrements[],
 	kDivs[], kDivIncs[], kMaxDivs[], kMinLen[], kMaxLen[]
 
 Performance:
@@ -252,7 +253,7 @@ kincs[]		fillarray	0,-1,2,0,1,0,-3,1
 ;endif
 
 ; run the sequencer
-kpitch,kotrig[],kopitch[] slyboy kclkx1,knotes,kincs,gifn1,0,0,0
+kpitch,kotrig[],kopitch[] Taphath kclkx1,knotes,kincs,gifn1,0,0,0
 
 ;self-patching trig-outs to noteIndex or to incs
 ;if kotrig[5] == 1 then
@@ -306,7 +307,7 @@ kdivs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
 kdivincs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
 kmaxdivs[]	fillarray	256,  256,  256,  256,  256,  256,  256,  256
 
-ktrig, ksub, ktrigArr[] slyseqtime ktimeunit, ktimes, kincs, kdivs, kdivincs,
+ktrig, ksub, ktrigArr[] Basemath ktimeunit, ktimes, kincs, kdivs, kdivincs,
 		kmaxdivs, kminlen, kmaxlen
 
 schedkwhen	ksub, 0, 0, 5, 0, 0.0001
@@ -331,13 +332,13 @@ kdivs[]		fillarray	0,    0,    0,    0,    8,    0,    0,    0
 kdivincs[]	fillarray	0,    0,    0,    0,   -2,    0,    0,    0
 kmaxdivs[]	fillarray	32,   32,   32,   32,   16,   16,   16,   16
 
-ktrig, ksub, ktrigArr[] slyseqtime ktimeunit, ktimes, ktincs, kdivs, kdivincs,
+ktrig, ksub, ktrigArr[] Basemath ktimeunit, ktimes, ktincs, kdivs, kdivincs,
 		kmaxdivs, kminlen, kmaxlen
 
 knotes[]	fillarray	0,    5,    0,    3,    2,    7,    0,    0
 kincs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    1
 
-kpitch,kotrig[],kopitch[] slyboy ktrig,knotes,kincs,gifn3
+kpitch,kotrig[],kopitch[] Taphath ktrig,knotes,kincs,gifn3
 
 schedkwhen	ksub, 0, 0, 7, 0, 0.0001, kpitch
 endin
