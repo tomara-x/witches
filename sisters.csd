@@ -61,7 +61,7 @@ gifn3 ftgen 0,0,-7*4,-51, 7,2,cpspch(6),0,
 
 opcode Taphath, kk[]k[], kk[]k[]ioOO
 /*
-Different rituals, but can grant you some of the power of the
+Different rituals, but can grant you powers similar to those of the
 Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 [https://aria.dog/modules/]
 
@@ -103,7 +103,7 @@ kTrig, kNoteIndx[], kIncrements[], iFn, iInitStep, kReset, kRandMode xin
 ilen		=		lenarray(kNoteIndx)
 kmem[]		init	ilen ;storing the initial notes state
 ktmp[]		init	ilen ;for accumulating the increments
-ksum[]		init	ilen ; sum of notes and increments
+ksum[]		init	ilen ;sum of notes and increments
 kPitchArr[]	init	ilen
 kTrigArr[]	init	ilen
 kAS			init	iInitStep%ilen ;active step
@@ -315,22 +315,22 @@ instr 6
 ktempo		=	137 ;bpm
 ktimeunit	=	1/(ktempo/60) ;1 whole note at ktempo (in seconds)
 
-ktimes[]	fillarray	.5,   1,    1,    1,    1,    1,    1,    1
-ktincs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
-kminlen[]	fillarray	1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
-kmaxlen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
+kTimes[]	fillarray	.5,   1,    1,    1,    1,    1,    1,    1
+kTimeIncs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
+kMinLen[]	fillarray	1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
+kMaxLen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
 
-kdivs[]		fillarray	0,    0,    0,    0,    8,    0,    0,    0
-kdivincs[]	fillarray	0,    0,    0,    0,   -2,    0,    0,    0
-kmaxdivs[]	fillarray	32,   32,   32,   32,   16,   16,   16,   16
+kDivs[]		fillarray	0,    0,    0,    0,    8,    0,    0,    0
+kDivIncs[]	fillarray	0,    0,    0,    0,   -2,    0,    0,    0
+kMaxDivs[]	fillarray	32,   32,   32,   32,   16,   16,   16,   16
 
-ktrig, ksub, ktrigArr[] Basemath ktimeunit, ktimes, ktincs, kdivs, kdivincs,
-		kmaxdivs, kminlen, kmaxlen
+ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
+		kMaxDivs,kMinLen,kMaxLen
 
-knotes[]	fillarray	0,    5,    0,    3,    2,    7,    0,    0
-kincs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    1
+kNotes[]	fillarray	0,    5,    0,    3,    2,    7,    0,    0
+kNoteIncs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    1
 
-kpitch,kotrig[],kopitch[] Taphath ktrig,knotes,kincs,gifn3
+kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
 
 schedkwhen	ksub, 0, 0, 7, 0, 0.0001, kpitch
 endin
