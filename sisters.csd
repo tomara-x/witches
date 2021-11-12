@@ -321,24 +321,24 @@ ktempo		=	137 ;bpm
 ktimeunit	=	1/(ktempo/60) ;1 whole note at ktempo (in seconds)
 
 kTimes[]	fillarray	1,    1,    1,    1,    1,    1,    1,    1
-kTimeIncs[]	fillarray	0,    0,    1,    0,    0,    0,    0,    0
-kMinLen[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0	
+kTimeIncs[]	fillarray	0,    0,    0,    1,    0,    0,    0,    0
+kMinLen[]	fillarray	0,    0,    0,    1,    0,    0,    0,    0
 kMaxLen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
 
-kDivs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
+kDivs[]		fillarray	0,    0,    0,    4,    0,    0,    0,    0
 kDivIncs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
 kMaxDivs[]	fillarray	16,   16,   16,   8,    8,    8,    8,    8
 
 ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
 		kMaxDivs,kMinLen,kMaxLen
 
-kNotes[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
-kNoteIncs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
+kNotes[]	fillarray	0,    2,    0,    6,    2,    3,    0,    1
+kNoteIncs[]	fillarray	1,    2,    0,    0,   -4,    0,    0,    3
 
 kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
 
-kenv	looptseg	ktempo/4/60, ksub, 0, 1,-10,1, 0,0,0
-asig	oscili		kenv, kpitch*2
+kenv	looptseg	ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
+asig	oscili		kenv, kpitch*4
 		out			limit(asig, -0.2,0.2)
 endin
 
