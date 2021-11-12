@@ -184,34 +184,39 @@ kMinLen[], kMaxLen[]: Minimum and maximum length of step (in TimeUnit)
 
 kTimeUnit, kTimes[], kIncrements[], kDivs[], kDivIncs[], kMaxDivs[], kMinLen[], kMaxLen[] xin
 
-ilen			=			lenarray(kTimes)
-kAS				init		0	;active step
-kTrigArr[]		init		ilen
+ilen			=		lenarray(kTimes)
+kAS				init	0	;active step
 
-ktimetmp[]		init		ilen ;accumulating the increments in this
-kdivstmp[]		init		ilen ;accumulating the increments in this
+ktimetmp[]		init	ilen ;accumulating the time increments in this
+kdivstmp[]		init	ilen ;same but divs increments
+ktimesum[]		init	ilen ;sum of accumulated increments and kTimes array
+kdivsum[]		init	ilen ;sum of accimulated div incs and kDivs
+kTrigArr[]		init	ilen
 
-ktimesum[]		=			ktimetmp+kTimes
-kdivsum[]		=			kdivstmp+kDivs
+kgoto perf
+ktimetmp		=		kIncrements
+kdivstmp		=		kDivIncs
 
-kTrigArr		=			0
+perf:
+ktimesum[kAS]	=		ktimetmp[kAS]+kTimes[kAS]
+kdivsum[kAS]	=		kdivstmp[kAS]+kDivs[kAS]
 
-kdivsum[kAS]	=			wrap(kdivsum[kAS], 0, kMaxDivs[kAS])
-kfreq			=			1/kTimeUnit
+kTrigArr		=		0
+
+ktimesum[kAS]	=		wrap(ktimesum[kAS], kMinLen[kAS], kMaxLen[kAS])
+kdivsum[kAS]	=		wrap(kdivsum[kAS], 0, kMaxDivs[kAS])
+kfreq			=		1/kTimeUnit
 
 if ktimesum[kAS] > 0 then
 	ktrig		metro	(kfreq/ktimesum[kAS])
 	ksubdiv		metro	(kfreq/ktimesum[kAS])*(kdivsum[kAS] > 0 ? kdivsum[kAS] : 1)
 else
-	ktrig		=			1
+	ktrig		=		1
 endif
 
 if ktrig != 0 then
 	ktimetmp[kAS] = ktimetmp[kAS] + kIncrements[kAS]
-	ktimesum[kAS] = wrap(ktimesum[kAS], kMinLen[kAS], kMaxLen[kAS])
-
 	kdivstmp[kAS] = kdivstmp[kAS] + kDivIncs[kAS]
-
 	kTrigArr[kAS] = 1
 	kAS = (kAS+1)%ilen
 endif
@@ -315,38 +320,26 @@ instr 6
 ktempo		=	137 ;bpm
 ktimeunit	=	1/(ktempo/60) ;1 whole note at ktempo (in seconds)
 
-kTimes[]	fillarray	.5,   1,    1,    1,    1,    1,    1,    1
-kTimeIncs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
-kMinLen[]	fillarray	1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
+kTimes[]	fillarray	1,    1,    1,    1,    1,    1,    1,    1
+kTimeIncs[]	fillarray	0,    0,    1,    0,    0,    0,    0,    0
+kMinLen[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0	
 kMaxLen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
 
-kDivs[]		fillarray	0,    0,    0,    0,    8,    0,    0,    0
-kDivIncs[]	fillarray	0,    0,    0,    0,   -2,    0,    0,    0
-kMaxDivs[]	fillarray	32,   32,   32,   32,   16,   16,   16,   16
+kDivs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
+kDivIncs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
+kMaxDivs[]	fillarray	16,   16,   16,   8,    8,    8,    8,    8
 
 ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
 		kMaxDivs,kMinLen,kMaxLen
 
-kNotes[]	fillarray	0,    5,    0,    3,    2,    7,    0,    0
-kNoteIncs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    1
+kNotes[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
+kNoteIncs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
 
 kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
 
-schedkwhen	ksub, 0, 0, 7, 0, 0.0001, kpitch
-endin
-
-instr 7
-iz		init		0.001
-aenv1	expsegr		4,0.1,iz
-aenv2	expsegr		2,0.3,iz
-aenv3	expsegr		1,0.8,iz
-aenv4	expsegr		1,0.5,iz
-amod1	oscili		aenv1,	p4/2
-amod2	oscili		aenv2,	p4
-acar1	Pmoscili	aenv3,	p4,	amod1+amod2
-acar2	Pmoscili 	aenv4,	p4,	amod1+amod2
-asig	limit		acar1+acar2, -0.1, 0.1
-		out			asig
+kenv	looptseg	ktempo/4/60, ksub, 0, 1,-10,1, 0,0,0
+asig	oscili		kenv, kpitch*2
+		out			limit(asig, -0.2,0.2)
 endin
 
 ; ------------------------------
