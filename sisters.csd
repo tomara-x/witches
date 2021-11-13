@@ -81,7 +81,7 @@ kTrigArr[]: An array of triggers with each index corresponding to
 		a step in the sequence. It contains a k-cycle-long trigger
 		that equals 1 when that corresponding step is activated (0 otherwise).
 kPitchArr[]: An array of the pitch information of all the steps.
-kTrig: Trigger signal the runs the sequencer.(metro, metro2, seqtime, Basemath...)
+kTrig: Trigger signal that runs the sequencer.(metro, metro2, seqtime, Basemath...)
 		The sequencer advances one step every k-cycle where kTrig != 0
 kNoteIndx[]: 1D array the length of which is the length of the sequence.
 		It contains index values of the iFn for every sequence
@@ -322,18 +322,44 @@ ktimeunit	=	1/(ktempo/60) ;1 whole note at ktempo (in seconds)
 
 kTimes[]	fillarray	1,    1,    1,    1,    1,    1,    1,    1
 kTimeIncs[]	fillarray	0,    0,    0,    1,    0,    0,    0,    0
-kMinLen[]	fillarray	0,    0,    0,    1,    0,    0,    0,    0
-kMaxLen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
-
 kDivs[]		fillarray	0,    0,    0,    4,    0,    0,    0,    0
 kDivIncs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
+
 kMaxDivs[]	fillarray	16,   16,   16,   8,    8,    8,    8,    8
+kMinLen[]	fillarray	0,    0,    0,    1,    0,    0,    0,    0
+kMaxLen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
 
 ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
 		kMaxDivs,kMinLen,kMaxLen
 
 kNotes[]	fillarray	0,    2,    0,    6,    2,    3,    0,    1
 kNoteIncs[]	fillarray	1,    2,    0,    0,   -4,    0,    0,    3
+
+kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
+
+kenv	looptseg	ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
+asig	oscili		kenv, kpitch*4
+		out			limit(asig, -0.2,0.2)
+endin
+
+instr 7
+ktempo		=	137
+ktimeunit	=	1/(ktempo/60)
+
+ktimes[]	genarray
+kTimeIncs[]	genarray
+kDivs[]		genarray
+kDivIncs[]	genarray
+
+kMaxDivs[]	init
+kMinLen[]	init
+kMaxLen[]	init
+
+ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
+		kMaxDivs,kMinLen,kMaxLen
+
+kNotes[]	fillarray
+kNoteIncs[]	fillarray
 
 kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
 
@@ -350,7 +376,8 @@ endin
 t		0		137	;score tempo 137bpm
 ;i1		0		128	;activate instrument 1 for 128 beats
 ;i4		0		64
-i6		0		64
+;i6		0		64
+i7		0		64
 e
 </CsScore>
 </CsoundSynthesizer>
