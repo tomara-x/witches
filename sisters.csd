@@ -53,6 +53,15 @@ gifn3 ftgen 0,0,-7*4,-51, 7,2,cpspch(6),0,
 2^(7/12),
 2^(8/12),
 2^(10/12)
+
+gifn4 ftgen 0,0,-7*2,-51, 7,2,cpspch(6),0,
+2^(0/12),
+2^(2/12),
+2^(3/12),
+2^(5/12),
+2^(7/12),
+2^(8/12),
+2^(10/12)
 ; ------------------------------ 
 
 
@@ -297,12 +306,12 @@ ktimeunit	=	1/(ktempo/60) ;1 whole note at tempo in seconds
 
 ktimes[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
 kincs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
-kminlen[]	fillarray	1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
-kmaxlen[]	fillarray	4,    4,    4,    4,    4,    4,    4,    4
-
 kdivs[]		fillarray	0,    0,    0,    0,    0,    0,    0,    0
 kdivincs[]	fillarray	0,    0,    0,    0,    0,    0,    0,    0
+
 kmaxdivs[]	fillarray	256,  256,  256,  256,  256,  256,  256,  256
+kminlen[]	fillarray	1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
+kmaxlen[]	fillarray	8,    8,    8,    8,    8,    8,    8,    8
 
 ktrig, ksub, ktrigArr[] Basemath ktimeunit, ktimes, kincs, kdivs, kdivincs,
 		kmaxdivs, kminlen, kmaxlen
@@ -342,24 +351,39 @@ asig	oscili		kenv, kpitch*4
 		out			limit(asig, -0.2,0.2)
 endin
 
-instr 7
+instr 7 ;Madness demo #0
 ktempo		=	137
 ktimeunit	=	1/(ktempo/60)
 
-ktimes[]	genarray
-kTimeIncs[]	genarray
-kDivs[]		genarray
-kDivIncs[]	genarray
+ilen		=		4
+kTimes[]	init	ilen
+kTimeIncs[]	init	ilen
+kDivs[]		init	ilen
+kDivIncs[]	init	ilen
+kMaxDivs[]	init	ilen
+kMinLen[]	init	ilen
+kMaxLen[]	init	ilen
 
-kMaxDivs[]	init
-kMinLen[]	init
-kMaxLen[]	init
+kNotes[]	init	ilen
+kNoteIncs[]	init	ilen
+
+kndx = 0
+while kndx < ilen do
+	kTimes[kndx]		=	(kndx%1)/10
+	kTimeIncs[kndx]		=	0
+	kDivs[kndx]			=	0
+	kDivIncs[kndx]		=	0
+	kMaxDivs[kndx]		=	0
+	kMinLen[kndx]		=	0
+	kMaxLen[kndx]		=	1
+
+	kNotes[kndx]		=	0
+	kNoteIncs[kndx]		=	random(-5, 5)
+	kndx += 1
+od
 
 ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
 		kMaxDivs,kMinLen,kMaxLen
-
-kNotes[]	fillarray
-kNoteIncs[]	fillarray
 
 kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
 
@@ -368,16 +392,102 @@ asig	oscili		kenv, kpitch*4
 		out			limit(asig, -0.2,0.2)
 endin
 
+instr 8 ;Madness demo #1
+ktempo		=	137
+ktimeunit	=	1/(ktempo/60)
+
+ilen		=		128
+kTimes[]	init	ilen
+kTimeIncs[]	init	ilen
+kDivs[]		init	ilen
+kDivIncs[]	init	ilen
+kMaxDivs[]	init	ilen
+kMinLen[]	init	ilen
+kMaxLen[]	init	ilen
+
+kNotes[]	init	ilen
+kNoteIncs[]	init	ilen
+
+kndx = 0
+while kndx < ilen do
+	kTimes[kndx]		=	(kndx%1)/10
+	kTimeIncs[kndx]		=	0
+	kDivs[kndx]			=	0
+	kDivIncs[kndx]		=	0
+	kMaxDivs[kndx]		=	0
+	kMinLen[kndx]		=	0
+	kMaxLen[kndx]		=	2
+
+	kNotes[kndx]		=	0
+	kNoteIncs[kndx]		=	random(-5, 5)
+	kndx += 1
+od
+
+ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
+		kMaxDivs,kMinLen,kMaxLen
+
+kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
+
+kenv	looptseg	ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
+asig	oscili		kenv, kpitch*4
+		out			limit(asig, -0.2,0.2)
+endin
+
+instr 9 ;Madness demo #2
+ktempo		=	137
+ktimeunit	=	1/(ktempo/60)
+
+ilen		=		128
+kTimes[]	init	ilen
+kTimeIncs[]	init	ilen
+kDivs[]		init	ilen
+kDivIncs[]	init	ilen
+kMaxDivs[]	init	ilen
+kMinLen[]	init	ilen
+kMaxLen[]	init	ilen
+
+kNotes[]	init	ilen
+kNoteIncs[]	init	ilen
+
+kndx = 0
+while kndx < ilen do
+	kTimes[kndx]		=	mirror(wrap(kndx, -4, 8), 1, 4)/2
+	kTimeIncs[kndx]		=	0
+	kDivs[kndx]			=	wrap(kndx, 0, 9)
+	kDivIncs[kndx]		=	0
+	kMaxDivs[kndx]		=	16
+	kMinLen[kndx]		=	0
+	kMaxLen[kndx]		=	2
+
+	kNoteIncs[kndx]		=	random:k(-5,5)
+	kNotes[kndx]		=	kNoteIncs[kndx]
+	kndx += 1
+od
+
+ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
+		kMaxDivs,kMinLen,kMaxLen
+
+kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn4
+
+kenv	looptseg	ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
+asig	oscili		kenv, kpitch*2
+		out			limit(asig, -0.2,0.2)
+endin
+
 ; ------------------------------
 
 </CsInstruments>
 ; ==============================================
 <CsScore>
+;read the manual, amy! there's better ways to mix and arrange!
 t		0		137	;score tempo 137bpm
-;i1		0		128	;activate instrument 1 for 128 beats
-;i4		0		64
-;i6		0		64
-i7		0		64
+;i1		0		64
+
+i4		0		274
+i6		0		274
+i7		0		274
+i8		0		274
+i9		0		274
 e
 </CsScore>
 </CsoundSynthesizer>
