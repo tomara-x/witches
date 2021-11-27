@@ -23,29 +23,18 @@ nchnls  =   2
 #include "function-tables.orc"
 #include "opcodes.orc"
 
-<<<<<<< HEAD
 gaRvbSend    init      0 ; global audio variable initialized to zero
 
-=======
->>>>>>> ubasemath
 instr 1
 ktempo      =   113 ;bpm
 ktimeunit   =   1/(ktempo/60) ;1 whole note at tempo in seconds
-
 ktimes[]    fillarray   1/4,  1/4,  4,    1/4,  1/4,  4,    1/4,  1/4
-kincs[]     fillarray   0,    0,    0,    0,    0,    0,    0,    0
-kdivs[]     fillarray   0,    0,    0,    0,    0,    0,    0,    0
-kdivincs[]  fillarray   0,    0,    0,    0,    0,    0,    0,    0
-
-kmaxdivs[]  fillarray   8,    8,    8,    8,    8,    8,    8,    8
-kminlen[]   fillarray   0,    0,    0,    0,    0,    0,    0,    0
 kmaxlen[]   fillarray   8,    8,    8,    8,    8,    8,    8,    8
 
-ktrig, ksub, ktrigArr[] Basemath ktimeunit, ktimes, kincs, kdivs, kdivincs,
-        kmaxdivs, kminlen, kmaxlen
+ktrig, ktrigArr[] uBasemath ktimeunit, ktimes, kmaxlen
 
 
-;schedkwhen  ksub, 0, 0, 2, 0, 0.0001
+schedkwhen  ktrig, 0, 0, 2, 0, 0.0001
 endin
 
 instr 2 ;hat

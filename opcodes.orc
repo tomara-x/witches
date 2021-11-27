@@ -214,7 +214,7 @@ if ktrig != 0 then
     kAS = (kAS+1)%ilen
 endif
 
-xout ktrig, ksubdiv, kTrigArr
+xout ktrig, kTrigArr
 endop
 
 ;phase modulation oscillator
