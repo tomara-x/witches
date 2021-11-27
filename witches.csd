@@ -23,9 +23,6 @@ nchnls  =   1
 #include "function-tables.orc"
 #include "opcodes.orc"
 
-; ------------------------------
-; instruments
-
 instr 1
 ktmpo       init    137 ;bpm
 kclkx1      metro   ktmpo/60 ;whole notes
@@ -336,8 +333,6 @@ kenv    looptseg    ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
 asig    oscili      kenv, kpitch
         out         limit(asig, -0.2,0.2)
 endin
-
-; ------------------------------
 
 </CsInstruments>
 ; ==============================================

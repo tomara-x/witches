@@ -101,7 +101,7 @@ computerscare [https://github.com/freddyz]
 Aria [https://aria.dog/modules/]
 
 Syntax:
-kTrigOut, kSubTrig, kTrigAtt[] Basemath kTimeUnit, kTimes[], kIncrements[], \
+kTrigOut, kSubTrig, kTrigArr[] Basemath kTimeUnit, kTimes[], kIncrements[], \
     kDivs[], kDivIncs[], kMaxDivs[], kMinLen[], kMaxLen[]
 
 Performance:
@@ -167,6 +167,49 @@ endif
 if ktrig != 0 then
     ktimetmp[kAS] = ktimetmp[kAS] + kIncrements[kAS]
     kdivstmp[kAS] = kdivstmp[kAS] + kDivIncs[kAS]
+    kTrigArr[kAS] = 1
+    kAS = (kAS+1)%ilen
+endif
+
+xout ktrig, ksubdiv, kTrigArr
+endop
+
+opcode uBasemath, kk[], kk[]k[]
+/*
+smaller Basemath
+
+Syntax:
+kTrigOut, kTrigArr[] uBasemath kTimeUnit, kTimes[], kIncrements[], kMaxLen[]
+
+Performance:
+kTrigOut: Step trigger output.
+kTrigArr: Trigger array with each index corresponding to a sequencer step.
+
+kTimeUnit: Time unit (in seconds/fractions of second) for all the time arrays.
+    Also, see seqtime manual entry.
+kTimes[]: An array defining the length of each step (in kTimeUnit).
+    The length of this array controls the length of the sequence.
+    A value of zero (or negative) will have the length of 1 k-cycle.
+    (can be modified from calling instrument for live performance)
+kMaxLen[]: Minimum and maximum length of step (in TimeUnit)
+    (up to but not including)
+*/
+
+kTimeUnit, kTimes[], kMaxLen[] xin
+
+ilen            =       lenarray(kTimes)
+kAS             init    0   ;active step
+kTrigArr[]      init    ilen
+kTrigArr        =       0
+
+kfreq           =       1/kTimeUnit
+if kTimes[kAS] > 0 then
+    ktrig       metro   kfreq/abs(kTimes[kAS]%kMaxLen[kAS])
+else
+    ktrig       =       1
+endif
+
+if ktrig != 0 then
     kTrigArr[kAS] = 1
     kAS = (kAS+1)%ilen
 endif
