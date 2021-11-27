@@ -23,8 +23,11 @@ nchnls  =   2
 #include "function-tables.orc"
 #include "opcodes.orc"
 
+<<<<<<< HEAD
 gaRvbSend    init      0 ; global audio variable initialized to zero
 
+=======
+>>>>>>> ubasemath
 instr 1
 ktempo      =   113 ;bpm
 ktimeunit   =   1/(ktempo/60) ;1 whole note at tempo in seconds
