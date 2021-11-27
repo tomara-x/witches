@@ -10,11 +10,11 @@ as published by Sam Hocevar. See the COPYING file for more details.
 */
 
 ;gifn1
-iscaledegrees	= 7
-itotalsize		= iscaledegrees*4
-iinterval		= 2 ;ratio range covered before repeating (octave = 2)
-ibasefreq		= cpspch(6) ;cpspch(8) = c4
-ibaseindex		= 0 ;index 0 will be ibasefreq
+iscaledegrees   = 7
+itotalsize      = iscaledegrees*4
+iinterval       = 2 ;ratio range covered before repeating (octave = 2)
+ibasefreq       = cpspch(6) ;cpspch(8) = c4
+ibaseindex      = 0 ;index 0 will be ibasefreq
 gifn1 ftgen 0,0,-itotalsize,-51, iscaledegrees,iinterval,
 ibasefreq,ibaseindex,
 2^(0/12),
