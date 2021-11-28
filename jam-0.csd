@@ -54,7 +54,7 @@ outs    asig, asig
 gaRvbSend += asig*0.8
 endin
 
-; stolen from the floss manual (05E01_freeverb.csd) 
+; stolen from the floss manual (05E01_freeverb.csd)
 instr 99 ; reverb - always on
 kroomsize    init      0.85         ; room size (range 0 to 1)
 kHFDamp      init      0.5          ; high freq. damping (range 0 to 1)
