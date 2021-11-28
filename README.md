@@ -10,10 +10,12 @@ The opcode `Taphath` tries to mimick Aria's MSR as much as possible. (except for
 
 `Basemath` is similar but does rhythm instead of pitch/control-signal.
 
+`uTaphath` is a minimal version of `Taphath`. Can be made to self-modulate by "connecting" the ouput trigger/trigger-array to the input array. (conditionally changing the input based on out triggers)
+
 `uBasemath` is a minimal version of `Basemath` with only `times` and `maximum length` as input arrays. (can self-modulate)
 
 ### opcodes.orc
-That's where the opcode definitions of Taphath and Basemath are. You can place this in your project directory, #include it in your csd file, and that's it, you have the opcodes ready to use. (It also includes the documentation of the opcodes)
+That's where the opcode definitions of Taphath and Basemath (and the u versions) are. You can place this in your project directory, #include it in your csd file, and that's it, you have the opcodes ready to use. (It also includes the documentation of the opcodes)
 
 ### function-tables.orc
 Those are function tables used in the demo file (they're just musical scales) you can edit them, define your own, or something else.
