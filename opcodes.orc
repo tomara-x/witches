@@ -69,12 +69,7 @@ if kTrig != 0 then
     ktmp[kAS] = ktmp[kAS]+kIncrements[kAS]
     kTrigArr[kAS] = 1
 
-    ;update pitch output array
-    kj = 0
-    while kj < ilen do
-        kPitchArr[kj] = table(ksum[kAS], iFn, 0, 0, 1)
-        kj += 1
-    od
+    kPitchArr[kAS] = table(ksum[kAS], iFn, 0, 0, 1)
     kpitch = kPitchArr[kAS]
 
     if kRandMode == 0 then
@@ -87,6 +82,59 @@ endif
 if kReset != 0 then
     ksum    =   kmem
     kAS     =   iInitStep%ilen
+endif
+
+xout kpitch, kTrigArr, kPitchArr
+endop
+
+opcode uTaphath, kk[]k[], kk[]ioO
+/*
+smaller Taphath
+
+syntax:
+kPitch, kTrigArr[], kPitchArr[] uTaphath kTrig, kNoteIndx[], iFn \
+        [, iInitStep] [, kRandomMode]
+
+initialization:
+iFn: Function table containing pitch information, or whatever
+        (using gen51 for example)
+iInitStep: First active step in the sequence (defaults to 0)
+
+performance:
+kPitch: Pitch information returned by currently active step.
+        This will be the same format as in the input iFn. (cps, pch, ...)
+kTrigArr[]: An array of triggers with each index corresponding to
+        a step in the sequence. It contains a k-cycle-long trigger
+        that equals 1 when that corresponding step is activated and 0 otherwise.
+kPitchArr[]: An array of the pitch information of all the steps.
+kTrig: Trigger signal that runs the sequencer.(metro, metro2, seqtime, Basemath...)
+        The sequencer advances one step every k-cycle where kTrig != 0
+kNoteIndx[]: 1D array the length of which is the length of the sequence.
+        It contains index values of the iFn for every sequence
+        step before the sequencer starts to self-modulate.
+        (ie the base index of a gen51)
+kRandomMode: Advance the sequence in random order when non zero.
+        (defaults to 0)
+*/
+kTrig, kNoteIndx[], iFn, iInitStep, kRandMode xin
+
+ilen        =       lenarray(kNoteIndx)
+kPitchArr[] init    ilen
+kTrigArr[]  init    ilen
+kAS         init    iInitStep%ilen ;active step
+
+kTrigArr    =   0
+if kTrig != 0 then
+    kTrigArr[kAS] = 1
+
+    kPitchArr[kAS] = table(kNoteIndx[kAS], iFn, 0, 0, 1)
+    kpitch = kPitchArr[kAS]
+
+    if kRandMode == 0 then
+        kAS = (kAS+1)%ilen
+    else
+        kAS = trandom(kTrig, 0, ilen)
+    endif
 endif
 
 xout kpitch, kTrigArr, kPitchArr
