@@ -23,7 +23,7 @@ nchnls  =   2
 #include "function-tables.orc"
 #include "opcodes.orc"
 
-gaRvbSend    init      0 ; global audio variable initialized to zero
+gaRvbSend init 0
 
 instr 1
 ktempo      =   113 ;bpm
