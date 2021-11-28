@@ -21,6 +21,9 @@ Those are function tables used in the demo file (they're just musical scales) yo
 ### witches.csd
 This is a demo file. These are just examples of ways I'd use the sequencers, but I'd love to see what you'd come up with. (seriously, mail/DM me any wiggly air you make!) Something I haven't tried, but I think would be awesome, is to have multiple instances running in the same instrument at different rates and modulating each other's inputs. Makes my head spin!
 
+### jam-x.csd
+Those files are just me playing around. Who knows what'll be there!
+
 ###### Made using [vim](https://www.vim.org/) and [Csound](csound.com/) installed on a [Fedora](fedoraproject.org/) proot on [Termux](termux.com/) on an android phone, void of any analog warmth.
 
 
