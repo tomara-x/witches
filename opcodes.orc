@@ -105,7 +105,7 @@ kPitch: Pitch information returned by currently active step.
         This will be the same format as in the input iFn. (cps, pch, ...)
 kTrigArr[]: An array of triggers with each index corresponding to
         a step in the sequence. It contains a k-cycle-long trigger
-        that equals 1 when that corresponding step is activated (0 otherwise).
+        that equals 1 when that corresponding step is activated and 0 otherwise.
 kPitchArr[]: An array of the pitch information of all the steps.
 kTrig: Trigger signal that runs the sequencer.(metro, metro2, seqtime, Basemath...)
         The sequencer advances one step every k-cycle where kTrig != 0
