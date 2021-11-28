@@ -23,8 +23,11 @@ nchnls  =   2
 #include "function-tables.orc"
 #include "opcodes.orc"
 
+<<<<<<< HEAD
 gaRvbSend    init      0 ; global audio variable initialized to zero
 
+=======
+>>>>>>> main
 instr 1
 ktempo      =   113 ;bpm
 ktimeunit   =   1/(ktempo/60) ;1 whole note at tempo in seconds
@@ -54,6 +57,92 @@ aRvbL,aRvbR  freeverb  gaRvbSend, gaRvbSend,kroomsize,kHFDamp
              clear     gaRvbSend    ; clear global audio variable
 endin
 
+<<<<<<< HEAD
+=======
+instr 10 ;fun
+ktempo      =   137
+ktimeunit   =   1/(ktempo/60)
+
+ilen        =       32
+kTimes[]    init    ilen
+kTimeIncs[] init    ilen
+kDivs[]     init    ilen
+kDivIncs[]  init    ilen
+kMaxDivs[]  init    ilen
+kMinLen[]   init    ilen
+kMaxLen[]   init    ilen
+
+kNotes[]    init    ilen
+kNoteIncs[] init    ilen
+
+kndx = 0
+while kndx < ilen do
+    kTimes[kndx]        =   1/2
+    kTimeIncs[kndx]     =   0
+    kDivs[kndx]         =   0
+    kDivIncs[kndx]      =   random:k(-2,6)
+    kMaxDivs[kndx]      =   9
+    kMinLen[kndx]       =   0
+    kMaxLen[kndx]       =   2
+
+    kNotes[kndx]        =   0
+    kNoteIncs[kndx]     =   random:k(-5,5)
+    kndx += 1
+od
+
+ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
+        kMaxDivs,kMinLen,kMaxLen
+
+kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
+
+kenv    looptseg    ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
+asig    oscili      kenv, kpitch*2
+        out         limit(asig, -0.2,0.2)
+endin
+
+instr 11
+ktempo      =   137
+ktimeunit   =   1/(ktempo/60)
+
+ilen        =       64
+kTimes[]    init    ilen
+kTimeIncs[] init    ilen
+kDivs[]     init    ilen
+kDivIncs[]  init    ilen
+kMaxDivs[]  init    ilen
+kMinLen[]   init    ilen
+kMaxLen[]   init    ilen
+
+kNotes[]    init    ilen
+kNoteIncs[] init    ilen
+
+kndx = 0
+while kndx < ilen do
+    kTimes[kndx]        =   1/4
+    kTimeIncs[kndx]     =   0
+    kDivs[kndx]         =   0
+    kDivIncs[kndx]      =   0
+    kMaxDivs[kndx]      =   0
+    kMinLen[kndx]       =   0
+    kMaxLen[kndx]       =   2
+
+    ;kNotes[kndx]       =   (2^kndx)%50 ;play around with this, 'tis dope af!
+    kNotes[kndx]        =   sin((kndx-(ilen/2))/10)*10
+    kNoteIncs[kndx]     =   1
+    kndx += 1
+od
+
+ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
+        kMaxDivs,kMinLen,kMaxLen
+
+kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
+
+kenv    looptseg    ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
+asig    oscili      kenv, kpitch
+        out         limit(asig, -0.2,0.2)
+endin
+
+>>>>>>> main
 </CsInstruments>
 ; ==============================================
 <CsScore>
