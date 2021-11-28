@@ -33,8 +33,18 @@ kmaxlen[]   fillarray   8,    8,    8,    8,    8,    8,    8,    8
 
 ktrig, ktrigArr[] uBasemath ktimeunit, ktimes, kmaxlen
 
+knotes[]    fillarray   7,    9,    10,   13
 
-schedkwhen  ktrig, 0, 0, 2, 0, 0.0001
+kptch, kArrtrig[], kptchArr[] uTaphath ktrig, knotes, gifn1
+
+asig1   oscili  0.25, kptchArr[0]
+asig2   oscili  0.25, kptchArr[1]
+asig3   oscili  0.25, kptchArr[2]
+asig4   oscili  0.25, kptchArr[3]
+aout = asig1+asig2+asig3+asig4
+outs aout*.5, aout*.5
+gaRvbSend += aout*0.8
+;schedkwhen  ktrig, 0, 0, 2, 0, 0.0001
 endin
 
 instr 2 ;hat
