@@ -26,31 +26,39 @@ nchnls  =   2
 gaRvbSend init 0
 
 instr 1
-ktempo      =   113 ;bpm
-ktimeunit   =   1/(ktempo/60) ;1 whole note at tempo in seconds
-ktimes[]    fillarray   1/4,  1/4,  4,    1/4,  1/4,  4,    1/4,  1/4
-kmaxlen[]   fillarray   8,    8,    8,    8,    8,    8,    8,    8
+ktempo      =           113 ;bpm
+ktimeunit   =           1/(ktempo/60) ;1 whole note at tempo in seconds
+kclkd4      metro       ktempo/60/4
+ktimes[]    fillarray   1,    1,    1,    6
+kmaxlen[]   fillarray   8,    8,    8,    8
 
-ktrig, ktrigArr[] uBasemath ktimeunit, ktimes, kmaxlen
+;k1[] init 4
+;ktrig, ksub, ktrigArrB[] Basemath ktimeunit, ktimes,k1,k1,k1,k1,k1, kmaxlen
+ktrig, ktrigArrB[] uBasemath ktimeunit, ktimes, kmaxlen
 
-knotes[]    fillarray   7,    9,    10,   13
+knotes[]    fillarray   0,    7,    14,   21
 
-kptch, kArrtrig[], kptchArr[] uTaphath ktrig, knotes, gifn1
+kptch, ktrigArrT[], kptchArr[] uTaphath ktrig, knotes, gifn1
 
-asig1   oscili  0.25, kptchArr[0]
-asig2   oscili  0.25, kptchArr[1]
-asig3   oscili  0.25, kptchArr[2]
-asig4   oscili  0.25, kptchArr[3]
-aout = asig1+asig2+asig3+asig4
-outs aout*.5, aout*.5
-gaRvbSend += aout*0.8
-;schedkwhen  ktrig, 0, 0, 2, 0, 0.0001
+schedkwhen  ktrig, 0, 0, 3, 0, 8, kptch
 endin
-
+/*
 instr 2 ;hat
 aenv    expsegr 1,p3,1,0.04,0.001
 asig    noise   0.1*aenv, 0
 outs    asig, asig
+gaRvbSend += asig*0.8
+endin
+*/
+instr 3
+iplk    =           0.1 ;(0 to 1)
+kamp    init        0.25
+icps    =           p4
+kpick   init        0.9 ;pickup point
+krefl   init        0.8 ;rate of decay? ]0,1[
+asig    wgpluck2    iplk,kamp,icps,kpick,krefl
+asig    pdhalf      asig,;---------------------------------------->
+        outs        asig,asig
 gaRvbSend += asig*0.8
 endin
 
