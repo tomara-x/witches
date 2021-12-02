@@ -24,7 +24,8 @@ This is a demo file. These are just examples of ways I'd use the sequencers, but
 ### jam-x.csd
 Those files are just me playing around. Who knows what'll be there!
 
-###### Made using [Vim](https://www.vim.org/) and [Csound](https://csound.com/) installed on a [Fedora](https://fedoraproject.org/) proot on [Termux](https://termux.com/) on an android phone, void of any analog warmth.
+###### Made using [Vim](https://www.vim.org/) and [Csound](https://csound.com/) installed on a [Fedora](https://fedoraproject.org/) proot on [Termux](https://termux.com/) on an android (version 8.1) phone, void of any analog warmth.
+(if you want the recipe to that, [I've got you](https://github.com/tomara-x/csound-proot-distro-recipe))
 
 
 💜
