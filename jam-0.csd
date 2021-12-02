@@ -33,7 +33,9 @@ kclkd4      metro       ktempo/60/4
 ktimes[]    fillarray   1,    1,    1,    1+4 ; <- think tied note
 kmaxlen[]   fillarray   8,    8,    8,    8
 ;k1[] init 4
-;ktrig, ksub, ktrigArrB[] Basemath ktimeunit, ktimes,k1,k1,k1,k1,k1, kmaxlen
+;k2[] fillarray 1, 1, 32, 1
+;k3[] fillarray 1, 1, 33, 1
+;ktrig, ksub, ktrigArrB[] Basemath ktimeunit, ktimes,k1,k2,k1,k3,k1, kmaxlen
 ktrig, ktrigArrB[] uBasemath ktimeunit, ktimes, kmaxlen
 
 knotes[]    fillarray   0,    7,    14,   21

@@ -183,7 +183,7 @@ kMinLen[], kMaxLen[]: Minimum and maximum length of step (in TimeUnit)
 kTimeUnit, kTimes[], kIncrements[], kDivs[], kDivIncs[], kMaxDivs[], kMinLen[], kMaxLen[] xin
 
 ilen            =       lenarray(kTimes)
-kAS             init    0   ;active step
+kAS             init    ilen-1   ;active step (this avoids skipping the first step)
 
 ktimetmp[]      init    ilen ;accumulating the time increments in this
 kdivstmp[]      init    ilen ;same but divs increments
@@ -246,7 +246,7 @@ kMaxLen[]: Minimum and maximum length of step (in TimeUnit)
 kTimeUnit, kTimes[], kMaxLen[] xin
 
 ilen            =       lenarray(kTimes)
-kAS             init    0   ;active step
+kAS             init    ilen-1  ;active step (starting at the last step)
 kTrigArr[]      init    ilen
 kTrigArr        =       0
 
