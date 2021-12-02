@@ -32,10 +32,6 @@ ktimeunit   =           1/(ktempo/60) ;1 whole note at tempo in seconds
 kclkd4      metro       ktempo/60/4
 ktimes[]    fillarray   1,    1,    1,    1+4 ; <- think tied note
 kmaxlen[]   fillarray   8,    8,    8,    8
-;k1[] init 4
-;k2[] fillarray 1, 1, 32, 1
-;k3[] fillarray 1, 1, 33, 1
-;ktrig, ksub, ktrigArrB[] Basemath ktimeunit, ktimes,k1,k2,k1,k3,k1, kmaxlen
 ktrig, ktrigArrB[] uBasemath ktimeunit, ktimes, kmaxlen
 
 knotes[]    fillarray   0,    7,    14,   21
@@ -69,6 +65,28 @@ asig    limit       asig, -0.4,0.4
 gaRvbSend += asig*0.8
 endin
 
+instr 4
+ktempo      =   113
+ktimeunit   =   1/(ktempo/60)
+
+ktimes[]    fillarray   1,    1,    1,    1+4
+kincs[]     fillarray   0,    0,    0,    0
+kdivs[]     fillarray   0,    4,    0,    0
+kdivincs[]  fillarray   0,    0,    0,    0
+
+kmaxdivs[]  fillarray   8,    8,    8,    8
+kminlen[]   fillarray   0,    0,    0,    0
+kmaxlen[]   fillarray   8,    8,    8,    8
+
+ktrig, ksub, ktrigArr[] Basemath ktimeunit, ktimes, kincs, kdivs, kdivincs,
+        kmaxdivs, kminlen, kmaxlen
+
+knotes[]    fillarray   0,    7,    14,   21
+kptch, ktrigArrT[], kptchArr[] uTaphath ktrig, knotes, gifn1
+
+schedkwhen  ksub, 0, 0, 3, 0, 1, kptch
+endin
+
 ; stolen from the floss manual (05E01_freeverb.csd)
 instr verb ; reverb - always on
 kroomsize    init      0.85         ; room size (range 0 to 1)
@@ -83,7 +101,7 @@ endin
 <CsScore>
 ;read the manual, amy!
 t       0       113
-i1      0       64
+i4      0       64
 e
 </CsScore>
 </CsoundSynthesizer>
