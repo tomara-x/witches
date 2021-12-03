@@ -47,6 +47,10 @@ kReset: Reset the sequencer to its original state when non zero.
         kNoteIndx[] and iInitStep wise. (defaults to 0)
 kRandomMode: Advance the sequence in random order when non zero.
         (defaults to 0)
+
+Note: The GEN51 plays a big role in this opcode's operation.
+        It acts as a pitch quantizer and a pitch range limiter.
+        Might wanna check out it's documentation.
 */
 kTrig, kNoteIndx[], kIncrements[], iFn, iInitStep, kReset, kRandMode xin
 
