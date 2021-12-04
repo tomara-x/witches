@@ -50,7 +50,7 @@ kRandomMode: Advance the sequence in random order when non zero.
 
 Note: The GEN51 plays a big role in this opcode's operation.
         It acts as a pitch quantizer and a pitch range limiter.
-        Might wanna check out it's documentation.
+        Might wanna check out its documentation.
 */
 kTrig, kNoteIndx[], kIncrements[], iFn, iInitStep, kReset, kRandMode xin
 
