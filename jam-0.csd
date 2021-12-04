@@ -26,6 +26,11 @@ nchnls  =   2
 gaRvbSend init 0
 alwayson "verb"
 
+gifftsize = 1024
+gioverlap = gifftsize/4
+giwinsize = gifftsize
+giwinshape = 1 ;von-Hann window
+
 instr 1
 ktempo      =           113 ;bpm
 ktimeunit   =           1/(ktempo/60) ;1 whole note at tempo in seconds
@@ -87,6 +92,15 @@ kptch, ktrigArrT[], kptchArr[] uTaphath ktrig, knotes, gifn1
 schedkwhen  ksub, 0, 0, 3, 0, 1, kptch
 endin
 
+instr 5 ;octave down
+ain     soundin "foreheadkisses.wav"
+fftin   pvsanal ain, gifftsize, gioverlap, giwinsize, giwinshape
+fftscal pvscale fftin, 1/2
+aout    pvsynth fftscal
+;aout    = (aout+ain)/2
+        outs    aout, aout
+endin
+
 ; stolen from the floss manual (05E01_freeverb.csd)
 instr verb ; reverb - always on
 kroomsize    init      0.85         ; room size (range 0 to 1)
@@ -101,7 +115,7 @@ endin
 <CsScore>
 ;read the manual, amy!
 t       0       113
-i4      0       64
+i5      0       64
 e
 </CsScore>
 </CsoundSynthesizer>
