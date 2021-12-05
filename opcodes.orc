@@ -9,6 +9,7 @@ terms of the Do What The Fuck You Want To Public License, Version 2,
 as published by Sam Hocevar. See the COPYING file for more details.
 */
 
+
 opcode Taphath, kk[]k[], kk[]k[]ioOO
 /*
 Different rituals, but can grant you powers similar to those of the
@@ -91,6 +92,123 @@ endif
 xout kpitch, kTrigArr, kPitchArr
 endop
 
+
+opcode TaphathQ, kk[]k[], kk[]k[]k[]iOO
+/*
+Different rituals, but can grant you powers similar to those of the
+Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
+[https://aria.dog/modules/]
+
+syntax:
+kActiveStep, kPitchArr[], kTrigArr[] Taphath kTrig, kNoteIndx[], \
+    kIncrements[], kQArr[], iFn [, kStepMode] [, kReset]
+
+initialization:
+iFn: Function table containing pitch information (using gen51 for example)
+        (but doesn't have to be pitch, it can contain any values you want)
+
+performance:
+kActiveStep: The index of the currently active step (from 0 to lenarray(kNoteIndex))
+kPitchArr[]: An array of the pitch outputs from each step.
+        (whatever values stored in iFn)
+kTrigArr[]: An array of trigger outputs from each step. A trigger is
+        1 k-cycle long, and equals 1 (in amplitude) when that corresponding
+        step is activated (0 otherwise).
+Note: You can combine these outputs: current-pitch = kPitchArr[kActiveStep]
+
+kTrig: Trigger signal that runs the sequencer.(metro, metro2, seqtime, Basemath...)
+        The sequencer advances one step every k-cycle where kTrig != 0
+        (direction determined by kStepMode)
+kNoteIndx[]: 1D array the length of which is the length of the sequence.
+        It contains index values of the iFn for every sequence
+        step before the sequencer starts to self-modulate.
+        Those are not note values, they're the indexes to the values
+        stored in the iFn (the sequencer will output values in
+        the function table, not these indexes)
+kIncrements[]: 1D array containing the amount for each step to be
+        transposed every time it is active. 2 means every time the step
+        is active, it will be 2 scale degrees higher.
+        (from c to d ... if iFn contains a chromatic c scale)
+        Increments can be negative or fractional values.
+        (this should be same length as kNoteIndex, but if not,
+        Csound will complain if it becomes a problem)
+kQArr[]: The queue inputs for eaxh step. Queued steps take priority over
+        other steps. This won't be modified by the sequencer but can be
+        from within the calling instrument after invoking the sequencer. Example:
+        kQueueArr[kActiveStep] = kQueueArr[kActiveStep]*kToggle
+        kToggle = 0 for reset, and kToggle = 1 for keep.
+        Positive values will add the corresponding steps to the queue,
+        zero and negative will not.
+kStepMode: How the sequencer will behave upon receiving a trigger.
+        0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
+kReset: Reset the sequencer to its original (kNoteIndex) state when non zero.
+        (defaults to 0)
+
+Note: The GEN51 plays a big role in this opcode's operation.
+        It acts as a pitch quantizer and a pitch range limiter.
+        Might wanna check out its documentation.
+*/
+kTrig, kNoteIndx[], kIncrements[], kQArr[], iFn, kStepMode, kReset xin
+
+ilen        =       lenarray(kNoteIndx)
+kmem[]      init    ilen ;storing the initial notes state
+ktmp[]      init    ilen ;for accumulating the increments
+ksum[]      init    ilen ;sum of notes and increments
+kPitchArr[] init    ilen
+kTrigArr[]  init    ilen
+kAS         init    0 ;active step
+
+kgoto perf
+kmem = kNoteIndx
+
+perf:
+kTrigArr    =   0
+ksum = kNoteIndx+ktmp ;can this be inside the triggered cycle?
+
+if kTrig != 0 then
+    ; do the step biz
+    ktmp[kAS] = ktmp[kAS]+kIncrements[kAS]
+    kTrigArr[kAS] = 1
+    kPitchArr[kAS] = table(ksum[kAS], iFn, 0, 0, 1)
+
+    ; now let's leave this step
+    kmax maxarray kQArr
+    if kmax == 0 then ; no queued steps (max=0 means entire array's non-positive)
+        if kStepMode == 0 then
+            kAS = (kAS+1)%ilen ;step foreward
+        elseif kStepMode == 1 then
+            kAS = (kAS-1)%ilen ;step backward
+        elseif kStepMode == 2 then
+            kAS = trandom(kTrig, 0, ilen) ;go to random step
+        endif
+    else ;there are queued steps
+        if kStepMode == 0 then
+            kAS = (kAS+1)%ilen ;make sure to not get stuck
+            while kQArr[kAS] <= 0 do ;loop til we find next positive Q
+                kAS = (kAS+1)%ilen
+            od
+        elseif kStepMode == 1 then
+            kAS = (kAS-1)%ilen ;same deal but we're moving backward
+            while kQArr[kAS] <= 0 do
+                kAS = (kAS-1)%ilen
+            od
+        elseif kStepMode == 2 then
+            kAS = trandom(kTrig, 0, ilen) ;jump to random step then go to nearest Q
+            while kQArr[kAS] <= 0 do
+                kAS = (kAS+1)%ilen
+            od
+        endif
+    endif
+endif
+
+if kReset != 0 then
+    ksum    =   kmem
+endif
+
+xout kAS, kPitchArr, kTrigArr
+endop
+
+
 opcode uTaphath, kk[]k[], kk[]ioO
 /*
 smaller Taphath
@@ -143,6 +261,7 @@ endif
 
 xout kpitch, kTrigArr, kPitchArr
 endop
+
 
 opcode Basemath, kkk[], kk[]k[]k[]k[]k[]k[]k[]
 /*
@@ -226,6 +345,7 @@ endif
 xout ktrig, ksubdiv, kTrigArr
 endop
 
+
 opcode uBasemath, kk[], kk[]k[]
 /*
 smaller Basemath
@@ -269,6 +389,7 @@ endif
 xout ktrig, kTrigArr
 endop
 
+
 ;phase modulation oscillator
 opcode Pmoscili, a, akaj
 aamp, kfreq, aphs, ifn xin
@@ -276,6 +397,7 @@ acarrier    phasor kfreq
 asig        tablei acarrier+aphs, ifn, 1,0,1
 xout        asig*aamp
 endop
+
 
 opcode ClkDiv, k, kk
 /*
