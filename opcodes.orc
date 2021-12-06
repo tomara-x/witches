@@ -76,7 +76,7 @@ kTrigArr[]  init    ilen
 kAS         init    0 ;active step
 
 kcycle timeinstk
-ckgoto kcycle!=1, perf ;what is Taphath isn't called in the first cycle of the instrument? is this relative to the opcode?
+ckgoto kcycle!=1, perf ;what if Taphath is called after the first cycle of the instrument? is this relative to the opcode?
 kmem = kNoteIndx
 
 ;initialize the pitch array
