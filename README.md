@@ -6,7 +6,7 @@ At the end of 2019 I met [his successor](https://github.com/AriaSalvatrice) in a
 
 Months after I lost my favorite instrument, I missed the magic, I wanted it in my csound setup, so I made this.
 
-The opcode `Taphath` tries to mimick Aria's MSR as much as possible. (except for the queue function because I'm too lazy)
+The opcode `Taphath` tries to mimick Aria's MSR as much as possible. (with just a few quirks!)
 
 `Basemath` is similar but does rhythm instead of pitch/control-signal.
 
