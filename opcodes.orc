@@ -10,90 +10,7 @@ as published by Sam Hocevar. See the COPYING file for more details.
 */
 
 
-opcode Taphath, kk[]k[], kk[]k[]ioOO
-/*
-Different rituals, but can grant you powers similar to those of the
-Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
-[https://aria.dog/modules/]
-
-syntax:
-kPitch, kTrigArr[], kPitchArr[] Taphath kTrig, kNoteIndx[], \
-    kIncrements[], iFn [, iInitStep] [, kReset] [, kRandomMode]
-
-initialization:
-iFn: Function table containing pitch information, or whatever
-        (using gen51 for example)
-iInitStep: First active step in the sequence (defaults to 0)
-
-performance:
-kPitch: Pitch information returned by currently active step.
-        This will be the same format as in the input iFn. (cps, pch, ...)
-kTrigArr[]: An array of triggers with each index corresponding to
-        a step in the sequence. It contains a k-cycle-long trigger
-        that equals 1 when that corresponding step is activated (0 otherwise).
-kPitchArr[]: An array of the pitch information of all the steps.
-kTrig: Trigger signal that runs the sequencer.(metro, metro2, seqtime, Basemath...)
-        The sequencer advances one step every k-cycle where kTrig != 0
-kNoteIndx[]: 1D array the length of which is the length of the sequence.
-        It contains index values of the iFn for every sequence
-        step before the sequencer starts to self-modulate.
-        (ie the base index of a gen51)
-kIncrements[]: 1D array (same length as kNoteIndx.. or not?)
-        containing the amount for each step to be transposed
-        every time it is active. 2 means every time the step
-        is active, it will be 2 scale degrees higher.
-        (from c to d ... if iFn contains a chromatic c scale)
-        Increments can be negative or fractional values.
-kReset: Reset the sequencer to its original state when non zero.
-        kNoteIndx[] and iInitStep wise. (defaults to 0)
-kRandomMode: Advance the sequence in random order when non zero.
-        (defaults to 0)
-
-Note: The GEN51 plays a big role in this opcode's operation.
-        It acts as a pitch quantizer and a pitch range limiter.
-        Might wanna check out its documentation.
-*/
-kTrig, kNoteIndx[], kIncrements[], iFn, iInitStep, kReset, kRandMode xin
-
-ilen        =       lenarray(kNoteIndx)
-kmem[]      init    ilen ;storing the initial notes state
-ktmp[]      init    ilen ;for accumulating the increments
-ksum[]      init    ilen ;sum of notes and increments
-kPitchArr[] init    ilen
-kTrigArr[]  init    ilen
-kAS         init    iInitStep%ilen ;active step
-
-kgoto perf
-kmem = kNoteIndx
-
-perf:
-kTrigArr    =   0
-ksum = kNoteIndx+ktmp
-
-if kTrig != 0 then
-    ktmp[kAS] = ktmp[kAS]+kIncrements[kAS]
-    kTrigArr[kAS] = 1
-
-    kPitchArr[kAS] = table(ksum[kAS], iFn, 0, 0, 1)
-    kpitch = kPitchArr[kAS]
-
-    if kRandMode == 0 then
-        kAS = (kAS+1)%ilen
-    else
-        kAS = trandom(kTrig, 0, ilen)
-    endif
-endif
-
-if kReset != 0 then
-    ksum    =   kmem
-    kAS     =   iInitStep%ilen
-endif
-
-xout kpitch, kTrigArr, kPitchArr
-endop
-
-
-opcode TaphathQ, kk[]k[], kk[]k[]k[]iOO
+opcode Taphath, kk[]k[], kk[]k[]k[]iOO
 /*
 Different rituals, but can grant you powers similar to those of the
 Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
@@ -158,8 +75,17 @@ kPitchArr[] init    ilen
 kTrigArr[]  init    ilen
 kAS         init    0 ;active step
 
-kgoto perf
+kcycle timeinstk
+ckgoto kcycle!=1, perf ;what is Taphath isn't called in the first cycle of the instrument? is this relative to the opcode?
 kmem = kNoteIndx
+
+;initialize the pitch array
+ksum = kNoteIndx+ktmp
+kn = 0
+while kn < ilen do
+    kPitchArr[kn] = table(ksum[kn], iFn, 0, 0, 1)
+    kn += 1
+od
 
 perf:
 kTrigArr    =   0
@@ -177,9 +103,10 @@ if kTrig != 0 then
         if kStepMode == 0 then
             kAS = (kAS+1)%ilen ;step foreward
         elseif kStepMode == 1 then
-            kAS = (kAS-1)%ilen ;step backward
+            kAS = wrap(kAS-1, 0, ilen) ;step backward
         elseif kStepMode == 2 then
             kAS = trandom(kTrig, 0, ilen) ;go to random step
+        else
         endif
     else ;there are queued steps
         if kStepMode == 0 then
@@ -188,15 +115,16 @@ if kTrig != 0 then
                 kAS = (kAS+1)%ilen
             od
         elseif kStepMode == 1 then
-            kAS = (kAS-1)%ilen ;same deal but we're moving backward
+            kAS = wrap(kAS-1, 0, ilen) ;same deal but we're moving backward
             while kQArr[kAS] <= 0 do
-                kAS = (kAS-1)%ilen
+                kAS = wrap(kAS-1, 0, ilen)
             od
         elseif kStepMode == 2 then
             kAS = trandom(kTrig, 0, ilen) ;jump to random step then go to nearest Q
             while kQArr[kAS] <= 0 do
                 kAS = (kAS+1)%ilen
             od
+        else
         endif
     endif
 endif
