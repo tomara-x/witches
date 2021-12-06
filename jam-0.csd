@@ -33,16 +33,16 @@ giwinshape = 1 ;von-Hann window
 
 instr 1
 ktempo      =           113 ;bpm
-ktimeunit   =           1/(ktempo/60) ;1 whole note at tempo in seconds
-kclkd4      metro       ktempo/60/4
-ktimes[]    fillarray   1,    1,    1,    1+4 ; <- think tied note
-kmaxlen[]   fillarray   8,    8,    8,    8
-ktrig, ktrigArrB[] uBasemath ktimeunit, ktimes, kmaxlen
+ktrig       metro       113/60
 
 knotes[]    fillarray   0,    7,    14,   21
-kptch, ktrigArrT[], kptchArr[] uTaphath ktrig, knotes, gifn1
+kincs[]     fillarray   1,    0,    0,    0
+kQ[]        fillarray   0,    0,    1,    0
+kAS, kpitches[], ktrigs[] Taphath ktrig, knotes, kincs, kQ, gifn1, 0
+kQ[kAS]     = kQ[kAS] * 0
 
-schedkwhen  ktrig, 0, 0, 3, 0, 1, kptch
+;printk2     kpitches[kAS]
+schedkwhen  ktrig, 0, 0, 3, 0, 1, kpitches[kAS]
 endin
 
 instr 2 ;hat
@@ -70,7 +70,7 @@ asig    limit       asig, -0.4,0.4
 gaRvbSend += asig*0.8
 endin
 
-instr 4
+instr 4 ;for testing basemath trig sync
 ktempo      =   113
 ktimeunit   =   1/(ktempo/60)
 
@@ -91,7 +91,7 @@ kptch, ktrigArrT[], kptchArr[] uTaphath ktrig, knotes, gifn1
 
 schedkwhen  ksub, 0, 0, 3, 0, 1, kptch
 endin
-
+/*
 instr 5 ;octave down
 ain     soundin "foreheadkisses.wav"
 fftin   pvsanal ain, gifftsize, gioverlap, giwinsize, giwinshape
@@ -100,7 +100,7 @@ aout    pvsynth fftscal
 ;aout    = (aout+ain)/2
         outs    aout, aout
 endin
-
+*/
 ; stolen from the floss manual (05E01_freeverb.csd)
 instr verb ; reverb - always on
 kroomsize    init      0.85         ; room size (range 0 to 1)
@@ -115,7 +115,7 @@ endin
 <CsScore>
 ;read the manual, amy!
 t       0       113
-i5      0       64
+i1      0       64
 e
 </CsScore>
 </CsoundSynthesizer>
