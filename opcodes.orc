@@ -73,31 +73,31 @@ ktmp[]      init    ilen ;for accumulating the increments
 ksum[]      init    ilen ;sum of notes and increments
 kPitchArr[] init    ilen
 kTrigArr[]  init    ilen
-kAS         init    0 ;active step
 
-kcycle timeinstk
-ckgoto kcycle!=1, perf ;what if Taphath is called after the first cycle of the instrument? is this relative to the opcode?
+;do this only on the first k-cycle the opcode runs
+kfirst  init 1
+ckgoto kfirst!=1, PastKOne
+kfirst = 0
+;store initial notes
 kmem = kNoteIndx
-
+;initial active step
+if kStepMode == 0 then
+    kAS = ilen-1
+else
+    kAS = 0
+endif
 ;initialize the pitch array
-ksum = kNoteIndx+ktmp
 kn = 0
 while kn < ilen do
-    kPitchArr[kn] = table(ksum[kn], iFn, 0, 0, 1)
+    kPitchArr[kn] = table(kNoteIndx[kn], iFn, 0, 0, 1)
     kn += 1
 od
 
-perf:
+PastKOne:
 kTrigArr    =   0
-ksum = kNoteIndx+ktmp ;can this be inside the triggered cycle?
 
 if kTrig != 0 then
-    ; do the step biz
-    ktmp[kAS] = ktmp[kAS]+kIncrements[kAS]
-    kTrigArr[kAS] = 1
-    kPitchArr[kAS] = table(ksum[kAS], iFn, 0, 0, 1)
-
-    ; now let's leave this step
+    ; go to the next step
     kmax maxarray kQArr
     if kmax == 0 then ; no queued steps (max=0 means entire array's non-positive)
         if kStepMode == 0 then
@@ -127,10 +127,16 @@ if kTrig != 0 then
         else
         endif
     endif
+
+    ; do the step biz
+    ktmp[kAS] = ktmp[kAS]+kIncrements[kAS]
+    ksum = kNoteIndx+ktmp
+    kTrigArr[kAS] = 1
+    kPitchArr[kAS] = table(ksum[kAS], iFn, 0, 0, 1)
 endif
 
 if kReset != 0 then
-    ksum    =   kmem
+    ksum = kmem
 endif
 
 xout kAS, kPitchArr, kTrigArr
