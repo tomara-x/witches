@@ -41,9 +41,12 @@ kQ[]        fillarray   0,    0,    0,    0
 kAS, kpitches[], ktrigs[] Taphath ktrig, knotes, kincs, kQ, gifn1, 0
 kQ[kAS]     = kQ[kAS] * 0
 
-if ktrig == 1 then
-    printarray     kpitches
-endif
+;kAS, kpitches[], ktrigs[] uTaphath ktrig, knotes, gifn1, 0
+;if ktrig == 1 then
+;    printarray     kpitches
+;    printarray     ktrigs
+;endif
+
 schedkwhen  ktrig, 0, 0, 3, 0, 1, kpitches[kAS]
 endin
 

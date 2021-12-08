@@ -96,8 +96,7 @@ while kn < ilen do
 od
 
 PastKOne:
-kTrigArr    =   0
-
+kTrigArr = 0
 if kTrig != 0 then
     ; go to the next step
     kmax maxarray kQArr
@@ -145,22 +144,21 @@ xout kAS, kPitchArr, kTrigArr
 endop
 
 
-opcode uTaphath, kk[]k[], kk[]ioO
+opcode uTaphath, kk[]k[], kk[]iOo
 /*
-smaller Taphath
+Smaller Taphath. No increments, no queue, no reset.
 
 syntax:
-kPitch, kTrigArr[], kPitchArr[] uTaphath kTrig, kNoteIndx[], iFn \
-        [, iInitStep] [, kRandomMode]
+kActiveStep, kPitchArr[], kTrigArr[] uTaphath kTrig, kNoteIndx[], iFn \
+        [, kStepMode] [, iInitStep]
 
 initialization:
-iFn: Function table containing pitch information, or whatever
-        (using gen51 for example)
+iFn: Function table containing pitch information (using gen51 for example)
+        (but doesn't have to be pitch, it can contain any values you want)
 iInitStep: First active step in the sequence (defaults to 0)
 
 performance:
-kPitch: Pitch information returned by currently active step.
-        This will be the same format as in the input iFn. (cps, pch, ...)
+kActiveStep: The index of the currently active step (from 0 to lenarray(kNoteIndex))
 kTrigArr[]: An array of triggers with each index corresponding to
         a step in the sequence. It contains a k-cycle-long trigger
         that equals 1 when that corresponding step is activated and 0 otherwise.
@@ -171,31 +169,51 @@ kNoteIndx[]: 1D array the length of which is the length of the sequence.
         It contains index values of the iFn for every sequence
         step before the sequencer starts to self-modulate.
         (ie the base index of a gen51)
-kRandomMode: Advance the sequence in random order when non zero.
-        (defaults to 0)
+kStepMode: How the sequencer will behave upon receiving a trigger.
+        0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
 */
-kTrig, kNoteIndx[], iFn, iInitStep, kRandMode xin
+kTrig, kNoteIndx[], iFn, kStepMode, iInitStep xin
 
 ilen        =       lenarray(kNoteIndx)
 kPitchArr[] init    ilen
 kTrigArr[]  init    ilen
-kAS         init    iInitStep%ilen ;active step
 
+;do this only on the first k-cycle the opcode runs
+kfirst  init 1
+ckgoto kfirst!=1, PastKOne
+kfirst = 0
+;initial active step
+if kStepMode == 0 then
+    kAS = ilen-1
+else
+    kAS = 0
+endif
+;initialize the pitch array
+kn = 0
+while kn < ilen do
+    kPitchArr[kn] = table(kNoteIndx[kn], iFn, 0, 0, 1)
+    kn += 1
+od
+
+PastKOne:
 kTrigArr    =   0
 if kTrig != 0 then
-    kTrigArr[kAS] = 1
-
-    kPitchArr[kAS] = table(kNoteIndx[kAS], iFn, 0, 0, 1)
-    kpitch = kPitchArr[kAS]
-
-    if kRandMode == 0 then
-        kAS = (kAS+1)%ilen
+    ;move to next step
+    if kStepMode == 0 then
+        kAS = (kAS+1)%ilen ;step foreward
+    elseif kStepMode == 1 then
+        kAS = wrap(kAS-1, 0, ilen) ;step backward
+    elseif kStepMode == 2 then
+        kAS = trandom(kTrig, 0, ilen) ;go to random step
     else
-        kAS = trandom(kTrig, 0, ilen)
     endif
+
+    ;do current step biz
+    kTrigArr[kAS] = 1
+    kPitchArr[kAS] = table(kNoteIndx[kAS], iFn, 0, 0, 1)
 endif
 
-xout kpitch, kTrigArr, kPitchArr
+xout kAS, kPitchArr, kTrigArr
 endop
 
 
