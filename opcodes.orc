@@ -42,11 +42,13 @@ kNoteIndx[]: 1D array the length of which is the length of the sequence.
         Those are not note values, they're the indexes to the values
         stored in the iFn (the sequencer will output values in
         the function table, not these indexes)
-kIncrements[]: 1D array containing the amount for each step to be
-        transposed every time it is active. 2 means every time the step
-        is active, it will be 2 scale degrees higher.
+kIncrements[]: 1D array containing the amount for each step to move up or down
+        the iFn every time it is active. (first step is no exception)
+        2 means every time the step is active, it will be 2 scale degrees higher.
         (from c to d ... if iFn contains a chromatic c scale)
-        Increments can be negative or fractional values.
+        Increments can be negative or fractional values. But since those are
+        indexes were dealing with the jump will only happen when the increments
+        add up to an integer.
         (this should be same length as kNoteIndex, but if not,
         Csound will complain if it becomes a problem)
 kQArr[]: The queue inputs for eaxh step. Queued steps take priority over

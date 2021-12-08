@@ -37,9 +37,9 @@ ktrig       metro       113/2/60
 
 knotes[]    fillarray   0,    7,    14,   21
 kincs[]     fillarray   0,    0,    0,    4
-kQ[]        fillarray   1,    1,    1,    1
-kAS, kpitches[], ktrigs[] Taphath ktrig, knotes, kincs, kQ, gifn1, 1
-kQ[kAS]     = kQ[kAS] * 1
+kQ[]        fillarray   0,    0,    0,    0
+kAS, kpitches[], ktrigs[] Taphath ktrig, knotes, kincs, kQ, gifn1, 0
+kQ[kAS]     = kQ[kAS] * 0
 
 if ktrig == 1 then
     printarray     kpitches
