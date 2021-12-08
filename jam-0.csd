@@ -33,15 +33,20 @@ giwinshape = 1 ;von-Hann window
 
 instr 1
 ktempo      =           113 ;bpm
-ktrig       metro       113/60
+ktrig       metro       113/2/60
 
 knotes[]    fillarray   0,    7,    14,   21
-kincs[]     fillarray   1,    0,    0,    0
-kQ[]        fillarray   0,    0,    1,    0
+kincs[]     fillarray   0,    0,    0,    4
+kQ[]        fillarray   0,    0,    0,    0
 kAS, kpitches[], ktrigs[] Taphath ktrig, knotes, kincs, kQ, gifn1, 0
 kQ[kAS]     = kQ[kAS] * 0
 
-;printk2     kpitches[kAS]
+;kAS, kpitches[], ktrigs[] uTaphath ktrig, knotes, gifn1, 0
+;if ktrig == 1 then
+;    printarray     kpitches
+;    printarray     ktrigs
+;endif
+
 schedkwhen  ktrig, 0, 0, 3, 0, 1, kpitches[kAS]
 endin
 
