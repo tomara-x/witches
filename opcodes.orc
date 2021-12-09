@@ -137,7 +137,8 @@ if kTrig != 0 then
 endif
 
 if kReset != 0 then
-    ksum = kmem
+    ksum = kmem ;revert to initial state
+    ktmp = 0 ;clear accumulated increments
 endif
 
 xout kAS, kPitchArr, kTrigArr
