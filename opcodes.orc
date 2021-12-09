@@ -96,7 +96,7 @@ while kn < ilen do
 od
 
 PastKOne:
-kTrigArr = 0
+kTrigArr = 0 ;clear trigger outputs
 if kTrig != 0 then
     ; go to the next step
     kmax maxarray kQArr
@@ -111,18 +111,18 @@ if kTrig != 0 then
         endif
     else ;there are queued steps
         if kStepMode == 0 then
-            kAS = (kAS+1)%ilen ;make sure to not get stuck
-            while kQArr[kAS] <= 0 do ;loop til we find next positive Q
+            kAS = (kAS+1)%ilen ;make sure to not get stuck if current step is queued
+            while kQArr[kAS] <= 0 do ;go to nearest queued step forward
                 kAS = (kAS+1)%ilen
             od
         elseif kStepMode == 1 then
             kAS = wrap(kAS-1, 0, ilen) ;same deal but we're moving backward
             while kQArr[kAS] <= 0 do
-                kAS = wrap(kAS-1, 0, ilen)
+                kAS = wrap(kAS-1, 0, ilen) ;wrap is easier then dealing with neg %
             od
         elseif kStepMode == 2 then
-            kAS = trandom(kTrig, 0, ilen) ;jump to random step then go to nearest Q
-            while kQArr[kAS] <= 0 do
+            kAS = trandom(kTrig, 0, ilen) ;jump to random step..
+            while kQArr[kAS] <= 0 do ; ..then go to nearest queued step foreward
                 kAS = (kAS+1)%ilen
             od
         else
@@ -130,10 +130,10 @@ if kTrig != 0 then
     endif
 
     ; do the step biz
-    ktmp[kAS] = ktmp[kAS]+kIncrements[kAS]
-    ksum = kNoteIndx+ktmp
-    kTrigArr[kAS] = 1
-    kPitchArr[kAS] = table(ksum[kAS], iFn, 0, 0, 1)
+    ktmp[kAS] = ktmp[kAS]+kIncrements[kAS] ;accumulate the increments
+    ksum = kNoteIndx+ktmp ;add the increments and the index values
+    kTrigArr[kAS] = 1 ;current step's trigger output
+    kPitchArr[kAS] = table(ksum[kAS], iFn, 0, 0, 1) ;output transposed index's value
 endif
 
 if kReset != 0 then
