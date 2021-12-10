@@ -16,15 +16,15 @@ Different rituals, but can grant you powers similar to those of the
 Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 [https://aria.dog/modules/]
 
-syntax:
-kActiveStep, kPitchArr[], kTrigArr[] Taphath kTrig, kNoteIndx[], \
+Syntax:
+kActiveStep, kPitchArr[], kTrigArr[] Taphath kTrig, kNoteIndx[],    \
     kIncrements[], kQArr[], iFn [, kStepMode] [, kReset]
 
-initialization:
+Initialization:
 iFn: Function table containing pitch information (using gen51 for example)
         (but doesn't have to be pitch, it can contain any values you want)
 
-performance:
+Performance:
 kActiveStep: The index of the currently active step (from 0 to lenarray(kNoteIndex))
 kPitchArr[]: An array of the pitch outputs from each step.
         (whatever values stored in iFn)
@@ -56,8 +56,7 @@ kQArr[]: The queue inputs for eaxh step. Queued steps take priority over
         from within the calling instrument after invoking the sequencer. Example:
         kQueueArr[kActiveStep] = kQueueArr[kActiveStep]*kToggle
         kToggle = 0 for reset, and kToggle = 1 for keep.
-        Positive values will add the corresponding steps to the queue,
-        zero and negative will not.
+        Positive values add corresponding steps to queue, non-positive remove them.
 kStepMode: How the sequencer will behave upon receiving a trigger.
         0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
 kReset: Reset the sequencer to its original (kNoteIndex) state when non zero.
@@ -149,16 +148,16 @@ opcode uTaphath, kk[]k[], kk[]iOo
 /*
 Smaller Taphath. No increments, no queue, no reset.
 
-syntax:
-kActiveStep, kPitchArr[], kTrigArr[] uTaphath kTrig, kNoteIndx[], iFn \
+Syntax:
+kActiveStep, kPitchArr[], kTrigArr[] uTaphath kTrig, kNoteIndx[], iFn   \
         [, kStepMode] [, iInitStep]
 
-initialization:
+Initialization:
 iFn: Function table containing pitch information (using gen51 for example)
         (but doesn't have to be pitch, it can contain any values you want)
 iInitStep: First active step in the sequence (defaults to 0)
 
-performance:
+Performance:
 kActiveStep: The index of the currently active step (from 0 to lenarray(kNoteIndex))
 kTrigArr[]: An array of triggers with each index corresponding to
         a step in the sequence. It contains a k-cycle-long trigger
@@ -218,86 +217,154 @@ xout kAS, kPitchArr, kTrigArr
 endop
 
 
-opcode Basemath, kkk[], kk[]k[]k[]k[]k[]k[]k[]
+opcode Basemath, kk[]k[], kk[]k[]k[]k[]k[]k[]k[]k[]OO
 /*
 Sister of Taphath. She modulates time and subdivisions instead of pitch/value.
 Inspired by the seqtime opcode, the Laundry Soup sequencer by computerscare,
 and, of course, the Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
-computerscare [https://github.com/freddyz]
 Aria [https://aria.dog/modules/]
+computerscare [https://github.com/freddyz]
 
 Syntax:
-kTrigOut, kSubTrig, kTrigArr[] Basemath kTimeUnit, kTimes[], kIncrements[], \
-    kDivs[], kDivIncs[], kMaxDivs[], kMinLen[], kMaxLen[]
+kActiveStep, kTrigArr[], kDivArr[] Basemath kTimeUnit, kLength[], kLenGain[],   \
+    kMinLen[], kMaxLen[] kDivision[], kDivGain[], kMaxDiv[], kQArr[]            \
+    [, kStepMode] [, Reset]
 
 Performance:
-kTrigOut: Step trigger output.
-kSubTrig: Dividied step trigger output
-kTrigArr: Trigger array with each index corresponding to a sequencer step.
-    (will output only the step trigger without the subdivisions)
+kActiveStep: Index of the currently active step (from 0 to lenarray(kNoteIndex))
+kTrigArr[]: Each step's trigger output. (without the divisions)
+kDivArr[]: Division outputs
 
 kTimeUnit: Time unit (in seconds/fractions of second) for all the time arrays.
     Also, see seqtime manual entry.
-kTimes[]: An array defining the length of each step (in kTimeUnit).
-    The length of this array controls the length of the sequence.
-    A value of zero (or negative) will have the length of 1 k-cycle.
-    (can be modified from calling instrument for live performance)
-kIncrements[]: An array (same length as kTimes) containing the values
-    (in TimeUnit) to be added to the length of each step each time
+kLength[]: Length of each step in kTimeUnit (can be fractional).
+    Non-positive step lengths will have the length of 1 k-cycle.
+    The length of this array itself controls the length of the sequence.
+kLenGain[]: A value (in TimeUnit) to be added to the length of each step each time
     that step is activated. (can be negative or fractional)
-kDivs[]: An array defining how many divisions are in a corresponding step.
-    0 or 1 is just natural trigger at the beginning, 2 gives you a trigger
-    at the beginning and a trigger in the middle, and so on.
-    Like a multiplied clock. (can be modified from calling instrument)
-    (0 and 1 will be treated equally, but have different effects with increments)
-kDivIncs[]: Amounts to increase each step's divisions every time
-    it's activated. (this to kDivs is just like kIncrements is to kTimes)
-kMaxDivs[]: Maximum number of subdivisions in a step before wraping around (modulo).
-    (up to, but not including)
+    (should be the same length as kLength to avoid out of range idexing)
 kMinLen[], kMaxLen[]: Minimum and maximum length of step (in TimeUnit)
     (From and including kMinLen, up to, but not including, kMaxLen)
+kDivision[]: An array defining how many divisions are in a corresponding step.
+    0 or 1 is just natural trigger at the beginning, 2 outputs a trigger at the
+    beginning and a trigger in the middle, and so on. Like a multiplied clock.
+    (0 and 1 will be treated equally, but have different effects with kDivGain)
+kDivGain[]: Amount to increase each step's divisions every time it's activated.
+    (just like kLenGain but for the divisions)
+kMaxDiv[]: Maximum number of subdivisions in a step before wraping around (modulo).
+    (up to, but not including)
+kQArr[]: The queue inputs for eaxh step. Queued steps take priority over other
+    steps. This won't be modified by the sequencer but can bebfrom within the
+    calling instrument after invoking the sequencer. Example:
+    kQueueArr[kActiveStep] = kQueueArr[kActiveStep]*kToggle
+    kToggle = 0 for reset, and kToggle = 1 for keep.
+    Positive values add the corresponding steps to queue, non-positive remove them.
+kStepMode: Direction in which the sequencer will move.
+    0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
+kReset: Reset sequencer to its original (kLength and kDivision) state when non zero.
+    (defaults to 0)
+
+Note: All input arrays can be modified mid-performance and it the sequencer will
+    react accordingly. Just don't change the length of the arrays, please!
 */
 
-kTimeUnit, kTimes[], kIncrements[], kDivs[], kDivIncs[], kMaxDivs[], kMinLen[], kMaxLen[] xin
+kTimeUnit, kLength[], kLenGain[], kMinLen[], kMaxLen[] kDivision[], kDivGain[], kMaxDiv[], kQArr[], kStepMode, kReset xin
 
-ilen            =       lenarray(kTimes)
-kAS             init    ilen-1   ;active step (this avoids skipping the first step)
-
-ktimetmp[]      init    ilen ;accumulating the time increments in this
-kdivstmp[]      init    ilen ;same but divs increments
-ktimesum[]      init    ilen ;sum of accumulated increments and kTimes array
-kdivsum[]       init    ilen ;sum of accimulated div incs and kDivs
+ilen            =       lenarray(kLength)
+klengainsum[]   init    ilen ;accumulates the gain values through sequencer run time
+knewlen[]       init    ilen ;accumulated gains + the input kLength
+kdivgainsum[]   init    ilen ;same as the two above
+knewdiv[]       init    ilen
+;output arrays
 kTrigArr[]      init    ilen
+kDivArr[]       init    ilen
 
-kgoto perf
-ktimetmp        =       kIncrements
-kdivstmp        =       kDivIncs
-
-perf:
-ktimesum[kAS]   =       ktimetmp[kAS]+kTimes[kAS]
-kdivsum[kAS]    =       kdivstmp[kAS]+kDivs[kAS]
-
-kTrigArr        =       0
-
-ktimesum[kAS]   =       wrap(ktimesum[kAS], kMinLen[kAS], kMaxLen[kAS])
-kdivsum[kAS]    =       wrap(kdivsum[kAS], 0, kMaxDivs[kAS])
-kfreq           =       1/kTimeUnit
-
-if ktimesum[kAS] > 0 then
-    ktrig       metro   (kfreq/ktimesum[kAS])
-    ksubdiv     metro   (kfreq/ktimesum[kAS])*(kdivsum[kAS] > 0 ? kdivsum[kAS] : 1)
+;first k-cycle stuff
+kfirst init 1
+ckgoto kfirst!=1, PastKOne
+kfirst = 0
+;store initial status
+kmem1 = kLength
+kmem2 = kDivision
+;initialize active step
+if kStepMode == 0 then
+    kAS = ilen-1
 else
-    ktrig       =       1
+    kAS = 0
+endif
+;step biz
+;klengainsum[kAS] = kLenGain[kAS]
+;kdivgainsum[kAS] = kDivGain[kAS]
+knewlen[kAS] = klengainsum[kAS]+kLength[kAS]
+knewdiv[kAS] = kdivgainsum[kAS]+kDivision[kAS]
+knewlen[kAS] = wrap(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
+knewdiv[kAS] = wrap(knewdiv[kAS], 0, kMaxDiv[kAS])
+
+PastKOne:
+kfreq = 1/kTimeUnit
+kTrigArr = 0
+if knewlen[kAS] > 0 then
+    ktrig metro (kfreq/knewlen[kAS])
+    kdiv  metro (kfreq/knewlen[kAS])*(knewdiv[kAS] > 0 ? knewdiv[kAS] : 1)
+else
+    ktrig = 1
 endif
 
 if ktrig != 0 then
-    ktimetmp[kAS] = ktimetmp[kAS] + kIncrements[kAS]
-    kdivstmp[kAS] = kdivstmp[kAS] + kDivIncs[kAS]
+    ; go to the next step
+    kmax maxarray kQArr
+    if kmax == 0 then ; no queued steps (max=0 means entire array's non-positive)
+        if kStepMode == 0 then
+            kAS = (kAS+1)%ilen ;step foreward
+        elseif kStepMode == 1 then
+            kAS = wrap(kAS-1, 0, ilen) ;step backward
+        elseif kStepMode == 2 then
+            kAS = trandom(kTrig, 0, ilen) ;go to random step
+        else
+        endif
+    else ;there are queued steps
+        if kStepMode == 0 then
+            kAS = (kAS+1)%ilen ;make sure to not get stuck if current step is queued
+            while kQArr[kAS] <= 0 do ;go to nearest queued step forward
+                kAS = (kAS+1)%ilen
+            od
+        elseif kStepMode == 1 then
+            kAS = wrap(kAS-1, 0, ilen) ;same deal but we're moving backward
+            while kQArr[kAS] <= 0 do
+                kAS = wrap(kAS-1, 0, ilen) ;wrap is easier then dealing with neg %
+            od
+        elseif kStepMode == 2 then
+            kAS = trandom(kTrig, 0, ilen) ;jump to random step..
+            while kQArr[kAS] <= 0 do ; ..then go to nearest queued step foreward
+                kAS = (kAS+1)%ilen
+            od
+        else
+        endif
+    endif
+
+    ;step biz
+    klengainsum[kAS] = kLenGain[kAS]
+    kdivgainsum[kAS] = kDivGain[kAS]
+    knewlen[kAS] = klengainsum[kAS]+[kLength]
+    knewdiv[kAS] = kdivgainsum[kAS]+[kDivision]
+    knewlen[kAS] = wrap(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
+    knewdiv[kAS] = wrap(knewdiv[kAS], 0, kMaxDiv[kAS])
+
     kTrigArr[kAS] = 1
-    kAS = (kAS+1)%ilen
 endif
 
-xout ktrig, ksubdiv, kTrigArr
+if kdiv != 0 then
+    kDivArr[kAS] = 1
+endif
+
+if kReset != 0 then
+    knewlen = kmem1
+    knewdiv = kmem2
+    klengainsum = 0
+    kdivgainsum = 0
+endif
+
+xout kAS, kTrigArr, kDivArr
 endop
 
 
