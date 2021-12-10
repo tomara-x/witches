@@ -268,7 +268,7 @@ Note: All input arrays can be modified mid-performance and it the sequencer will
     react accordingly. Just don't change the length of the arrays, please!
 */
 
-kTimeUnit, kLength[], kLenGain[], kMinLen[], kMaxLen[] kDivision[], kDivGain[], kMaxDiv[], kQArr[], kStepMode, kReset xin
+kTimeUnit, kLength[], kLenGain[], kMinLen[], kMaxLen[], kDivision[], kDivGain[], kMaxDiv[], kQArr[], kStepMode, kReset xin
 
 ilen            =       lenarray(kLength)
 klengainsum[]   init    ilen ;accumulates the gain values through sequencer run time
@@ -284,8 +284,8 @@ kfirst init 1
 ckgoto kfirst!=1, PastKOne
 kfirst = 0
 ;store initial status
-kmem1 = kLength
-kmem2 = kDivision
+kmem1[] = kLength
+kmem2[] = kDivision
 ;initialize active step
 if kStepMode == 0 then
     kAS = ilen-1
@@ -303,6 +303,7 @@ knewdiv[kAS] = wrap(knewdiv[kAS], 0, kMaxDiv[kAS])
 PastKOne:
 kfreq = 1/kTimeUnit
 kTrigArr = 0
+kDivArr = 0
 if knewlen[kAS] > 0 then
     ktrig metro (kfreq/knewlen[kAS])
     kdiv  metro (kfreq/knewlen[kAS])*(knewdiv[kAS] > 0 ? knewdiv[kAS] : 1)
@@ -319,7 +320,7 @@ if ktrig != 0 then
         elseif kStepMode == 1 then
             kAS = wrap(kAS-1, 0, ilen) ;step backward
         elseif kStepMode == 2 then
-            kAS = trandom(kTrig, 0, ilen) ;go to random step
+            kAS = trandom(ktrig, 0, ilen) ;go to random step
         else
         endif
     else ;there are queued steps
@@ -334,7 +335,7 @@ if ktrig != 0 then
                 kAS = wrap(kAS-1, 0, ilen) ;wrap is easier then dealing with neg %
             od
         elseif kStepMode == 2 then
-            kAS = trandom(kTrig, 0, ilen) ;jump to random step..
+            kAS = trandom(ktrig, 0, ilen) ;jump to random step..
             while kQArr[kAS] <= 0 do ; ..then go to nearest queued step foreward
                 kAS = (kAS+1)%ilen
             od
@@ -345,8 +346,8 @@ if ktrig != 0 then
     ;step biz
     klengainsum[kAS] = kLenGain[kAS]
     kdivgainsum[kAS] = kDivGain[kAS]
-    knewlen[kAS] = klengainsum[kAS]+[kLength]
-    knewdiv[kAS] = kdivgainsum[kAS]+[kDivision]
+    knewlen[kAS] = klengainsum[kAS]+kLength[kAS]
+    knewdiv[kAS] = kdivgainsum[kAS]+kDivision[kAS]
     knewlen[kAS] = wrap(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
     knewdiv[kAS] = wrap(knewdiv[kAS], 0, kMaxDiv[kAS])
 

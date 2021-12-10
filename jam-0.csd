@@ -75,26 +75,28 @@ asig    limit       asig, -0.4,0.4
 gaRvbSend += asig*0.8
 endin
 
-instr 4 ;for testing basemath trig sync
+instr 4
 ktempo      =   113
-ktimeunit   =   1/(ktempo/60)
+ktimeunit   =   1/(ktempo/60) ;whole note
 
-ktimes[]    fillarray   1,    1,    1,    1+4
-kincs[]     fillarray   0,    0,    0,    0
-kdivs[]     fillarray   0,    4,    0,    0
-kdivincs[]  fillarray   0,    0,    0,    0
-
-kmaxdivs[]  fillarray   8,    8,    8,    8
+klen[]      fillarray   1,    1,    1,    1+4
+klgain[]    fillarray   0,    0,    0,    0
 kminlen[]   fillarray   0,    0,    0,    0
-kmaxlen[]   fillarray   8,    8,    8,    8
+kmaxlen[]   fillarray   4,    4,    4,    4
 
-ktrig, ksub, ktrigArr[] Basemath ktimeunit, ktimes, kincs, kdivs, kdivincs,
-        kmaxdivs, kminlen, kmaxlen
+kdiv[]      fillarray   0,    0,    0,    0
+kdgain[]    fillarray   0,    0,    0,    0
+kmaxdiv[]   fillarray   8,    8,    8,    8
+
+kQ[]        fillarray   0,    0,    0,    0
+
+kbAS, kbtrig[], kdiv[] Basemath ktimeunit, klen,klgain,kminlen,kmaxlen,
+    kdiv,kdgain,kmaxdiv, kQ ;stepmode
 
 knotes[]    fillarray   0,    7,    14,   21
-kptch, ktrigArrT[], kptchArr[] uTaphath ktrig, knotes, gifn1
+ktAS, kpitch[], kttrig[] uTaphath kbtrig[kbAS], knotes, gifn1
 
-schedkwhen  ksub, 0, 0, 3, 0, 1, kptch
+schedkwhen  kbtrig[kbAS], 0, 0, 3, 0, 1, kpitch[ktAS]
 endin
 /*
 instr 5 ;octave down
@@ -120,7 +122,7 @@ endin
 <CsScore>
 ;read the manual, amy!
 t       0       113
-i1      0       64
+i4      0       64
 e
 </CsScore>
 </CsoundSynthesizer>
