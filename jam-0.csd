@@ -82,22 +82,30 @@ ktimeunit   =   1/(ktempo/60) ;whole note
 klen[]      fillarray   1,    1,    1,    1+4
 klgain[]    fillarray   0,    0,    0,    0
 kminlen[]   fillarray   0,    0,    0,    0
-kmaxlen[]   fillarray   4,    4,    4,    4
+kmaxlen[]   fillarray   8,    8,    8,    8
 
-kdiv[]      fillarray   0,    0,    0,    0
+kdiv[]      fillarray   0,    0,    7,    0
 kdgain[]    fillarray   0,    0,    0,    0
 kmaxdiv[]   fillarray   8,    8,    8,    8
 
 kQ[]        fillarray   0,    0,    0,    0
 
 kbAS, kbtrig[], kdiv[] Basemath ktimeunit, klen,klgain,kminlen,kmaxlen,
-    kdiv,kdgain,kmaxdiv, kQ ;stepmode
+    kdiv,kdgain,kmaxdiv, kQ
+schedkwhen  kdiv[kbAS], 0, 0, "test", 0, .1
 
-knotes[]    fillarray   0,    7,    14,   21
-ktAS, kpitch[], kttrig[] uTaphath kbtrig[kbAS], knotes, gifn1
-
-schedkwhen  kbtrig[kbAS], 0, 0, 3, 0, 1, kpitch[ktAS]
+;iif kbtrig[kbAS] == 1 then
+;    printarray(kbtrig)
+;endif
+;knotes[]    fillarray   0,    7,    14,   21
+;ktAS, kpitch[], kttrig[] uTaphath kbtrig[kbAS], knotes, gifn1
 endin
+
+instr test
+asig oscil 0.8, 440*16
+outs asig, asig
+endin
+
 /*
 instr 5 ;octave down
 ain     soundin "foreheadkisses.wav"

@@ -293,8 +293,8 @@ else
     kAS = 0
 endif
 ;step biz
-;klengainsum[kAS] = kLenGain[kAS]
-;kdivgainsum[kAS] = kDivGain[kAS]
+;klengainsum[kAS] = klengainsum[kAS]+kLenGain[kAS]
+;kdivgainsum[kAS] = kdivgainsum[kAS]+kDivGain[kAS]
 knewlen[kAS] = klengainsum[kAS]+kLength[kAS]
 knewdiv[kAS] = kdivgainsum[kAS]+kDivision[kAS]
 knewlen[kAS] = wrap(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
@@ -344,8 +344,8 @@ if ktrig != 0 then
     endif
 
     ;step biz
-    klengainsum[kAS] = kLenGain[kAS]
-    kdivgainsum[kAS] = kDivGain[kAS]
+    klengainsum[kAS] = klengainsum[kAS]+kLenGain[kAS]
+    kdivgainsum[kAS] = kdivgainsum[kAS]+kDivGain[kAS]
     knewlen[kAS] = klengainsum[kAS]+kLength[kAS]
     knewdiv[kAS] = kdivgainsum[kAS]+kDivision[kAS]
     knewlen[kAS] = wrap(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
