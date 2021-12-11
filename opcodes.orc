@@ -231,7 +231,7 @@ kActiveStep, kTrigArr[], kDivArr[] Basemath kTimeUnit, kLength[], kLenGain[],   
     [, kStepMode] [, Reset]
 
 Performance:
-kActiveStep: Index of the currently active step (from 0 to lenarray(kNoteIndex))
+kActiveStep: Index of the currently active step (from 0 to lenarray(kLength))
 kTrigArr[]: Each step's trigger output. (without the divisions)
 kDivArr[]: Division outputs
 
@@ -369,16 +369,16 @@ xout kAS, kTrigArr, kDivArr
 endop
 
 
-opcode uBasemath, kk[], kk[]k[]
+opcode uBasemath, kk[], kk[]
 /*
 smaller Basemath
 
 Syntax:
-kTrigOut, kTrigArr[] uBasemath kTimeUnit, kTimes[], kIncrements[], kMaxLen[]
+kActiveStep, kTrigArr[] uBasemath kTimeUnit, kLength[]
 
 Performance:
-kTrigOut: Step trigger output.
-kTrigArr: Trigger array with each index corresponding to a sequencer step.
+kActiveStep: Index of the currently active step (from 0 to lenarray(kLength))
+kTrigArr[]: Each step's trigger output.
 
 kTimeUnit: Time unit (in seconds/fractions of second) for all the time arrays.
     Also, see seqtime manual entry.
