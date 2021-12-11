@@ -7,9 +7,9 @@ At the end of 2019 I met [his successor](https://github.com/AriaSalvatrice) in a
 Months after I lost my favorite instrument, I missed the magic, I wanted it in my csound setup, so I made these:
 
 (check the opcodes.orc file for full documentation)
-- `Taphath` tries to mimick Aria's MSR as much as possible. (with just a few quirks!) It's an arbitrary-length, self-modulating, pitch-quantized[^1] sequencer.
+- `Taphath` tries to mimick Aria's MSR as much as possible. (with just a few quirks) It's an arbitrary-length, self-modulating, pitch-quantized[^1] sequencer.
 
-- `Basemath` is similar but does rhythm instead of pitch/control-signal.
+- `Basemath` is an arbitrary-length, self-modulating rhythm sequencer.
 
 - `uTaphath` and `uBasemath` are minimal versions.
 
