@@ -47,17 +47,10 @@ kQ[kAS]     = kQ[kAS] * 0
 ;    printarray     ktrigs
 ;endif
 
-schedkwhen  ktrig, 0, 0, 3, 0, 1, kpitches[kAS]
+schedkwhen  ktrig, 0, 0, "string", 0, 1, kpitches[kAS]
 endin
 
-instr 2 ;hat
-aenv    expsegr 1,p3,1,0.04,0.001
-asig    noise   0.1*aenv, 0
-outs    asig, asig
-gaRvbSend += asig*0.8
-endin
-
-instr 3
+instr string
 iplk    =           0.1 ;(0 to 1)
 kamp    init        0.15
 icps    =           p4
@@ -75,7 +68,7 @@ asig    limit       asig, -0.4,0.4
 gaRvbSend += asig*0.8
 endin
 
-instr 4
+instr 2
 ktempo      =   113
 ktimeunit   =   1/(ktempo/60) ;whole note
 
@@ -94,17 +87,18 @@ kbAS, kbtrig[], kdiv[] Basemath ktimeunit, klen,klgain,kminlen,kmaxlen,
     kdiv,kdgain,kmaxdiv, kQ
 schedkwhen  kbtrig[kbAS], 0, 0, "test", 0, .1, 440*(2^3)
 schedkwhen  kdiv[kbAS], 0, 0, "test", 0, .1, 440*(2^4)
-
-;iif kbtrig[kbAS] == 1 then
-;    printarray(kbtrig)
-;endif
-;knotes[]    fillarray   0,    7,    14,   21
-;ktAS, kpitch[], kttrig[] uTaphath kbtrig[kbAS], knotes, gifn1
 endin
 
 instr test
 asig oscil 0.8, p4
 outs asig, asig
+endin
+
+instr hat
+aenv    expsegr 1,p3,1,0.04,0.001
+asig    noise   0.1*aenv, 0
+outs    asig, asig
+gaRvbSend += asig*0.8
 endin
 
 /*
@@ -117,6 +111,7 @@ aout    pvsynth fftscal
         outs    aout, aout
 endin
 */
+
 ; stolen from the floss manual (05E01_freeverb.csd)
 instr verb ; reverb - always on
 kroomsize    init      0.85         ; room size (range 0 to 1)
@@ -131,7 +126,7 @@ endin
 <CsScore>
 ;read the manual, amy!
 t       0       113
-i4      0       64
+i2      0       64
 e
 </CsScore>
 </CsoundSynthesizer>
