@@ -264,8 +264,10 @@ kStepMode: Direction in which the sequencer will move.
 kReset: Reset sequencer to its original (kLength and kDivision) state when non zero.
     (defaults to 0)
 
-Note: All input arrays can be modified mid-performance and it the sequencer will
-    react accordingly. Just don't change the length of the arrays, please!
+Note: All input arrays can be modified mid-performance and the sequencer will
+    react accordingly. Just don't change the length of the arrays please!
+Note: I guess you can think of kLength as frequency dividers, and kDivision
+    as frequency multipliers? (frequency being 1/kTimeUnit Hz)
 */
 
 kTimeUnit, kLength[], kLenGain[], kMinLen[], kMaxLen[], kDivision[], kDivGain[], kMaxDiv[], kQArr[], kStepMode, kReset xin
