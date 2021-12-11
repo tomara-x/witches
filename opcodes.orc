@@ -413,7 +413,7 @@ endif
 PastKOne:
 kfreq = 1/kTimeUnit
 kTrigArr = 0
-if knewlen[kAS] > 0 then
+if kLength[kAS] > 0 then
     ktrig metro (kfreq/kLength[kAS])
 else
     ktrig = 1 ;non-positive length step (trigger new step in next k-cycle)

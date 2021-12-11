@@ -88,6 +88,14 @@ schedkwhen  kbtrig[kbAS], 0, 0, "test", 0, .1, 440*(2^3)
 schedkwhen  kbdiv[kbAS], 0, 0, "test", 0, .1, 440*(2^4)
 endin
 
+instr 3
+ktempo      =   420
+ktimeunit   =   1/(ktempo/60) ;whole note
+klen[]      fillarray   64,    1,    1,    1
+kAS, ktrig[] uBasemath ktimeunit, klen
+schedkwhen  ktrig[kAS], 0, 0, "test", 0, .1, 440*(2^3)
+endin
+
 instr test
 asig oscil 0.8, p4
 outs asig, asig
@@ -125,7 +133,7 @@ endin
 <CsScore>
 ;read the manual, amy!
 t       0       113
-i2      0       64
+i3      0       64
 e
 </CsScore>
 </CsoundSynthesizer>
