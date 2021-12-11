@@ -4,15 +4,14 @@ King Solomon was punk rock awesome! He made the ultimate sequencer, it used magi
 
 At the end of 2019 I met [his successor](https://github.com/AriaSalvatrice) in awesomeness. She programmed (among many other cool things) the [Modulus Salomonis Regis](https://aria.dog/modules/). Its powers were infinite, its possibilities endless, but the platform on which it ran.. Ah, that's a long story...
 
-Months after I lost my favorite instrument, I missed the magic, I wanted it in my csound setup, so I made this.
+Months after I lost my favorite instrument, I missed the magic, I wanted it in my csound setup, so I made these:
 
-The opcode `Taphath` tries to mimick Aria's MSR as much as possible. (with just a few quirks!)
+(check the opcodes.orc file for full documentation)
+- `Taphath` tries to mimick Aria's MSR as much as possible. (with just a few quirks) It's an arbitrary-length, self-modulating, pitch-quantized[^1] sequencer.
 
-`Basemath` is similar but does rhythm instead of pitch/control-signal.
+- `Basemath` is an arbitrary-length, self-modulating rhythm sequencer.
 
-`uTaphath` is a minimal version of `Taphath`. Can be made to self-modulate by "connecting" the ouput trigger/trigger-array to the input array. (conditionally changing the input based on out triggers)
-
-`uBasemath` is a minimal version of `Basemath` with only `times` and `maximum length` as input arrays. (can self-modulate)
+- `uTaphath` and `uBasemath` are minimal versions.
 
 ### opcodes.orc
 That's where the opcode definitions of Taphath and Basemath (and the u versions) are. You can place this in your project directory, #include it in your csd file, and that's it, you have the opcodes ready to use. (It also includes the documentation of the opcodes)
@@ -30,3 +29,5 @@ Those files are just me playing around. Who knows what'll be there!
 
 
 💜
+
+[^1]: When used with a GEN51 function table.

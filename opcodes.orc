@@ -231,7 +231,7 @@ kActiveStep, kTrigArr[], kDivArr[] Basemath kTimeUnit, kLength[], kLenGain[],   
     [, kStepMode] [, Reset]
 
 Performance:
-kActiveStep: Index of the currently active step (from 0 to lenarray(kNoteIndex))
+kActiveStep: Index of the currently active step (from 0 to lenarray(kLength))
 kTrigArr[]: Each step's trigger output. (without the divisions)
 kDivArr[]: Division outputs
 
@@ -264,8 +264,10 @@ kStepMode: Direction in which the sequencer will move.
 kReset: Reset sequencer to its original (kLength and kDivision) state when non zero.
     (defaults to 0)
 
-Note: All input arrays can be modified mid-performance and it the sequencer will
-    react accordingly. Just don't change the length of the arrays, please!
+Note: All input arrays can be modified mid-performance and the sequencer will
+    react accordingly. Just don't change the length of the arrays please!
+Note: I guess you can think of kLength as frequency dividers, and kDivision
+    as frequency multipliers? (frequency being 1/kTimeUnit Hz)
 */
 
 kTimeUnit, kLength[], kLenGain[], kMinLen[], kMaxLen[], kDivision[], kDivGain[], kMaxDiv[], kQArr[], kStepMode, kReset xin
@@ -369,47 +371,69 @@ xout kAS, kTrigArr, kDivArr
 endop
 
 
-opcode uBasemath, kk[], kk[]k[]
+opcode uBasemath, kk[], kk[]Oo
 /*
-smaller Basemath
+Smaller Basemath
 
 Syntax:
-kTrigOut, kTrigArr[] uBasemath kTimeUnit, kTimes[], kIncrements[], kMaxLen[]
+kActiveStep, kTrigArr[] uBasemath kTimeUnit, kLength[] [, kStepMode] [, iInitStep]
+
+Initialization:
+iInitStep: First active step in the sequence (defaults to 0)
 
 Performance:
-kTrigOut: Step trigger output.
-kTrigArr: Trigger array with each index corresponding to a sequencer step.
+kActiveStep: Index of the currently active step (from 0 to lenarray(kLength))
+kTrigArr[]: Each step's trigger output.
 
 kTimeUnit: Time unit (in seconds/fractions of second) for all the time arrays.
     Also, see seqtime manual entry.
-kTimes[]: An array defining the length of each step (in kTimeUnit).
-    The length of this array controls the length of the sequence.
-    A value of zero (or negative) will have the length of 1 k-cycle.
-    (can be modified from calling instrument for live performance)
-kMaxLen[]: Minimum and maximum length of step (in TimeUnit)
-    (up to but not including)
+kLength[]: Length of each step in kTimeUnit (can be fractional).
+    Non-positive step lengths will have the length of 1 k-cycle.
+    The length of this array itself controls the length of the sequence.
+kStepMode: Direction in which the sequencer will move.
+    0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
 */
 
-kTimeUnit, kTimes[], kMaxLen[] xin
+kTimeUnit, kLength[], kStepMode, iInitStep xin
 
-ilen            =       lenarray(kTimes)
-kAS             init    ilen-1  ;active step (starting at the last step)
-kTrigArr[]      init    ilen
-kTrigArr        =       0
+ilen        =       lenarray(kLength)
+kTrigArr[]  init    ilen
 
-kfreq           =       1/kTimeUnit
-if kTimes[kAS] > 0 then
-    ktrig       metro   kfreq/abs(kTimes[kAS]%kMaxLen[kAS])
+;first k-cycle stuff
+kfirst init 1
+ckgoto kfirst!=1, PastKOne
+kfirst = 0
+;initialize active step
+if kStepMode == 0 then
+    kAS = ilen-1
 else
-    ktrig       =       1
+    kAS = 0
+endif
+
+PastKOne:
+kfreq = 1/kTimeUnit
+kTrigArr = 0
+if knewlen[kAS] > 0 then
+    ktrig metro (kfreq/kLength[kAS])
+else
+    ktrig = 1 ;non-positive length step (trigger new step in next k-cycle)
 endif
 
 if ktrig != 0 then
+    ; go to the next step
+    if kStepMode == 0 then
+        kAS = (kAS+1)%ilen ;step foreward
+    elseif kStepMode == 1 then
+        kAS = wrap(kAS-1, 0, ilen) ;step backward
+    elseif kStepMode == 2 then
+        kAS = trandom(ktrig, 0, ilen) ;go to random step
+    else
+    endif
+
     kTrigArr[kAS] = 1
-    kAS = (kAS+1)%ilen
 endif
 
-xout ktrig, kTrigArr
+xout kAS, kTrigArr
 endop
 
 
