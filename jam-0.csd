@@ -79,20 +79,21 @@ instr 4
 ktempo      =   113
 ktimeunit   =   1/(ktempo/60) ;whole note
 
-klen[]      fillarray   1,    1,    1,    1+4
+klen[]      fillarray   1,    1,    1,    1
 klgain[]    fillarray   0,    0,    0,    0
 kminlen[]   fillarray   0,    0,    0,    0
 kmaxlen[]   fillarray   8,    8,    8,    8
 
-kdiv[]      fillarray   0,    0,    7,    0
+kdiv[]      fillarray   0,    0,    0,    4
 kdgain[]    fillarray   0,    0,    0,    0
-kmaxdiv[]   fillarray   8,    8,    8,    8
+kmaxdiv[]   fillarray   4,    4,    4,    8
 
 kQ[]        fillarray   0,    0,    0,    0
 
 kbAS, kbtrig[], kdiv[] Basemath ktimeunit, klen,klgain,kminlen,kmaxlen,
     kdiv,kdgain,kmaxdiv, kQ
-schedkwhen  kdiv[kbAS], 0, 0, "test", 0, .1
+schedkwhen  kbtrig[kbAS], 0, 0, "test", 0, .1, 440*(2^3)
+schedkwhen  kdiv[kbAS], 0, 0, "test", 0, .1, 440*(2^4)
 
 ;iif kbtrig[kbAS] == 1 then
 ;    printarray(kbtrig)
@@ -102,7 +103,7 @@ schedkwhen  kdiv[kbAS], 0, 0, "test", 0, .1
 endin
 
 instr test
-asig oscil 0.8, 440*16
+asig oscil 0.8, p4
 outs asig, asig
 endin
 

@@ -250,7 +250,7 @@ kDivision[]: An array defining how many divisions are in a corresponding step.
     beginning and a trigger in the middle, and so on. Like a multiplied clock.
     (0 and 1 will be treated equally, but have different effects with kDivGain)
 kDivGain[]: Amount to increase each step's divisions every time it's activated.
-    (just like kLenGain but for the divisions)
+    (just like kLenGain but for the divisions) (psst! fractions do fun stuff here!)
 kMaxDiv[]: Maximum number of subdivisions in a step before wraping around (modulo).
     (up to, but not including)
 kQArr[]: The queue inputs for eaxh step. Queued steps take priority over other
@@ -283,7 +283,7 @@ kDivArr[]       init    ilen
 kfirst init 1
 ckgoto kfirst!=1, PastKOne
 kfirst = 0
-;store initial status
+;store initial state
 kmem1[] = kLength
 kmem2[] = kDivision
 ;initialize active step
@@ -308,7 +308,7 @@ if knewlen[kAS] > 0 then
     ktrig metro (kfreq/knewlen[kAS])
     kdiv  metro (kfreq/knewlen[kAS])*(knewdiv[kAS] > 0 ? knewdiv[kAS] : 1)
 else
-    ktrig = 1
+    ktrig = 1 ;non-positive length step (trigger new step in next k-cycle)
 endif
 
 if ktrig != 0 then
