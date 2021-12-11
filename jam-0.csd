@@ -77,16 +77,15 @@ klgain[]    fillarray   0,    0,    0,    0
 kminlen[]   fillarray   0,    0,    0,    0
 kmaxlen[]   fillarray   8,    8,    8,    8
 
-kdiv[]      fillarray   0,    0,    0,    4
+kdiv[]      fillarray   2,    0,    0,    0
 kdgain[]    fillarray   0,    0,    0,    0
-kmaxdiv[]   fillarray   4,    4,    4,    8
+kmaxdiv[]   fillarray   8,    8,    8,    8
 
 kQ[]        fillarray   0,    0,    0,    0
 
-kbAS, kbtrig[], kdiv[] Basemath ktimeunit, klen,klgain,kminlen,kmaxlen,
-    kdiv,kdgain,kmaxdiv, kQ
+kbAS, kbtrig[], kbdiv[] Basemath ktimeunit, klen,klgain,kminlen,kmaxlen, kdiv,kdgain,kmaxdiv, kQ
 schedkwhen  kbtrig[kbAS], 0, 0, "test", 0, .1, 440*(2^3)
-schedkwhen  kdiv[kbAS], 0, 0, "test", 0, .1, 440*(2^4)
+schedkwhen  kbdiv[kbAS], 0, 0, "test", 0, .1, 440*(2^4)
 endin
 
 instr test
