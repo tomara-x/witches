@@ -27,8 +27,6 @@ ibasefreq,ibaseindex,
 ; ratios (the numirators are the scale notes 0=c ... 11=b)
 ; (this is c dorian #4 (ukrainian dorian) in 12-tet)
 
-gifn2 ftgen 0,0,-8,-2, 2,2,1,2,1,2,3,3 ;delta times (16 steps)
-
 ;natural minor
 gifn3 ftgen 0,0,-7*4,-51, 7,2,cpspch(6),0,
 2^(0/12),
@@ -51,4 +49,20 @@ gifn4 ftgen 0,0,-7*2,-51, 7,2,cpspch(6),0,
 
 ;ramp wave
 gidfn1 ftgen 0,0,64,7, -1,64,1
+
+;31-tet
+iscaledegrees   = 31
+itotalsize      = iscaledegrees*4
+iinterval       = 2 ;ratio range covered before repeating (octave = 2)
+ibasefreq       = cpspch(6) ;cpspch(8) = c4
+ibaseindex      = 0 ;index 0 will be ibasefreq
+gi31tet ftgen 0,0,-itotalsize,-51, iscaledegrees,iinterval,ibasefreq,ibaseindex,
+2^(00/31),2^(01/31),2^(02/31),2^(03/31),
+2^(04/31),2^(05/31),2^(06/31),2^(07/31),
+2^(08/31),2^(09/31),2^(10/31),2^(11/31),
+2^(12/31),2^(13/31),2^(14/31),2^(15/31),
+2^(16/31),2^(17/31),2^(18/31),2^(19/31),
+2^(20/31),2^(21/31),2^(22/31),2^(23/31),
+2^(24/31),2^(25/31),2^(26/31),2^(27/31),
+2^(28/31),2^(29/31),2^(30/31)
 

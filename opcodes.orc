@@ -184,9 +184,9 @@ ckgoto kfirst!=1, PastKOne
 kfirst = 0
 ;initial active step
 if kStepMode == 0 then
-    kAS = ilen-1
+    kAS = wrap(iInitStep-1, 0, ilen)
 else
-    kAS = 0
+    kAS = wrap(iInitStep, 0, ilen)
 endif
 ;initialize the pitch array
 kn = 0
@@ -227,7 +227,7 @@ computerscare [https://github.com/freddyz]
 
 Syntax:
 kActiveStep, kTrigArr[], kDivArr[] Basemath kTimeUnit, kLength[], kLenGain[],   \
-    kMinLen[], kMaxLen[] kDivision[], kDivGain[], kMaxDiv[], kQArr[]            \
+    kMinLen[], kMaxLen[], kDivision[], kDivGain[], kMaxDiv[], kQArr[]           \
     [, kStepMode] [, Reset]
 
 Performance:
@@ -405,9 +405,9 @@ ckgoto kfirst!=1, PastKOne
 kfirst = 0
 ;initialize active step
 if kStepMode == 0 then
-    kAS = ilen-1
+    kAS = wrap(iInitStep-1, 0, ilen)
 else
-    kAS = 0
+    kAS = wrap(iInitStep, 0, ilen)
 endif
 
 PastKOne:
