@@ -32,13 +32,13 @@ giwinsize = gifftsize
 giwinshape = 1 ;von-Hann window
 
 instr 1
-ktempo      =           113 ;bpm
+ktempo      =           210 ;bpm
 ktimeunit   =           1/(ktempo/60)
-klen[]      fillarray   1,    2,    1,    1,    4,    1/2,  2,    1
+klen[]      fillarray   1,    1,    1,    1,    1,    1/2,  1,    1
 kbAS,kbtrig[] uBasemath ktimeunit, klen
 
 knotes[]    fillarray   0,    0,    0,    0,    0,    0,    0,    0
-kincs[]     fillarray   0,    0,    0,    5,    0,    0,    0,    0
+kincs[]     fillarray  .1,   .3,    0,    0,   .2,   .2,    0,    0
 kQ[]        fillarray   0,    0,    0,    0,    0,    0,    0,    0
 ktAS, kpitch[], kttrig[] Taphath kbtrig[kbAS], knotes, kincs, kQ, gi31tet
 kQ[ktAS]     = kQ[ktAS] * 0
@@ -51,17 +51,17 @@ iplk    =           0.1 ;(0 to 1)
 kamp    init        0.15
 icps    =           p4
 kpick   init        0.9 ;pickup point
-krefl   init        0.8 ;rate of decay? ]0,1[
+krefl   init        0.9 ;rate of decay? ]0,1[
 asig    wgpluck2    iplk,kamp,icps,kpick,krefl
 
-kenv    linsegr     1,p3,1,0.5,0 ;to avoid end click
-asig    *=          kenv
-
 adist   cmp         asig, ">", 0
-adist   *=          0.2
+adist   *=          0.1
 asig    +=          adist
 asig    bqrez       asig, icps*8, 30
 asig    limit       asig, -0.4,0.4
+
+kenv    linsegr     1,p3,1,0.5,0 ;to avoid end click
+asig    *=          kenv
 
         outs        asig,asig
 gaRvbSend += asig*0.8
