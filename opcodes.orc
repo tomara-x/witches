@@ -295,21 +295,18 @@ else
     kAS = 0
 endif
 ;step biz
-;klengainsum[kAS] = klengainsum[kAS]+kLenGain[kAS]
-;kdivgainsum[kAS] = kdivgainsum[kAS]+kDivGain[kAS]
 knewlen[kAS] = klengainsum[kAS]+kLength[kAS]
 knewdiv[kAS] = kdivgainsum[kAS]+kDivision[kAS]
 knewlen[kAS] = wrap(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
 knewdiv[kAS] = wrap(knewdiv[kAS], 0, kMaxDiv[kAS])
 
 PastKOne:
-kfreq = 1/kTimeUnit
+kfreq = 1/(kTimeUnit == 0? 1 : abs(kTimeUnit))
 kTrigArr = 0
 kDivArr = 0
-if knewlen[kAS] > 0 then
-    ktrig metro (kfreq/knewlen[kAS])
-    kdiv  metro (kfreq/knewlen[kAS])*(knewdiv[kAS] > 0 ? knewdiv[kAS] : 1)
-else
+ktrig metro kfreq/(knewlen[kAS] > 0? knewlen[kAS] : 1)
+kdiv  metro (kfreq/(knewlen[kAS] > 0? knewlen[kAS] : 1))*(knewdiv[kAS] > 0? knewdiv[kAS] : 1)
+if knewlen[kAS] <= 0 then
     ktrig = 1 ;non-positive length step (trigger new step in next k-cycle)
 endif
 
@@ -411,11 +408,10 @@ else
 endif
 
 PastKOne:
-kfreq = 1/kTimeUnit
+kfreq = 1/(kTimeUnit == 0? 1 : abs(kTimeUnit))
 kTrigArr = 0
-if kLength[kAS] > 0 then
-    ktrig metro (kfreq/kLength[kAS])
-else
+ktrig metro kfreq/(kLength[kAS] > 0? kLength[kAS] : 1)
+if kLength[kAS] <= 0 then
     ktrig = 1 ;non-positive length step (trigger new step in next k-cycle)
 endif
 
