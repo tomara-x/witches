@@ -227,7 +227,7 @@ computerscare [https://github.com/freddyz]
 
 Syntax:
 kActiveStep, kTrigArr[], kDivArr[] Basemath kTimeUnit, kLength[], kLenGain[],   \
-    kMinLen[], kMaxLen[] kDivision[], kDivGain[], kMaxDiv[], kQArr[]            \
+    kMinLen[], kMaxLen[], kDivision[], kDivGain[], kMaxDiv[], kQArr[]           \
     [, kStepMode] [, Reset]
 
 Performance:
