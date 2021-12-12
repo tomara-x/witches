@@ -7,6 +7,8 @@ terms of the Do What The Fuck You Want To Public License, Version 2,
 as published by Sam Hocevar. See the COPYING file for more details.
 */
 
+; this one's for you, K
+
 <CsoundSynthesizer>
 <CsOptions>
 -odac -L stdin
@@ -49,10 +51,12 @@ endin
 instr 2
 ktempo      =           265 ;bpm
 ktimeunit   =           1/(ktempo/60)
-klen[]      fillarray   8,    1,     1,    0
-kbAS,kbtrig[] uBasemath ktimeunit, klen, 0,1
+klen[]      fillarray   8,    0,    0,    0,    0,    0,    0,    0
+kbAS,kbtrig[] uBasemath ktimeunit, klen
 
-schedkwhen  kbtrig[kbAS], 0, 0, "hat", 0, .00001
+knotes[]    fillarray   0,    0,   31,   62,    0,    0,    0,    0
+ktAS,kpitch[],kttrig[] uTaphath kbtrig[kbAS], knotes, gi31tet
+schedkwhen  kbtrig[kbAS], 0, 0, "string", 0, .1, kpitch[ktAS]
 endin
 
 instr string
@@ -77,8 +81,8 @@ gaRvbSend += asig*0.8
 endin
 
 /*
-instr 2
-ktempo      =   113
+instr 5
+ktempo      =   265
 ktimeunit   =   1/(ktempo/60) ;whole note
 
 klen[]      fillarray   1,    1,    1,    1
@@ -86,7 +90,7 @@ klgain[]    fillarray   0,    0,    0,    0
 kminlen[]   fillarray   0,    0,    0,    0
 kmaxlen[]   fillarray   8,    8,    8,    8
 
-kdiv[]      fillarray   2,    0,    0,    0
+kdiv[]      fillarray   0,    0,    0,    1
 kdgain[]    fillarray   0,    0,    0,    0
 kmaxdiv[]   fillarray   8,    8,    8,    8
 
@@ -97,6 +101,11 @@ schedkwhen  kbtrig[kbAS], 0, 0, "test", 0, .1, 440*(2^3)
 schedkwhen  kbdiv[kbAS], 0, 0, "test", 0, .1, 440*(2^4)
 endin
 */
+
+instr test
+asig oscil 0.8, p4
+outs asig, asig
+endin
 
 instr hat
 aenv    expsegr 1,p3,1,0.08,0.001
