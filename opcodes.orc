@@ -117,7 +117,7 @@ if kTrig != 0 then
         elseif kStepMode == 1 then
             kAS = wrap(kAS-1, 0, ilen) ;same deal but we're moving backward
             while kQArr[kAS] <= 0 do
-                kAS = wrap(kAS-1, 0, ilen) ;wrap is easier then dealing with neg %
+                kAS = wrap(kAS-1, 0, ilen) ;wrap is easier than dealing with neg %
             od
         elseif kStepMode == 2 then
             kAS = trandom(kTrig, 0, ilen) ;jump to random step..
@@ -331,7 +331,7 @@ if ktrig != 0 then
         elseif kStepMode == 1 then
             kAS = wrap(kAS-1, 0, ilen) ;same deal but we're moving backward
             while kQArr[kAS] <= 0 do
-                kAS = wrap(kAS-1, 0, ilen) ;wrap is easier then dealing with neg %
+                kAS = wrap(kAS-1, 0, ilen) ;wrap is easier than dealing with neg %
             od
         elseif kStepMode == 2 then
             kAS = trandom(ktrig, 0, ilen) ;jump to random step..

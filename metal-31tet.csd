@@ -28,13 +28,8 @@ nchnls  =   2
 gaRvbSend init 0
 alwayson "verb"
 
-gifftsize = 1024
-gioverlap = gifftsize/4
-giwinsize = gifftsize
-giwinshape = 1 ;von-Hann window
-
 instr 1
-ktempo      =           265 ;bpm
+ktempo      =           256 ;bpm
 ktimeunit   =           1/(ktempo/60)
 klen[]      fillarray   1,    1,    1,    1,    1,    1/2,  1,    1
 kbAS,kbtrig[] uBasemath ktimeunit, klen
@@ -49,7 +44,7 @@ schedkwhen  kbtrig[kbAS], 0, 0, "string", 0, .1, kpitch[ktAS]
 endin
 
 instr 2
-ktempo      =           265 ;bpm
+ktempo      =           256 ;bpm
 ktimeunit   =           1/(ktempo/60)
 klen[]      fillarray   8,    0,    0,    0,    0,    0,    0,    0
 kbAS,kbtrig[] uBasemath ktimeunit, klen
@@ -68,8 +63,6 @@ krefl   init        0.9 ;rate of decay? ]0,1[
 asig    wgpluck2    iplk,kamp,icps,kpick,krefl
 
 ;adist   cmp         asig, ">", 0
-;adist   *=          0.1
-;asig    +=          adist
 ;asig    bqrez       asig, icps*8, 30
 asig    limit       asig, -0.4,0.4
 
@@ -77,30 +70,28 @@ kenv    linsegr     1,p3,1,0.5,0 ;to avoid end click
 asig    *=          kenv
 
         outs        asig,asig
-gaRvbSend += asig*0.8
+gaRvbSend += asig*0.5
 endin
 
-/*
-instr 5
-ktempo      =   265
-ktimeunit   =   1/(ktempo/60) ;whole note
-
-klen[]      fillarray   1,    1,    1,    1
-klgain[]    fillarray   0,    0,    0,    0
-kminlen[]   fillarray   0,    0,    0,    0
-kmaxlen[]   fillarray   8,    8,    8,    8
-
-kdiv[]      fillarray   0,    0,    0,    1
-kdgain[]    fillarray   0,    0,    0,    0
-kmaxdiv[]   fillarray   8,    8,    8,    8
-
-kQ[]        fillarray   0,    0,    0,    0
-
-kbAS, kbtrig[], kbdiv[] Basemath ktimeunit, klen,klgain,kminlen,kmaxlen, kdiv,kdgain,kmaxdiv, kQ
-schedkwhen  kbtrig[kbAS], 0, 0, "test", 0, .1, 440*(2^3)
-schedkwhen  kbdiv[kbAS], 0, 0, "test", 0, .1, 440*(2^4)
-endin
-*/
+;instr 5
+;ktempo      =   256
+;ktimeunit   =   1/(ktempo/60) ;whole note
+;
+;klen[]      fillarray   1,    1,    1,    1
+;klgain[]    fillarray   0,    0,    0,    0
+;kminlen[]   fillarray   0,    0,    0,    0
+;kmaxlen[]   fillarray   8,    8,    8,    8
+;
+;kdiv[]      fillarray   0,    0,    0,    1
+;kdgain[]    fillarray   0,    0,    0,    0
+;kmaxdiv[]   fillarray   8,    8,    8,    8
+;
+;kQ[]        fillarray   0,    0,    0,    0
+;
+;kbAS, kbtrig[], kbdiv[] Basemath ktimeunit, klen,klgain,kminlen,kmaxlen, kdiv,kdgain,kmaxdiv, kQ
+;schedkwhen  kbtrig[kbAS], 0, 0, "test", 0, .1, 440*(2^3)
+;schedkwhen  kbdiv[kbAS], 0, 0, "test", 0, .1, 440*(2^4)
+;endin
 
 instr test
 asig oscil 0.8, p4
@@ -127,7 +118,7 @@ endin
 ; ==============================================
 <CsScore>
 ;read the manual, amy!
-t       0       265
+t       0       256
 ;i1      0       64
 i2      0       64
 e
