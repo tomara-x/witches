@@ -445,6 +445,7 @@ endop
 opcode ClkDiv, k, kk
 /*
 Clock divider. Outputs 1 on the nth time the in-signal is non-zero.
+This opcode is quite handy with the ladies!
 Syntax: kout ClkDiv ksig, kn
 */
 ksig, kn xin
