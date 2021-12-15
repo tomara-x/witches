@@ -31,12 +31,12 @@ alwayson "verb"
 instr 1
 ktempo      =           256 ;bpm
 ktimeunit   =           1/(ktempo/60)
-klen[]      fillarray   1,    1,    1,    1,    1,    1/2,  1,    1
+klen[]      fillarray   1,    1,    1,    1
 kbAS,kbtrig[] uBasemath ktimeunit, klen
 
-knotes[]    fillarray   0,    0,    0,    0,    0,    0,    0,    0
-kincs[]     fillarray  .1,   .3,    0,    0,   .2,   .2,   .5,    0
-kQ[]        fillarray   0,    0,    0,    0,    0,    0,    0,    0
+knotes[]    fillarray   0,    9,    0,    4
+kincs[]     fillarray   1,    3,    3,    0
+kQ[]        fillarray   0,    0,    0,    0
 ktAS, kpitch[], kttrig[] Taphath kbtrig[kbAS], knotes, kincs, kQ, gi31tet
 kQ[ktAS]     = kQ[ktAS] * 0
 
@@ -46,7 +46,7 @@ endin
 instr 2
 ktempo      =           256 ;bpm
 ktimeunit   =           1/(ktempo/60)
-klen[]      fillarray   8,    0,    0,    0,    0,    0,    0,    0
+klen[]      fillarray   0,    0,    0,    0,    0,    0,    0,    8
 kbAS,kbtrig[] uBasemath ktimeunit, klen
 
 knotes[]    fillarray   0,    0,   31,   62,    0,    0,    0,    0
@@ -62,15 +62,16 @@ kpick   init        0.9 ;pickup point
 krefl   init        0.9 ;rate of decay? ]0,1[
 asig    wgpluck2    iplk,kamp,icps,kpick,krefl
 
-;adist   cmp         asig, ">", 0
-;asig    bqrez       asig, icps*8, 30
-asig    limit       asig, -0.4,0.4
+asig    bqrez       asig, 3000, 10
+adist   cmp         asig, ">", 0
+adist   bqrez       adist, 500, 40
+asig    limit       asig+adist*.08, -0.4,0.4
 
 kenv    linsegr     1,p3,1,0.5,0 ;to avoid end click
 asig    *=          kenv
 
         outs        asig,asig
-gaRvbSend += asig*0.5
+gaRvbSend += asig*0.2
 endin
 
 ;instr 5
@@ -119,8 +120,8 @@ endin
 <CsScore>
 ;read the manual, amy!
 t       0       256
-;i1      0       64
-i2      0       64
+i1      0       128
+;i2      0       64
 e
 </CsScore>
 </CsoundSynthesizer>
