@@ -7,8 +7,6 @@ terms of the Do What The Fuck You Want To Public License, Version 2,
 as published by Sam Hocevar. See the COPYING file for more details.
 */
 
-; this one's for you, K
-
 <CsoundSynthesizer>
 <CsOptions>
 -odac -L stdin
@@ -37,24 +35,13 @@ kbAS,kbtrig[] uBasemath ktimeunit, klen
 knotes[]    fillarray   0,    9,    0,    4
 kincs[]     fillarray   1,    3,    3,    0
 kQ[]        fillarray   0,    0,    0,    0
-ktAS, kpitch[], kttrig[] Taphath kbtrig[kbAS], knotes, kincs, kQ, gi31tet
+ktAS, kpitch[], kttrig[] Taphath kbtrig[kbAS], knotes, kincs, kQ, gicm6
 kQ[ktAS]     = kQ[ktAS] * 0
 
-schedkwhen  kbtrig[kbAS], 0, 0, "string", 0, .1, kpitch[ktAS]
+schedkwhen  kbtrig[kbAS], 0, 0, "string1", 0, .1, kpitch[ktAS]
 endin
 
-instr 2
-ktempo      =           256 ;bpm
-ktimeunit   =           1/(ktempo/60)
-klen[]      fillarray   0,    0,    0,    8
-kbAS,kbtrig[] uBasemath ktimeunit, klen
-
-knotes[]    fillarray   0,    0,    0,    1
-ktAS,kpitch[],kttrig[] uTaphath kbtrig[kbAS], knotes, gi31tet
-schedkwhen  kbtrig[kbAS], 0, 0, "string", 0, .1, kpitch[ktAS]
-endin
-
-instr string
+instr string1
 iplk    =           0.1 ;(0 to 1)
 kamp    init        0.15
 icps    =           p4
@@ -62,11 +49,48 @@ kpick   init        0.9 ;pickup point
 krefl   init        0.9 ;rate of decay? ]0,1[
 asig    wgpluck2    iplk,kamp,icps,kpick,krefl
 
-kenv1   linsegr     1,0.4,0,0.5,0
+kenv1   linsegr     1,0.2,0,0.1,0
 asig    bqrez       asig, kenv1*p4*4, 10
-;adist   cmp         asig, ">", 0
-;adist   bqrez       adist, 500, 40
-asig    limit       asig, -0.4,0.4
+adist   cmp         asig, ">", 0
+adist   bqrez       adist, 500, 40
+asig    limit       asig+adist*.05, -0.4,0.4
+
+kenv2   linsegr     1,p3,1,0.5,0 ;to avoid end click
+asig    *=          kenv2
+
+        outs        asig,asig
+gaRvbSend += asig*0.1
+endin
+
+instr 2
+ktempo      =           256 ;bpm
+ktimeunit   =           1/(ktempo/60)
+klen[]      fillarray   1/2,  1/2,  1/2,  1
+kbAS,kbtrig[] uBasemath ktimeunit, klen
+
+knotes[]    fillarray   0,    0,    14,   7
+ktAS,kpitch[],kttrig[] uTaphath kbtrig[kbAS], knotes, gicm6
+
+if ClkDiv(kttrig[3], 2) == 1 then
+knotes[0] = knotes[0] + 20
+endif
+
+kenv linseg 0, p3, 1
+
+schedkwhen  kbtrig[kbAS], 0, 0, "string2", 0, .1, kpitch[ktAS], kenv
+endin
+
+instr string2
+iplk    =           0.1 ;(0 to 1)
+kamp    init        0.15
+icps    =           p4
+kpick   init        0.9 ;pickup point
+krefl   init        0.9 ;rate of decay? ]0,1[
+asig    wgpluck2    iplk,kamp,icps,kpick,krefl
+
+asig    bqrez       asig, 4000, 70
+adist   oscili      asig, p4*4
+asig    limit       asig+adist*p5, -0.4,0.4
 
 kenv2   linsegr     1,p3,1,0.5,0 ;to avoid end click
 asig    *=          kenv2
@@ -121,8 +145,8 @@ endin
 <CsScore>
 ;read the manual, amy!
 t       0       256
-;1i1      0       128
-i2      0       64
+;i1      0       128
+i2      0       128
 e
 </CsScore>
 </CsoundSynthesizer>
