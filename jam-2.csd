@@ -58,7 +58,7 @@ kQ[ktAS] = kQ[ktAS] * 0
 ;schedule("bow1", 0, 128*4)
 schedkwhen  kbdiv[kbAS]-kbdiv[4], 0, 0, "pluck1", 0, .1, kpitch[ktAS], 0.7, 0.0
 schedkwhen  kbtrig[0]+kbtrig[4], 0, 0, "hat", 0, .0001
-schedkwhen  ClkDiv(kbdiv[0], 4), 0, 0, "pluck1", 0, 2, kpitch[ktAS]*2, 0.3, 0.4
+schedkwhen  ClkDiv(kbdiv[0], 4), 0, 0, "pluck1", 0, 6, kpitch[ktAS]*2, 0.3, 0.4
 endin
 
 instr bow1
@@ -84,7 +84,7 @@ asig1   wgpluck2    iplk,kamp,icps,kpick,krefl
 asig2   wgpluck2    iplk,kamp,icps*1.5,kpick,krefl
 asig3   wgpluck2    iplk,kamp,icps*2.0,kpick,krefl
 asig    =           asig1+asig2+asig3
-kenv2   linsegr     1,p3,1,0.5,0 ;to avoid end click
+kenv2   linsegr     1,p3,1,0.8,0 ;to avoid end click
 asig    *=          kenv2
         outs        asig,asig
 gaDstSend += asig*p6
