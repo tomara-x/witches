@@ -75,9 +75,16 @@ if ClkDiv(kttrig[3], 2) == 1 then
 knotes[0] = knotes[0] + 20
 endif
 
-kenv linseg 0, p3, 1
+if kttrig[1] == 1 then
+knotes[2] = knotes[2] + 5
+knotes[0] = knotes[0] - 2
+endif
 
-schedkwhen  kbtrig[kbAS], 0, 0, "string2", 0, .1, kpitch[ktAS], kenv
+;schedkwhen  kbtrig[kbAS], 0, 0, "string3", 0, .1, kpitch[ktAS]
+schedkwhen  kbtrig[0], 0, 0, "string1", 0, .1, kpitch[0]
+schedkwhen  kbtrig[1], 0, 0, "string2", 0, .1, kpitch[1], 1
+schedkwhen  kbtrig[2], 0, 0, "string3", 0, .1, kpitch[2]
+schedkwhen  kbtrig[3], 0, 0, "string3", 0, .1, kpitch[3]
 endin
 
 instr string2
@@ -96,7 +103,25 @@ kenv2   linsegr     1,p3,1,0.5,0 ;to avoid end click
 asig    *=          kenv2
 
         outs        asig,asig
-gaRvbSend += asig*0.1
+gaRvbSend += asig*0.05
+endin
+
+instr string3
+iplk    =           0.2 ;(0 to 1)
+kamp    init        0.15
+icps    =           p4
+kpick   init        0.9 ;pickup point
+krefl   init        0.9 ;rate of decay? ]0,1[
+asig    wgpluck2    iplk,kamp,icps,kpick,krefl
+
+asig    +=          pdhalf(asig, -0.95)
+kenv2   linsegr     1,p3,1,0.5,0 ;to avoid end click
+asig    *=          kenv2
+asig    limit       asig, -0.3,0.3
+;asig    bqrez       asig, 4000, 10
+
+        outs        asig,asig
+gaRvbSend += asig*0.05
 endin
 
 ;instr 5
@@ -146,7 +171,7 @@ endin
 ;read the manual, amy!
 t       0       256
 ;i1      0       128
-i2      0       128
+i2      0     128
 e
 </CsScore>
 </CsoundSynthesizer>

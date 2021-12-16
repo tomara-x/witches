@@ -48,5 +48,8 @@ gi31tet ftgen 0,0,-itotalsize,-51, iscaledegrees,iinterval,ibasefreq,ibaseindex,
 2^(28/31),2^(29/31),2^(30/31)
 
 ;ramp wave (for bit-crushing)
-gidfn1 ftgen 0,0,64,7, -1,64,1
+giframp ftgen 0,0,64,7, -1,64,1
+
+;tanh function for distortion
+giftanh ftgen 0,0,1024,"tanh", -5, 5, 0
 
