@@ -9,53 +9,34 @@ terms of the Do What The Fuck You Want To Public License, Version 2,
 as published by Sam Hocevar. See the COPYING file for more details.
 */
 
-;gifn1
+;c dorian #4 (ukrainian dorian) in 12-tet
 iscaledegrees   = 7
 itotalsize      = iscaledegrees*4
-iinterval       = 2 ;ratio range covered before repeating (octave = 2)
+iinterval       = 2 ;ratio range covered before repeating (2 = 1 octave)
 ibasefreq       = cpspch(6) ;cpspch(8) = c4
 ibaseindex      = 0 ;index 0 will be ibasefreq
-gifn1 ftgen 0,0,-itotalsize,-51, iscaledegrees,iinterval,
-ibasefreq,ibaseindex,
-2^(0/12),
-2^(2/12),
-2^(3/12),
-2^(6/12),
-2^(7/12),
-2^(9/12),
-2^(10/12)
-; ratios (the numirators are the scale notes 0=c ... 11=b)
-; (this is c dorian #4 (ukrainian dorian) in 12-tet)
+giud ftgen 0,0,-itotalsize,-51, iscaledegrees,iinterval,ibasefreq,ibaseindex,
+2^(0/12),2^(2/12),2^(3/12),2^(6/12),2^(7/12),2^(9/12),2^(10/12)
+; ratios (the numirators are the scale notes in this case 0=c ... 11=b)
 
-;natural minor
-gifn3 ftgen 0,0,-7*4,-51, 7,2,cpspch(6),0,
-2^(0/12),
-2^(2/12),
-2^(3/12),
-2^(5/12),
-2^(7/12),
-2^(8/12),
-2^(10/12)
+;c natural minor (6 octaves)
+gicm6 ftgen 0,0,-7*6,-51, 7,2,cpspch(6),0,
+2^(0/12),2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
 
-;same but 2 octaves
-gifn4 ftgen 0,0,-7*2,-51, 7,2,cpspch(6),0,
-2^(0/12),
-2^(2/12),
-2^(3/12),
-2^(5/12),
-2^(7/12),
-2^(8/12),
-2^(10/12)
+;4 octaves
+gicm4 ftgen 0,0,-7*6,-51, 7,2,cpspch(6),0,
+2^(0/12),2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
 
-;ramp wave
-gidfn1 ftgen 0,0,64,7, -1,64,1
+;2 octaves
+gicm2 ftgen 0,0,-7*2,-51, 7,2,cpspch(6),0,
+2^(0/12),2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
 
 ;31-tet
 iscaledegrees   = 31
 itotalsize      = iscaledegrees*4
-iinterval       = 2 ;ratio range covered before repeating (octave = 2)
+iinterval       = 2
 ibasefreq       = cpspch(6) ;cpspch(8) = c4
-ibaseindex      = 0 ;index 0 will be ibasefreq
+ibaseindex      = 0
 gi31tet ftgen 0,0,-itotalsize,-51, iscaledegrees,iinterval,ibasefreq,ibaseindex,
 2^(00/31),2^(01/31),2^(02/31),2^(03/31),
 2^(04/31),2^(05/31),2^(06/31),2^(07/31),
@@ -65,4 +46,7 @@ gi31tet ftgen 0,0,-itotalsize,-51, iscaledegrees,iinterval,ibasefreq,ibaseindex,
 2^(20/31),2^(21/31),2^(22/31),2^(23/31),
 2^(24/31),2^(25/31),2^(26/31),2^(27/31),
 2^(28/31),2^(29/31),2^(30/31)
+
+;ramp wave (for bit-crushing)
+gidfn1 ftgen 0,0,64,7, -1,64,1
 
