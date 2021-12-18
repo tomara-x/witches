@@ -54,11 +54,43 @@ kQ[]        fillarray   0,    0,    0,    0
 ktAS, kpitch[], kttrig[] Taphath kbdiv[kbAS], knotes, kincs, kQ, giud
 kQ[ktAS] = kQ[ktAS] * 0
 
-;gkpitch = kpitch[ktAS]
-;schedule("bow1", 0, 128*4)
-schedkwhen  kbdiv[kbAS]-kbdiv[4], 0, 0, "pluck1", 0, .1, kpitch[ktAS], 0.7, 0.0
-schedkwhen  kbtrig[0]+kbtrig[4], 0, 0, "hat", 0, .0001
-schedkwhen  ClkDiv(kbdiv[0], 4), 0, 0, "pluck1", 0, 6, kpitch[ktAS]*2, 0.3, 0.4
+;schedkwhen  kbdiv[kbAS]-kbdiv[4], 0, 0, "pluck1", 0, .1, kpitch[ktAS], 0.7, 0.0
+;schedkwhen  ClkDiv(kbdiv[0], 4), 0, 0, "pluck1", 0, 6, kpitch[ktAS]*2, 0.3, 0.4
+
+kl1[]      fillarray   1,    1,    1,    1
+kb1AS, kb1t[] uBasemath ktimeunit, kl1
+
+schedkwhen  kb1t[0], 0, 0, "kick", 0, .0001
+schedkwhen  kb1t[2], 0, 0, "snare", 0, .0001
+schedkwhen  kb1t[kb1AS]-(kb1t[0]+kb1t[2]), 0, 0, "hat", 0, .0001
+endin
+
+instr kick
+aaenv   expsegr 1,p3,1,0.1,0.001
+afenv   expsegr 230,p3,230,0.05,20
+asig    oscili aaenv*.3, afenv
+asig    distort asig, 0.2, giftanh
+outs    asig, asig
+gaRvbSend += asig*0.03
+endin
+
+instr snare
+kenv    expsegr 1,p3,1,0.9,0.001
+asprng  pluck kenv*0.3, 260, 260, 0, 3, 0.5
+aaenv   expsegr 1,p3,1,0.1,0.001
+afenv   expsegr 260,p3,260,0.05,20
+adrm    oscili aaenv*.3, afenv
+asig = (asprng+adrm)/2
+asig    distort asig, 0.2, giftanh
+outs    asig, asig
+gaRvbSend += asig*0.03
+endin
+
+instr hat
+aenv    expsegr 1,p3,1,0.08,0.001
+asig    noise   0.1*aenv, 0
+outs    asig, asig
+gaRvbSend += asig*0.03
 endin
 
 instr pluck1
@@ -76,17 +108,6 @@ asig    *=          kenv2
         outs        asig,asig
 gaDstSend += asig*p6
 gaRvbSend += asig*0.05
-endin
-
-instr hat
-aenv    expsegr 1,p3,1,0.08,0.001
-asig    noise   0.1*aenv, 0
-outs    asig, asig
-gaRvbSend += asig*0.05
-endin
-
-instr kick
-
 endin
 
 instr dist ;distortion effect
