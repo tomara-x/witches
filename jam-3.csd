@@ -57,38 +57,44 @@ kQ[ktAS] = kQ[ktAS] * 0
 ;schedkwhen  kbdiv[kbAS]-kbdiv[4], 0, 0, "pluck1", 0, .1, kpitch[ktAS], 0.7, 0.0
 ;schedkwhen  ClkDiv(kbdiv[0], 4), 0, 0, "pluck1", 0, 6, kpitch[ktAS]*2, 0.3, 0.4
 
-kl1[]      fillarray   1,    1,    1,    1
+kl1[]      fillarray   1,    1/3, 1/3, 1/3,    1,    1/5, 1/5, 1/5, 1/5, 1/5
 kb1AS, kb1t[] uBasemath ktimeunit, kl1
 
 schedkwhen  kb1t[0], 0, 0, "kick", 0, .0001
-schedkwhen  kb1t[2], 0, 0, "snare", 0, .0001
-schedkwhen  kb1t[kb1AS]-(kb1t[0]+kb1t[2]), 0, 0, "hat", 0, .0001
+schedkwhen  kb1t[4], 0, 0, "snare", 0, .0001
+schedkwhen  kb1t[kb1AS]-(kb1t[0]+kb1t[4]), 0, 0, "hat", 0, .0001
 endin
 
 instr kick
-aaenv   expsegr 1,p3,1,0.1,0.001
-afenv   expsegr 230,p3,230,0.05,20
-asig    oscili aaenv*.3, afenv
-asig    distort asig, 0.2, giftanh
+iifrq   = 230
+iefrq   = 20
+aaenv   expsegr 1,p3,1,0.3,0.001
+afenv   expsegr iifrq,p3,iifrq,0.05,iefrq
+asig    oscili aaenv*.6, afenv
+asig    distort asig*2, 0.2, giftanh
+asig    limit asig, -0.5,0.5
+asig    += moogladder(asig, iifrq*2, .3)
 outs    asig, asig
 gaRvbSend += asig*0.03
 endin
 
 instr snare
+ifreq   = 280
 kenv    expsegr 1,p3,1,0.9,0.001
-asprng  pluck kenv*0.3, 260, 260, 0, 3, 0.5
-aaenv   expsegr 1,p3,1,0.1,0.001
-afenv   expsegr 260,p3,260,0.05,20
+asprng  pluck kenv*0.3, ifreq, ifreq, 0, 3, 0.5
+aaenv   expsegr 1,p3,1,0.2,0.001
+afenv   expsegr ifreq,p3,ifreq,0.05,20
 adrm    oscili aaenv*.3, afenv
-asig = (asprng+adrm)/2
+asig    = (asprng+adrm)/2
 asig    distort asig, 0.2, giftanh
+asig    += moogladder(asig, ifreq, .5)*2
 outs    asig, asig
 gaRvbSend += asig*0.03
 endin
 
 instr hat
-aenv    expsegr 1,p3,1,0.08,0.001
-asig    noise   0.1*aenv, 0
+aenv    expsegr 1,p3,1,0.06,0.001
+asig    noise   0.1*aenv, -0.8
 outs    asig, asig
 gaRvbSend += asig*0.03
 endin
