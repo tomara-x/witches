@@ -59,10 +59,31 @@ kQ[ktAS] = kQ[ktAS] * 0
 
 kl1[]      fillarray   1,    1/3, 1/3, 1/3,    1,    1/5, 1/5, 1/5, 1/5, 1/5
 kb1AS, kb1t[] uBasemath ktimeunit, kl1
-
 schedkwhen  kb1t[0], 0, 0, "kick", 0, .0001
 schedkwhen  kb1t[4], 0, 0, "snare", 0, .0001
 schedkwhen  kb1t[kb1AS]-(kb1t[0]+kb1t[4]), 0, 0, "hat", 0, .0001
+
+kl2[]      fillarray   8/3, 8/3, 8/3
+kb2AS, kb2t[] uBasemath ktimeunit, kl2
+schedkwhen  kb2t[kb2AS], 0, 0, "FM1", 0, .0001
+endin
+
+instr FM1
+iz = 0.0001
+ama1    expsegr 10,0.1,iz
+amod1   oscili ama1,220
+ama2    expsegr 10,0.1,iz
+amod2   oscili ama2,55
+
+aca1 expsegr 1,2,iz
+kcf1 expsegr 220,1.8,55
+acar1   Pmoscili aca1, kcf1, amod1
+aca2 expsegr 1,2,iz
+kcf2 expsegr 880,0.6,110
+acar2   Pmoscili aca2, kcf2, amod2
+asig    = acar1+acar2
+asig    *= 0.08
+outs    asig, asig
 endin
 
 instr kick
@@ -80,13 +101,13 @@ endin
 
 instr snare
 ifreq   = 280
-kenv    expsegr 1,p3,1,0.9,0.001
-asprng  pluck kenv*0.3, ifreq, ifreq, 0, 3, 0.5
-aaenv   expsegr 1,p3,1,0.2,0.001
+kenv    expsegr 1,p3,1,1,0.001
+asprng  pluck kenv*0.8, ifreq, ifreq, 0, 3, 0.6
+aaenv   expsegr 1,p3,1,0.3,0.001
 afenv   expsegr ifreq,p3,ifreq,0.05,20
-adrm    oscili aaenv*.3, afenv
+adrm    oscili aaenv*.4, afenv
 asig    = (asprng+adrm)/2
-asig    distort asig, 0.2, giftanh
+asig    distort asig, 0.4, giftanh
 asig    += moogladder(asig, ifreq, .5)*2
 outs    asig, asig
 gaRvbSend += asig*0.03
