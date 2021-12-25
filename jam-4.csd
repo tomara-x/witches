@@ -28,17 +28,17 @@ alwayson "dist"
 instr 1
 ktrig   metro 128*4/60
 knote[] fillarray p4,p5,p6,p7
-kincs[] fillarray 0, 8, 4, 2
+kincs[] fillarray 0, 1, 7, 0
 kQ[]    fillarray 0, 0, 0, 0
-kAS, kp[], kt[] Taphath ktrig, knote, kincs, kQ, giud
+kAS, kp[], kt[] Taphath ktrig, knote, kincs, kQ, gicm6
 kcps    = kp[kAS]
 aop1    poscil .1, kcps
 aop2    poscil .1, kcps/2
 aop3    Pmoscili 0.2, kcps/1, aop1+aop2
 aop4    Pmoscili 0.2, kcps/2, aop1+aop2
-aop5    Pmoscili 0.2, kcps/1, aop1+aop2
+aop5    Pmoscili 0.1, kcps/1, aop1+aop2
 aop6    Pmoscili 0.5, kcps/1, aop3
-aop7    Pmoscili 0.5, kcps/2, aop4
+aop7    Pmoscili 0.5, kcps/4, aop4
 aop8    Pmoscili 0.5, kcps/2, aop5
 aout    = aop6 + aop7 + aop8
 aout    = aout * 0.1
@@ -66,11 +66,12 @@ endin
 <CsScore>
 ;read the manual, amy!
 t       0       128
-i1      0       16       4 32 12 14
+i1      0       16       4 3  12 10
 i1      +       16       4 12 21 7
-i1      +       16       0 16 8  9
 i1      +       16       7 21 0  14
+i1      +       16       4 12 21 7
 i1      +       16       8 9  10 12
+i1      +       16       4 12 21 7
 e
 </CsScore>
 </CsoundSynthesizer>

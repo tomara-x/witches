@@ -83,7 +83,7 @@ kfirst = 0
 kmem = kNoteIndx
 ;initial active step
 if kStepMode == 0 then
-    kAS = ilen-1
+    kAS = (ilen-1)%ilen
 else
     kAS = 0
 endif
@@ -184,7 +184,7 @@ ckgoto kfirst!=1, PastKOne
 kfirst = 0
 ;initial active step
 if kStepMode == 0 then
-    kAS = wrap(iInitStep-1, 0, ilen)
+    kAS = wrap(iInitStep-1, 0, ilen)%ilen
 else
     kAS = wrap(iInitStep, 0, ilen)
 endif
@@ -290,7 +290,7 @@ kmem1[] = kLength
 kmem2[] = kDivision
 ;initialize active step
 if kStepMode == 0 then
-    kAS = ilen-1
+    kAS = (ilen-1)%ilen
 else
     kAS = 0
 endif
@@ -402,7 +402,7 @@ ckgoto kfirst!=1, PastKOne
 kfirst = 0
 ;initialize active step
 if kStepMode == 0 then
-    kAS = wrap(iInitStep-1, 0, ilen)
+    kAS = wrap(iInitStep-1, 0, ilen)%ilen
 else
     kAS = wrap(iInitStep, 0, ilen)
 endif
