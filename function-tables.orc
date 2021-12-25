@@ -11,9 +11,9 @@ as published by Sam Hocevar. See the COPYING file for more details.
 
 ;c dorian #4 (ukrainian dorian) in 12-tet
 iscaledegrees   = 7
-itotalsize      = iscaledegrees*4
+itotalsize      = iscaledegrees*7
 iinterval       = 2 ;ratio range covered before repeating (2 = 1 octave)
-ibasefreq       = cpspch(6) ;cpspch(8) = c4
+ibasefreq       = cpspch(5) ;cpspch(8) = c4
 ibaseindex      = 0 ;index 0 will be ibasefreq
 giud ftgen 0,0,-itotalsize,-51, iscaledegrees,iinterval,ibasefreq,ibaseindex,
 2^(0/12),2^(2/12),2^(3/12),2^(6/12),2^(7/12),2^(9/12),2^(10/12)

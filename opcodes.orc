@@ -433,8 +433,15 @@ xout kAS, kTrigArr
 endop
 
 
-;phase modulation oscillator
-opcode Pmoscili, a, akaj
+;phase modulation oscillator (something's messed up here)
+;syntax: ares Pmoscili xamp, kfreq ,aphase [,ifn]
+opcode Pmoscili, a, kkaj
+kamp, kfreq, aphs, ifn xin
+acarrier    phasor kfreq
+asig        tablei acarrier+aphs, ifn, 1,0,1
+xout        asig*kamp
+endop
+opcode Pmoscili, a, akaj ;overload for doing AM
 aamp, kfreq, aphs, ifn xin
 acarrier    phasor kfreq
 asig        tablei acarrier+aphs, ifn, 1,0,1
