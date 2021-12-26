@@ -1,33 +1,27 @@
 trans rights
-
 /*
 Copyright © 2021 Amy Universe <nopenullnilvoid00@gmail.com>
 This work is free. You can redistribute it and/or modify it under the
 terms of the Do What The Fuck You Want To Public License, Version 2,
 as published by Sam Hocevar. See the COPYING file for more details.
 */
-
 <CsoundSynthesizer>
 <CsOptions>
--odac -L stdin
+; Real-time / render
+-odac -L stdin -m 231
+; -o jam-2.wav
 </CsOptions>
-; ==============================================
 <CsInstruments>
-
 sr      =   44100
-ksmps   =   42
-;kr     =   1050
+ksmps   =   42 ;kr=1050
 nchnls  =   2
 0dbfs   =   1
 
 #define TEMPO #128#
-
 #include "function-tables.orc"
 #include "opcodes.orc"
-
 gaRvbSend init 0
 alwayson "verb"
-
 gaDstSend init 0
 alwayson "dist"
 
@@ -51,14 +45,14 @@ knotes[]    fillarray   0,    9,    0,    4
 kincs[]     fillarray   1,    3,    3,    0
 kQ[]        fillarray   0,    0,    0,    0
 
-ktAS, kpitch[], kttrig[] Taphath kbdiv[kbAS], knotes, kincs, kQ, giud
+ktAS, kpitch[], kttrig[] Taphath kbdiv[kbAS], knotes, kincs, kQ, giud4
 kQ[ktAS] = kQ[ktAS] * 0
 
 ;gkpitch = kpitch[ktAS]
 ;schedule("bow1", 0, 128*4)
 schedkwhen  kbdiv[kbAS]-kbdiv[4], 0, 0, "pluck1", 0, .1, kpitch[ktAS], 0.7, 0.0
 schedkwhen  kbtrig[0]+kbtrig[4], 0, 0, "hat", 0, .0001
-schedkwhen  ClkDiv(kbdiv[0], 4), 0, 0, "pluck1", 0, 6, kpitch[ktAS]*2, 0.3, 0.4
+schedkwhen  ClkDiv(kttrig[0], 4), 0, 0, "pluck1", 0, 6, kpitch[ktAS], 0.3, 0.4
 endin
 
 instr bow1
@@ -107,8 +101,7 @@ outs        ares, ares
 clear       gaDstSend
 endin
 
-; stolen from the floss manual (05E01_freeverb.csd)
-instr verb ; reverb - always on
+instr verb ; reverb (stolen from the floss manual 05E01_freeverb.csd)
 kroomsize    init      0.85         ; room size (range 0 to 1)
 kHFDamp      init      0.5          ; high freq. damping (range 0 to 1)
 aRvbL,aRvbR  freeverb  gaRvbSend, gaRvbSend,kroomsize,kHFDamp

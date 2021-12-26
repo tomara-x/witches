@@ -28,7 +28,7 @@ alwayson "dist"
 instr 1
 ktrig   metro 128*4/60
 knote[] fillarray p4,p5,p6,p7
-kincs[] fillarray 0, 1, 7, 0
+kincs[] fillarray 0, 1, 0, 3
 kQ[]    fillarray 0, 0, 0, 0
 kAS, kp[], kt[] Taphath ktrig, knote, kincs, kQ, gicm6
 kcps    = kp[kAS]
@@ -66,12 +66,13 @@ endin
 <CsScore>
 ;read the manual, amy!
 t       0       128
-i1      0       16       4 3  12 10
-i1      +       16       4 12 21 7
-i1      +       16       7 21 0  14
-i1      +       16       4 12 21 7
-i1      +       16       8 9  10 12
-i1      +       16       4 12 21 7
+i1      0       16      28 29 28 35
+i1      +       16      28 29 46 28
+i1      +       16      28 29 46 28
+i1      +       16      28 29 46 28
+i1      68      16      00 29 00 28
+i1      +       16      28 29 46 28
+i1      +       16      28 29 46 28
 e
 </CsScore>
 </CsoundSynthesizer>
