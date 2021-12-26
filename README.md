@@ -21,6 +21,7 @@ Those are function tables used in my playing files. They're mostly just gen51 mu
 
 ### all other files
 Those files are just me playing around. Who knows what'll be there! Check them out for examples/seeing the sequencers in action.
+
 Here's my [soundcloud](https://soundcloud.com/nope-null) where you can find some renders of some of the files here.
 
 If you make something with these, I'd love love love to have a listen/look!
