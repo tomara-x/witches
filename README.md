@@ -19,15 +19,14 @@ That's where the opcode definitions of Taphath and Basemath are. You can place t
 ### function-tables.orc
 Those are function tables used in the demo file (they're just musical scales) you can edit them, define your own, or something else.
 
-### witches.csd
-This is a demo file. These are just examples of ways I'd use the sequencers, but I'd love to see what you'd come up with. (seriously, mail/DM me any wiggly air you make!) Something I haven't tried, but I think would be awesome, is to have multiple instances running in the same instrument at different rates and modulating each other's inputs. Makes my head spin!
+### all other files
+Those files are just me playing around. Who knows what'll be there! Check them out for examples/seeing the sequencers in action.
 
-### jam-x.csd
-Those files are just me playing around. Who knows what'll be there!
+If you make something with these, I'd love love love to have a listen/look!
 
 ###### Made using [Vim](https://www.vim.org/) and [Csound](https://csound.com/) installed on a [Fedora](https://fedoraproject.org/) ([Void](https://voidlinux.org/) now) proot on [Termux](https://termux.com/) on an android (version 8.1) phone, void of any analog warmth! [[setup recipe]](https://github.com/tomara-x/csound-proot-distro-recipe)
 
 
 💜
 
-[^1]: When used with a GEN51 function table.
+[^1]: When used with a [GEN51](https://csound.com/docs/manual/GEN51.html) function table.

@@ -1,22 +1,20 @@
 trans rights
-
 /*
 Copyright © 2021 Amy Universe <nopenullnilvoid00@gmail.com>
 This work is free. You can redistribute it and/or modify it under the
 terms of the Do What The Fuck You Want To Public License, Version 2,
 as published by Sam Hocevar. See the COPYING file for more details.
 */
-
+This one's for my witches <3
 <CsoundSynthesizer>
 <CsOptions>
--odac -L stdin
+; RT/Render
+-odac -L stdin -m 231
+; -o magic.wav
 </CsOptions>
-; ==============================================
 <CsInstruments>
-
 sr      =   44100
-ksmps   =   42
-;kr     =   1050
+ksmps   =   42 ;kr=1050
 nchnls  =   1
 0dbfs   =   1
 
@@ -26,16 +24,11 @@ nchnls  =   1
 instr 1
 ktmpo       init    137 ;bpm
 kclkx1      metro   ktmpo/60 ;whole notes
-kclkx4      metro   4*ktmpo/60 ;quarter notes
-kclkd4      metro   ktmpo/60/4 ;4 whole notes
-kclkd8      metro   ktmpo/60/8 ;8 whole notes
-kclkd16     metro   ktmpo/60/16 ;16 whole notes
-ktrigseq1   seqtime 1/(4*ktmpo/60), 0, 8, 0, gifn2
-
 knotes[]    fillarray   0,0,0,0,0,0,0,0
 kincs[]     fillarray   0,-1,2,0,1,0,-3,1
+kQ[]        fillarray   0,0,0,0,0,0,0,0
 
-;kreset = kclkd8  ;reset must be 1-k-cycle-long trigger
+;kreset = ClkDiv(kclkx1, 8)  ;reset must be 1-k-cycle-long trigger
 
 ;if kclkx1 > 0 then ;randomly increment a random step increment!
 ;   krandstep   trandom kclkx1, 0, lenarray(kincs)
@@ -44,7 +37,7 @@ kincs[]     fillarray   0,-1,2,0,1,0,-3,1
 ;endif
 
 ; run the sequencer
-kpitch,kotrig[],kopitch[] Taphath kclkx1,knotes,kincs,gifn1,0,0,0
+kAS,kpitch[],ktrig[] Taphath kclkx1,knotes,kincs, kQ, giud4
 
 ;self-patching trig-outs to noteIndex or to incs
 ;if kotrig[5] == 1 then
@@ -56,10 +49,10 @@ kpitch,kotrig[],kopitch[] Taphath kclkx1,knotes,kincs,gifn1,0,0,0
 ; make some noise
 kpres   randi       2, 8, 0.5, 0, 3 ;amp, cps, seed, bit, offset
 krat    randi       0.25, 2, 0.5, 0, 0.01
-asig    wgbow       0.4, kpitch, 3, 0.13, 5, 0.004
+asig    wgbow       0.4, kpitch[kAS], 3, 0.13, 5, 0.004
         out         asig
 ; run another instrument with the same pitch info
-        schedkwhen  kclkx1, 0, 0, 2, 0, 0.4, kpitch/2
+        schedkwhen  kclkx1, 0, 0, 2, 0, 0.4, kpitch[kAS]/2
 endin
 
 instr 2
@@ -77,28 +70,28 @@ asig    limit       asig, -0.25, 0.25
         out         asig
 endin
 
-instr 4
+instr 4 ;overkill
 ktempo      =   137 ;bpm
 ktimeunit   =   1/(ktempo/60) ;1 whole note at tempo in seconds
 
-ktimes[]    fillarray   4,    4,    4,    4,    4,    4,    4,    4
-kincs[]     fillarray   0,    0,    0,    0,    0,    0,    0,    0
-kdivs[]     fillarray   0,    0,    0,    0,    0,    0,    0,    0
-kdivincs[]  fillarray   0,    0,    0,    0,    0,    0,    0,    0
-
-kmaxdivs[]  fillarray   256,  256,  256,  256,  256,  256,  256,  256
+klen[]      fillarray   4,    4,    4,    4,    4,    4,    4,    4
+kgain[]     fillarray   0,    0,    0,    0,    0,    0,    0,    0
 kminlen[]   fillarray   1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64, 1/64
 kmaxlen[]   fillarray   8,    8,    8,    8,    8,    8,    8,    8
+kdivs[]     fillarray   0,    0,    0,    0,    0,    0,    0,    0
+kdivgain[]  fillarray   0,    0,    0,    0,    0,    0,    0,    0
+kmaxdivs[]  fillarray   256,  256,  256,  256,  256,  256,  256,  256
+kQ[]        fillarray   0,    0,    0,    0,    0,    0,    0,    0
 
-ktrig, ksub, ktrigArr[] Basemath ktimeunit, ktimes, kincs, kdivs, kdivincs,
-        kmaxdivs, kminlen, kmaxlen
+kAS, ktrig[], kd[] Basemath ktimeunit, klen, kgain, kminlen, kmaxlen,
+        kdivs, kdivgain, kmaxdivs, kQ
 
-schedkwhen  ksub, 0, 0, 5, 0, 0.0001
+schedkwhen  kd[kAS], 0, 0, "hat", 0, 0.0001
 endin
 
-instr 5 ;hat
+instr hat
 aenv    expsegr 1,p3,1,0.04,0.001
-asig    noise   0.1*aenv, 0
+asig    noise   0.2*aenv, 0
 out     asig
 endin
 
@@ -106,189 +99,207 @@ instr 6
 ktempo      =   137 ;bpm
 ktimeunit   =   1/(ktempo/60) ;1 whole note at ktempo (in seconds)
 
-kTimes[]    fillarray   1,    1,    1,    1,    1,    1,    1,    1
-kTimeIncs[] fillarray   0,    0,    0,    1,    0,    0,    0,    0
-kDivs[]     fillarray   0,    0,    0,    4,    0,    0,    0,    0
-kDivIncs[]  fillarray   0,    0,    0,    0,    0,    0,    0,    0
+klen[]      fillarray   1,    1,    1,    1,    1,    1,    1,    1
+kgain[]     fillarray   0,    0,    0,    1,    0,    0,    0,    0
+kminlen[]   fillarray   0,    0,    0,    1,    0,    0,    0,    0
+kmaxlen[]   fillarray   4,    4,    4,    4,    4,    4,    4,    4
+kdivs[]     fillarray   0,    0,    0,    4,    0,    0,    0,    0
+kdivgain[]  fillarray   0,    0,    0,    0,    0,    0,    0,    0
+kmaxdivs[]  fillarray   16,   16,   16,   8,    8,    8,    8,    8
+kbQ[]       fillarray   0,    0,    0,    0,    0,    0,    0,    0
 
-kMaxDivs[]  fillarray   16,   16,   16,   8,    8,    8,    8,    8
-kMinLen[]   fillarray   0,    0,    0,    1,    0,    0,    0,    0
-kMaxLen[]   fillarray   4,    4,    4,    4,    4,    4,    4,    4
+kbAS, kbtrig[], kd[] Basemath ktimeunit,klen,kgain,kminlen,kmaxlen,
+        kdivs,kdivgain,kmaxdivs,kbQ
 
-ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
-        kMaxDivs,kMinLen,kMaxLen
+knotes[]    fillarray   0,    2,    0,    6,    2,    3,    0,    1
+knotegain[] fillarray   1,    2,    0,    0,   -4,    0,    0,    3
+ktQ[]       fillarray   0,    0,    0,    0,    0,    0,    0,    0
 
-kNotes[]    fillarray   0,    2,    0,    6,    2,    3,    0,    1
-kNoteIncs[] fillarray   1,    2,    0,    0,   -4,    0,    0,    3
+ktAS,kpitch[],kttrig[] Taphath kbtrig[kbAS],knotes,knotegain,ktQ,gicm4
 
-kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
-
-kenv    looptseg    ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
-asig    oscili      kenv, kpitch*4
+kenv    looptseg    ktempo/8/60, kd[kbAS], 0, 1,-40,1, 0,0,0
+asig    oscili      kenv, kpitch[ktAS]*4
         out         limit(asig, -0.2,0.2)
 endin
 
-instr 7 ;Madness demo #0
+instr 7
 ktempo      =   137
 ktimeunit   =   1/(ktempo/60)
 
 ilen        =       4
-kTimes[]    init    ilen
-kTimeIncs[] init    ilen
-kDivs[]     init    ilen
-kDivIncs[]  init    ilen
-kMaxDivs[]  init    ilen
-kMinLen[]   init    ilen
-kMaxLen[]   init    ilen
+klen[]      init    ilen
+kgain[]     init    ilen
+kdivs[]     init    ilen
+kdivgain[]  init    ilen
+kmaxdivs[]  init    ilen
+kminlen[]   init    ilen
+kmaxlen[]   init    ilen
+kbQ[]       init    ilen
 
-kNotes[]    init    ilen
-kNoteIncs[] init    ilen
+knotes[]    init    ilen
+knotegain[] init    ilen
+ktQ[]       init    ilen
 
 kndx = 0
 while kndx < ilen do
-    kTimes[kndx]        =   (kndx%1)/10 ;leaving this for the idea + I didn't know
-    kTimeIncs[kndx]     =   0
-    kDivs[kndx]         =   0
-    kDivIncs[kndx]      =   0
-    kMaxDivs[kndx]      =   0
-    kMinLen[kndx]       =   0
-    kMaxLen[kndx]       =   1
+    klen[kndx]          =   (kndx%4)/10
+    kgain[kndx]         =   0
+    kdivs[kndx]         =   0
+    kdivgain[kndx]      =   0
+    kmaxdivs[kndx]      =   0
+    kminlen[kndx]       =   0
+    kmaxlen[kndx]       =   1
+    kbQ[kndx]           =   0
 
-    kNotes[kndx]        =   0
-    kNoteIncs[kndx]     =   random(-5, 5)
+    knotes[kndx]        =   0
+    knotegain[kndx]     =   random(-5, 5)
+    ktQ[kndx]           =   0
     kndx += 1
 od
 
-ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
-        kMaxDivs,kMinLen,kMaxLen
+kbAS, kbtrig[], kd[] Basemath ktimeunit,klen,kgain,kminlen,kmaxlen,
+        kdivs,kdivgain,kmaxdivs,kbQ
 
-kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
+ktAS,kpitch[],kttrig[] Taphath kbtrig[kbAS],knotes,knotegain,ktQ,gicm4
 
-kenv    looptseg    ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
-asig    oscili      kenv, kpitch*4
+kenv    looptseg    ktempo/8/60, kd[kbAS], 0, 1,-40,1, 0,0,0
+asig    oscili      kenv, kpitch[ktAS]*4
         out         limit(asig, -0.2,0.2)
 endin
 
-instr 8 ;Madness demo #1
+instr 8
 ktempo      =   137
 ktimeunit   =   1/(ktempo/60)
 
 ilen        =       128
-kTimes[]    init    ilen
-kTimeIncs[] init    ilen
-kDivs[]     init    ilen
-kDivIncs[]  init    ilen
-kMaxDivs[]  init    ilen
-kMinLen[]   init    ilen
-kMaxLen[]   init    ilen
+klen[]      init    ilen
+kgain[]     init    ilen
+kdivs[]     init    ilen
+kdivgain[]  init    ilen
+kmaxdivs[]  init    ilen
+kminlen[]   init    ilen
+kmaxlen[]   init    ilen
+kbQ[]       init    ilen
 
-kNotes[]    init    ilen
-kNoteIncs[] init    ilen
+knotes[]    init    ilen
+knotegain[] init    ilen
+ktQ[]       init    ilen
 
 kndx = 0
 while kndx < ilen do
-    kTimes[kndx]        =   (kndx%1)/10
-    kTimeIncs[kndx]     =   0
-    kDivs[kndx]         =   0
-    kDivIncs[kndx]      =   0
-    kMaxDivs[kndx]      =   0
-    kMinLen[kndx]       =   0
-    kMaxLen[kndx]       =   2
+    klen[kndx]          =   (kndx%1)/10
+    kgain[kndx]         =   0
+    kdivs[kndx]         =   0
+    kdivgain[kndx]      =   0
+    kmaxdivs[kndx]      =   0
+    kminlen[kndx]       =   0
+    kmaxlen[kndx]       =   2
+    kbQ[kndx]           =   0
 
-    kNotes[kndx]        =   0
-    kNoteIncs[kndx]     =   random(-5, 5)
+    knotes[kndx]        =   0
+    knotegain[kndx]     =   random(-5, 5)
+    ktQ[kndx]           =   0
     kndx += 1
 od
+klen[0] = 8
 
-ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
-        kMaxDivs,kMinLen,kMaxLen
+kbAS, kbtrig[], kd[] Basemath ktimeunit,klen,kgain,kminlen,kmaxlen,
+        kdivs,kdivgain,kmaxdivs,kbQ
 
-kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
+ktAS,kpitch[],kttrig[] Taphath kbtrig[kbAS],knotes,knotegain,ktQ,gicm4
 
-kenv    looptseg    ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
-asig    oscili      kenv, kpitch*4
+kenv    looptseg    ktempo/8/60, kd[kbAS], 0, 1,-40,1, 0,0,0
+asig    oscili      kenv, kpitch[ktAS]*4
         out         limit(asig, -0.2,0.2)
 endin
 
-instr 9 ;Madness demo #2
+instr 9
 ktempo      =   137
 ktimeunit   =   1/(ktempo/60)
 
 ilen        =       128
-kTimes[]    init    ilen
-kTimeIncs[] init    ilen
-kDivs[]     init    ilen
-kDivIncs[]  init    ilen
-kMaxDivs[]  init    ilen
-kMinLen[]   init    ilen
-kMaxLen[]   init    ilen
+klen[]      init    ilen
+kgain[]     init    ilen
+kdivs[]     init    ilen
+kdivgain[]  init    ilen
+kmaxdivs[]  init    ilen
+kminlen[]   init    ilen
+kmaxlen[]   init    ilen
+kbQ[]       init    ilen
 
-kNotes[]    init    ilen
-kNoteIncs[] init    ilen
+knotes[]    init    ilen
+knotegain[] init    ilen
+ktQ[]       init    ilen
 
 kndx = 0
 while kndx < ilen do
-    kTimes[kndx]        =   mirror(wrap(kndx, -4, 8), 1, 4)/2
-    kTimeIncs[kndx]     =   0
-    kDivs[kndx]         =   wrap(kndx, 0, 9)
-    kDivIncs[kndx]      =   0
-    kMaxDivs[kndx]      =   16
-    kMinLen[kndx]       =   0
-    kMaxLen[kndx]       =   2
+    klen[kndx]          =   mirror(wrap(kndx, -4, 8), 1, 4)/2
+    kgain[kndx]         =   0
+    kdivs[kndx]         =   wrap(kndx, 0, 9)
+    kdivgain[kndx]      =   0
+    kmaxdivs[kndx]      =   16
+    kminlen[kndx]       =   0
+    kmaxlen[kndx]       =   2
+    kbQ[kndx]           =   0
 
-    kNoteIncs[kndx]     =   random:k(-5,5)
-    kNotes[kndx]        =   kNoteIncs[kndx]
+    knotes[kndx]        =   random:k(-5,5)
+    knotegain[kndx]     =   knotes[kndx]
+    ktQ[kndx]           =   0
     kndx += 1
 od
 
-ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
-        kMaxDivs,kMinLen,kMaxLen
+kbAS, kbtrig[], kd[] Basemath ktimeunit,klen,kgain,kminlen,kmaxlen,
+        kdivs,kdivgain,kmaxdivs,kbQ
 
-kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn4
+ktAS,kpitch[],kttrig[] Taphath kbtrig[kbAS],knotes,knotegain,ktQ,gicm2
 
-kenv    looptseg    ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
-asig    oscili      kenv, kpitch*2
+kenv    looptseg    ktempo/8/60, kd[kbAS], 0, 1,-40,1, 0,0,0
+asig    oscili      kenv, kpitch[ktAS]*2
         out         limit(asig, -0.2,0.2)
 endin
 
-instr 10 ;fun
+instr 10
 ktempo      =   137
 ktimeunit   =   1/(ktempo/60)
 
 ilen        =       32
-kTimes[]    init    ilen
-kTimeIncs[] init    ilen
-kDivs[]     init    ilen
-kDivIncs[]  init    ilen
-kMaxDivs[]  init    ilen
-kMinLen[]   init    ilen
-kMaxLen[]   init    ilen
+klen[]      init    ilen
+kgain[]     init    ilen
+kdivs[]     init    ilen
+kdivgain[]  init    ilen
+kmaxdivs[]  init    ilen
+kminlen[]   init    ilen
+kmaxlen[]   init    ilen
+kbQ[]       init    ilen
 
-kNotes[]    init    ilen
-kNoteIncs[] init    ilen
+knotes[]    init    ilen
+knotegain[] init    ilen
+ktQ[]       init    ilen
 
 kndx = 0
 while kndx < ilen do
-    kTimes[kndx]        =   1/2
-    kTimeIncs[kndx]     =   0
-    kDivs[kndx]         =   0
-    kDivIncs[kndx]      =   random:k(-2,6)
-    kMaxDivs[kndx]      =   9
-    kMinLen[kndx]       =   0
-    kMaxLen[kndx]       =   2
+    klen[kndx]          =   1/2
+    kgain[kndx]         =   0
+    kdivs[kndx]         =   0
+    kdivgain[kndx]      =   random:k(-2,6)
+    kmaxdivs[kndx]      =   9
+    kminlen[kndx]       =   0
+    kmaxlen[kndx]       =   2
+    kbQ[kndx]           =   0
 
-    kNotes[kndx]        =   0
-    kNoteIncs[kndx]     =   random:k(-5,5)
+    knotes[kndx]        =   0
+    knotegain[kndx]     =   random:k(-5,5)
+    ktQ[kndx]           =   0
     kndx += 1
 od
 
-ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
-        kMaxDivs,kMinLen,kMaxLen
+kbAS, kbtrig[], kd[] Basemath ktimeunit,klen,kgain,kminlen,kmaxlen,
+        kdivs,kdivgain,kmaxdivs,kbQ
 
-kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
+ktAS,kpitch[],kttrig[] Taphath kbtrig[kbAS],knotes,knotegain,ktQ,gicm4
 
-kenv    looptseg    ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
-asig    oscili      kenv, kpitch*2
+kenv    looptseg    ktempo/8/60, kd[kbAS], 0, 1,-40,1, 0,0,0
+asig    oscili      kenv, kpitch[ktAS]*2
         out         limit(asig, -0.2,0.2)
 endin
 
@@ -297,53 +308,56 @@ ktempo      =   137
 ktimeunit   =   1/(ktempo/60)
 
 ilen        =       64
-kTimes[]    init    ilen
-kTimeIncs[] init    ilen
-kDivs[]     init    ilen
-kDivIncs[]  init    ilen
-kMaxDivs[]  init    ilen
-kMinLen[]   init    ilen
-kMaxLen[]   init    ilen
+klen[]      init    ilen
+kgain[]     init    ilen
+kdivs[]     init    ilen
+kdivgain[]  init    ilen
+kmaxdivs[]  init    ilen
+kminlen[]   init    ilen
+kmaxlen[]   init    ilen
+kbQ[]       init    ilen
 
-kNotes[]    init    ilen
-kNoteIncs[] init    ilen
+knotes[]    init    ilen
+knotegain[] init    ilen
+ktQ[]       init    ilen
 
 kndx = 0
 while kndx < ilen do
-    kTimes[kndx]        =   1/4
-    kTimeIncs[kndx]     =   0
-    kDivs[kndx]         =   0
-    kDivIncs[kndx]      =   0
-    kMaxDivs[kndx]      =   0
-    kMinLen[kndx]       =   0
-    kMaxLen[kndx]       =   2
+    klen[kndx]          =   1/4
+    kgain[kndx]         =   0
+    kdivs[kndx]         =   0
+    kdivgain[kndx]      =   0
+    kmaxdivs[kndx]      =   0
+    kminlen[kndx]       =   0
+    kmaxlen[kndx]       =   2
+    kbQ[kndx]           =   0
 
-    ;kNotes[kndx]       =   (2^kndx)%50 ;play around with this, 'tis dope af!
-    kNotes[kndx]        =   sin((kndx-(ilen/2))/10)*10
-    kNoteIncs[kndx]     =   1
+    knotes[kndx]       =   (2^kndx)%50 ;play around with this, 'tis dope af!
+    ;knotes[kndx]        =   sin((kndx-(ilen/2))/10)*10
+    knotegain[kndx]     =   1
+    ktQ[kndx]           =   0
     kndx += 1
 od
 
-ktrig,ksub,kbasemathtrigs[] Basemath ktimeunit,kTimes,kTimeIncs,kDivs,kDivIncs,
-        kMaxDivs,kMinLen,kMaxLen
+kbAS, kbtrig[], kd[] Basemath ktimeunit,klen,kgain,kminlen,kmaxlen,
+        kdivs,kdivgain,kmaxdivs,kbQ
 
-kpitch,ktaphtrigs[],ktaphpitches[] Taphath ktrig,kNotes,kNoteIncs,gifn3
+ktAS,kpitch[],kttrig[] Taphath kbtrig[kbAS],knotes,knotegain,ktQ,gicm4
 
-kenv    looptseg    ktempo/8/60, ksub, 0, 1,-40,1, 0,0,0
-asig    oscili      kenv, kpitch
+kenv    looptseg    ktempo/8/60, kd[kbAS], 0, 1,-40,1, 0,0,0
+asig    oscili      kenv, kpitch[ktAS]
         out         limit(asig, -0.2,0.2)
 endin
 
 </CsInstruments>
-; ==============================================
 <CsScore>
-;read the manual, amy! there's better ways to mix and arrange!
+;read the manual, amy!
 t       0       137 ;score tempo 137bpm
-;i1     0       64
+;i1      0       137
 
 i4      0       274
 i6      0       274
-i7      0       274
+;i7      0       274
 i8      0       274
 i9      0       274
 
