@@ -18,7 +18,7 @@ Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 
 Syntax:
 kActiveStep, kPitchArr[], kTrigArr[] Taphath kTrig, kNoteIndx[],    \
-    kIncrements[], kQArr[], iFn [, kStepMode] [, kReset]
+    kNdxGain[], kQArr[], iFn [, kStepMode] [, kReset]
 
 Initialization:
 iFn: Function table containing pitch information (using gen51 for example)
@@ -42,12 +42,12 @@ kNoteIndx[]: 1D array the length of which is the length of the sequence.
         Those are not note values, they're the indexes to the values
         stored in the iFn (the sequencer will output values in
         the function table, not these indexes)
-kIncrements[]: 1D array containing the amount for each step to move up or down
-        the iFn every time it is active. (first step is no exception)
-        2 means every time the step is active, it will be 2 scale degrees higher.
-        (from c to d ... if iFn contains a chromatic c scale)
+kNdxGain[]: Each time the corresponding step is active, add the this value
+        to the note index. (first sequence cycle is no exception)
+        2 for exmple means that every time the step is active, it will be 2
+        scale degrees higher. (from c to d ... if iFn contains a chromatic c scale)
         Increments can be negative or fractional values. But since those are
-        indexes were dealing with the jump will only happen when the increments
+        indexes we're dealing with, the jump will only happen when the increments
         add up to an integer.
         (this should be same length as kNoteIndex, but if not,
         Csound will complain if it becomes a problem)
@@ -66,12 +66,12 @@ Note: The GEN51 plays a big role in this opcode's operation.
         It acts as a pitch quantizer and a pitch range limiter.
         Might wanna check out its documentation.
 */
-kTrig, kNoteIndx[], kIncrements[], kQArr[], iFn, kStepMode, kReset xin
+kTrig, kNoteIndx[], kNdxGain[], kQArr[], iFn, kStepMode, kReset xin
 
 ilen        =       lenarray(kNoteIndx)
 kmem[]      init    ilen ;storing the initial notes state
-ktmp[]      init    ilen ;for accumulating the increments
-ksum[]      init    ilen ;sum of notes and increments
+ksum[]      init    ilen ;for accumulating the gain
+knewindex[] init    ilen ;sum of note indexes and gain
 kPitchArr[] init    ilen
 kTrigArr[]  init    ilen
 
@@ -129,15 +129,15 @@ if kTrig != 0 then
     endif
 
     ; do the step biz
-    ktmp[kAS] = ktmp[kAS]+kIncrements[kAS] ;accumulate the increments
-    ksum = kNoteIndx+ktmp ;add the increments and the index values
+    ksum[kAS] = ksum[kAS]+kNdxGain[kAS] ;accumulate the increments
+    knewindex = kNoteIndx+ksum ;add the increments and the index values
     kTrigArr[kAS] = 1 ;current step's trigger output
-    kPitchArr[kAS] = table(ksum[kAS], iFn, 0, 0, 1) ;output transposed index's value
+    kPitchArr[kAS] = table(knewindex[kAS], iFn, 0, 0, 1) ;output transposed index's value
 endif
 
 if kReset != 0 then
-    ksum = kmem ;revert to initial state
-    ktmp = 0 ;clear accumulated increments
+    knewindex = kmem ;revert to initial state
+    ksum = 0 ;clear accumulated increments
 endif
 
 xout kAS, kPitchArr, kTrigArr
@@ -184,7 +184,7 @@ ckgoto kfirst!=1, PastKOne
 kfirst = 0
 ;initial active step
 if kStepMode == 0 then
-    kAS = wrap(iInitStep-1, 0, ilen)%ilen
+    kAS = wrap(iInitStep-1, 0, ilen)%ilen ;Amy, listen! I know it looks stupid, but it's important! Leave it!
 else
     kAS = wrap(iInitStep, 0, ilen)
 endif

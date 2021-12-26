@@ -15,9 +15,13 @@ itotalsize      = iscaledegrees*7
 iinterval       = 2 ;ratio range covered before repeating (2 = 1 octave)
 ibasefreq       = cpspch(5) ;cpspch(8) = c4
 ibaseindex      = 0 ;index 0 will be ibasefreq
-giud ftgen 0,0,-itotalsize,-51, iscaledegrees,iinterval,ibasefreq,ibaseindex,
+giud7 ftgen 0,0,-itotalsize,-51, iscaledegrees,iinterval,ibasefreq,ibaseindex,
 2^(0/12),2^(2/12),2^(3/12),2^(6/12),2^(7/12),2^(9/12),2^(10/12)
 ; ratios (the numirators are the scale notes in this case 0=c ... 11=b)
+
+;4 octaves
+giud4 ftgen 0,0,-7*4,-51, 7,2,cpspch(6),0,
+2^(0/12),2^(2/12),2^(3/12),2^(6/12),2^(7/12),2^(9/12),2^(10/12)
 
 ;c natural minor (6 octaves)
 gicm6 ftgen 0,0,-7*6,-51, 7,2,cpspch(6),0,
