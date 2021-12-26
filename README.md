@@ -17,10 +17,11 @@ Months after I lost my favorite instrument, I missed the magic, I wanted it in m
 That's where the opcode definitions of Taphath and Basemath are. You can place this in your project directory, #include it in your csd file, and that's it, you have the opcodes ready to use. (It also includes the documentation of the opcodes)
 
 ### function-tables.orc
-Those are function tables used in the demo file (they're just musical scales) you can edit them, define your own, or something else.
+Those are function tables used in my playing files. They're mostly just gen51 musical scales used with `Taphath` You can edit them, define your own, or something else.
 
 ### all other files
 Those files are just me playing around. Who knows what'll be there! Check them out for examples/seeing the sequencers in action.
+Here's my [soundcloud](https://soundcloud.com/nope-null) where you can find some renders of some of the files here.
 
 If you make something with these, I'd love love love to have a listen/look!
 
