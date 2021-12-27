@@ -10,6 +10,26 @@ as published by Sam Hocevar. See the COPYING file for more details.
 */
 
 
+opcode ClkDiv, k, kk
+/*
+Clock divider. Outputs 1 on the nth time the in-signal is non-zero.
+This opcode is quite handy with the ladies!
+Syntax: kout ClkDiv ksig, kn
+*/
+ksig, kn xin
+kcount init 0
+kout = 0
+if ksig != 0 then
+    kcount += 1
+endif
+if kcount >= abs(kn) then
+    kout = 1
+    kcount = 0
+endif
+xout kout
+endop
+
+
 opcode Taphath, kk[]k[], kk[]k[]k[]iOO
 /*
 Different rituals, but can grant you powers similar to those of the
@@ -49,8 +69,7 @@ kNdxGain[]: Each time the corresponding step is active, add the this value
         Increments can be negative or fractional values. But since those are
         indexes we're dealing with, the jump will only happen when the increments
         add up to an integer.
-        (this should be same length as kNoteIndex, but if not,
-        Csound will complain if it becomes a problem)
+        (this should be same length as kNoteIndex, to avoid out-of-range indexing)
 kQArr[]: The queue inputs for eaxh step. Queued steps take priority over
         other steps. This won't be modified by the sequencer but can be
         from within the calling instrument after invoking the sequencer. Example:
@@ -242,7 +261,7 @@ kLength[]: Length of each step in kTimeUnit (can be fractional).
     The length of this array itself controls the length of the sequence.
 kLenGain[]: A value (in TimeUnit) to be added to the length of each step each time
     that step is activated. (can be negative or fractional)
-    (should be the same length as kLength to avoid out of range idexing)
+    (should be the same length as kLength to avoid out-of-range idexing)
 kMinLen[], kMaxLen[]: Minimum and maximum length of step (in TimeUnit)
     (From and including kMinLen, up to, but not including, kMaxLen)
 kDivision[]: An array defining how many divisions are in a corresponding step.
@@ -254,7 +273,7 @@ kDivGain[]: Amount to increase each step's divisions every time it's activated.
 kMaxDiv[]: Maximum number of subdivisions in a step before wraping around (modulo).
     (up to, but not including)
 kQArr[]: The queue inputs for eaxh step. Queued steps take priority over other
-    steps. This won't be modified by the sequencer but can bebfrom within the
+    steps. This won't be modified by the sequencer but can be from within the
     calling instrument after invoking the sequencer. Example:
     kQueueArr[kActiveStep] = kQueueArr[kActiveStep]*kToggle
     kToggle = 0 for reset, and kToggle = 1 for keep.
@@ -433,8 +452,115 @@ xout kAS, kTrigArr
 endop
 
 
+opcode tBasemath, kk[], kk[]k[]k[]k[]k[]OO
+/*
+Basemath that takes an external trigger input. (metro, metro2, etc)
+Instead of the length there's a count input for how many triggers are in a step.
+(Think sequential clock divider) Also there are no divisions.
+
+Syntax:
+kActiveStep, kTrigArr[] tBasemath kTrig, kCount[], kGain[], kMin[], kMax[], \
+    kQArr[] [, kStepMode] [, Reset]
+
+Performance:
+kActiveStep: Index of the currently active step (from 0 to lenarray(kCount))
+kTrigArr[]: Each step's trigger output.
+
+kTrig: Input trigger that runs the sequencer. Every k-cycle when this is
+    non-zero will advance the sequencer (according to count and step mode)
+kCount[]: Count of how many input triggers it takes to move to next step
+    (how long a step is in clicks) These sould be integers.
+    The length of this array controls the length of the sequence.
+kGain[]: Increment to be added to the counth of each step each time
+    that step is activated. (can be negative or fractional)
+    (should be the same length as kCount to avoid out-of-range idexing)
+kMin[], kMax[]: Minimum and maximum count for each step (kMin <= count < kMax)
+kQArr[]: The queue inputs for eaxh step. Queued steps take priority over other
+    steps. This won't be modified by the sequencer but can be from within the
+    calling instrument after invoking the sequencer. Example:
+    kQueueArr[kActiveStep] = kQueueArr[kActiveStep]*kToggle
+    kToggle = 0 for reset, and kToggle = 1 for keep.
+    Positive values add the corresponding steps to queue, non-positive remove them.
+kStepMode: Direction in which the sequencer will move.
+    0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
+kReset: Reset sequencer to its original (kCount) state when non-zero.(defaults to 0)
+*/
+
+kTrig, kCount[], kGain[], kMin[], kMax[], kQArr[], kStepMode, kReset xin
+ilen            =       lenarray(kCount)
+kgainsum[]      init    ilen ;accumulates the gain values through sequencer run time
+knewcount[]     init    ilen ;accumulated gains + the input kCount
+kTrigArr[]      init    ilen
+
+;first k-cycle stuff
+kfirst init 1
+ckgoto kfirst!=1, PastKOne
+kfirst = 0
+;store initial state
+kmem1[] = kCount
+;pick initial step
+if kStepMode == 0 then
+    kAS = 0
+else
+    kAS = (ilen-1)%ilen
+endif
+;step biz
+knewcount[kAS] = wrap(kCount[kAS], kMin[kAS], kMax[kAS])
+;probably need to output a special first cycle click
+
+PastKOne:
+kTrigArr = 0
+if ClkDiv(kTrig, knewcount[kAS]) != 0 then
+    ; go to the next step
+    kmax maxarray kQArr
+    if kmax == 0 then ; no queued steps (max=0 means entire array's non-positive)
+        if kStepMode == 0 then
+            kAS = (kAS+1)%ilen ;step foreward
+        elseif kStepMode == 1 then
+            kAS = wrap(kAS-1, 0, ilen) ;step backward
+        elseif kStepMode == 2 then
+            kAS = trandom(kTrig, 0, ilen) ;go to random step
+        else
+        endif
+    else ;there are queued steps
+        if kStepMode == 0 then
+            kAS = (kAS+1)%ilen ;make sure to not get stuck if current step is queued
+            while kQArr[kAS] <= 0 do ;go to nearest queued step forward
+                kAS = (kAS+1)%ilen
+            od
+        elseif kStepMode == 1 then
+            kAS = wrap(kAS-1, 0, ilen) ;same deal but we're moving backward
+            while kQArr[kAS] <= 0 do
+                kAS = wrap(kAS-1, 0, ilen) ;wrap is easier than dealing with neg %
+            od
+        elseif kStepMode == 2 then
+            kAS = trandom(kTrig, 0, ilen) ;jump to random step..
+            while kQArr[kAS] <= 0 do ; ..then go to nearest queued step foreward
+                kAS = (kAS+1)%ilen
+            od
+        else
+        endif
+    endif
+
+    ;step biz
+    kgainsum[kAS] = kgainsum[kAS]+kGain[kAS]
+    knewcount[kAS] = kgainsum[kAS]+kCount[kAS]
+    knewcount[kAS] = wrap(knewcount[kAS], kMin[kAS], kMax[kAS])
+
+    kTrigArr[kAS] = 1
+endif
+
+if kReset != 0 then
+    knewcount = kmem1
+    kgainsum = 0
+endif
+
+xout kAS, kTrigArr
+endop
+
+
 ;phase modulation oscillator
-;syntax: ares Pmoscili xamp, kfreq ,aphase [,ifn]
+;syntax: ares Pmoscili xamp, kfreq [,aphase] [,ifn]
 opcode Pmoscili, a, kkaj
 kamp, kfreq, aphs, ifn xin
 acarrier    phasor kfreq
@@ -454,26 +580,6 @@ endop
 opcode Pmoscili, a, akj ; AM
 aamp, kfreq, ifn xin
 xout    oscili(aamp, kfreq, ifn)
-endop
-
-
-opcode ClkDiv, k, kk
-/*
-Clock divider. Outputs 1 on the nth time the in-signal is non-zero.
-This opcode is quite handy with the ladies!
-Syntax: kout ClkDiv ksig, kn
-*/
-ksig, kn xin
-kcount init 0
-kout = 0
-if ksig != 0 then
-    kcount += 1
-endif
-if kcount >= abs(kn) then
-    kout = 1
-    kcount = 0
-endif
-xout kout
 endop
 
 ;you ever do this? add an empty line at the end so your code doesn't fall off?!
