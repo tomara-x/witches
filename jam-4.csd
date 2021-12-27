@@ -28,21 +28,21 @@ alwayson "dist"
 instr 1
 ktrig   metro 128*4/60
 knote[] fillarray p4,p5,p6,p7
-kincs[] fillarray 0, 1, 0, 3
+kgain[] fillarray p8,p9,p10,p11
 kQ[]    fillarray 0, 0, 0, 0
-kAS, kp[], kt[] Taphath ktrig, knote, kincs, kQ, gicm6
-kcps    = kp[kAS]
-aop1    poscil .1, kcps
-aop2    poscil .1, kcps/2
-aop3    Pmoscili 0.2, kcps/1, aop1+aop2
+kAS, kp[], kt[] Taphath ktrig, knote, kgain, kQ, gicm4
+kcps    = kp[kAS]*4
+aop1    Pmoscili 0.1, kcps*4
+aop2    Pmoscili 0.2, kcps/2
+aop3    Pmoscili 0.8, kcps/1, aop1+aop2
 aop4    Pmoscili 0.2, kcps/2, aop1+aop2
-aop5    Pmoscili 0.1, kcps/1, aop1+aop2
-aop6    Pmoscili 0.5, kcps/1, aop3
+aop5    Pmoscili 0.1, kcps/4, aop1+aop2
+aop6    Pmoscili 0.5, kcps/2, aop3
 aop7    Pmoscili 0.5, kcps/4, aop4
-aop8    Pmoscili 0.5, kcps/2, aop5
+aop8    Pmoscili 0.5, kcps/8, aop5
 aout    = aop6 + aop7 + aop8
 aout    = aout * 0.1
-;aout    limit aout, -0.4, 0.4
+;aout    limit aout, -0.1, 0.1
 outs    aout, aout
 endin
 
@@ -66,11 +66,12 @@ endin
 <CsScore>
 ;read the manual, amy!
 t       0       128
-i1      0       16      28 29 28 35
-i1      +       16      28 29 46 28
-i1      +       16      28 29 46 28
-i1      +       16      28 29 46 28
-i1      68      16      00 29 00 28
+i1      0       16      28 29 28 35 0 1 0 0
+i1      +       16      07 10 08 12
+i1      +       16      28 29 28 35
+i1      +       16      28 29 46 28 2 1 0 0
+i1      +       16      28 29 28 35 0 0 0 0
+i1      +       16      00 29 00 28 7 8 3 -4
 i1      +       16      28 29 46 28
 i1      +       16      28 29 46 28
 e

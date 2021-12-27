@@ -433,7 +433,7 @@ xout kAS, kTrigArr
 endop
 
 
-;phase modulation oscillator (something's messed up here)
+;phase modulation oscillator
 ;syntax: ares Pmoscili xamp, kfreq ,aphase [,ifn]
 opcode Pmoscili, a, kkaj
 kamp, kfreq, aphs, ifn xin
@@ -446,6 +446,14 @@ aamp, kfreq, aphs, ifn xin
 acarrier    phasor kfreq
 asig        tablei acarrier+aphs, ifn, 1,0,1
 xout        asig*aamp
+endop
+opcode Pmoscili, a, kkj ;just an oscili if no phase input is given
+kamp, kfreq, ifn xin
+xout    oscili(kamp, kfreq, ifn)
+endop
+opcode Pmoscili, a, akj ; AM
+aamp, kfreq, ifn xin
+xout    oscili(aamp, kfreq, ifn)
 endop
 
 
@@ -467,3 +475,6 @@ if kcount >= abs(kn) then
 endif
 xout kout
 endop
+
+;you ever do this? add an empty line at the end so your code doesn't fall off?!
+
