@@ -13,23 +13,26 @@ nchnls  =   1
 #include "opcodes.orc"
 
 instr 1
-ktrig1  metro 2
-kcnt[]  fillarray 2, 1, 4, -4
-kgain[] fillarray 0, 0, 0, 0
-kmin[]  fillarray 0, 0, 0, 0
-kmax[]  fillarray 9, 9, 9, 9
-kQ[]    fillarray 0, 0, 0, 0
+ktrig1  metro 30*15/60
+kcnt[]  fillarray 1, 1/3, 1/3, 1/3, 1, 1/5, 1/5, 1/5, 1/5, 1/5
+kn init 0
+if kn == 0 then
+    kcnt *= 15
+    kn = 1
+endif
+kgain[] fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+kmin[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+kmax[]  fillarray 19, 19, 19, 19, 19, 19, 19, 19, 19, 19
+kQ[]    fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kAS, kt[] tBasemath ktrig1, kcnt, kgain, kmin, kmax, kQ
 
-schedkwhen ktrig1, 0,0, "beep", 0, 0.05, 440*2^3
+;schedkwhen ktrig1, 0,0, "beep", 0, 0.05, 440*2^2
 schedkwhen kt[kAS], 0,0, "beep", 0, 0.05, 440*2^4
-endin
 
-instr 2
-ktrig1 metro 2
-ktrig2 ClkDivp ktrig1, 2, -1
-schedkwhen ktrig1, 0,0, "beep", 0, 0.05, 440*2^3
-schedkwhen ktrig2, 0,0, "beep", 0, 0.05, 440*2^4
+kcnt2[]  fillarray 4*15
+kmax2[]  fillarray 64
+kAS2, kt2[] tBasemath ktrig1, kcnt2, kgain, kmin, kmax2, kQ
+schedkwhen kt2[kAS2], 0,0, "beep", 0, 0.05, 440*2^3
 endin
 
 instr beep
