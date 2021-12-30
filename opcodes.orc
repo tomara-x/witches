@@ -30,6 +30,25 @@ xout kout
 endop
 
 
+opcode ClkDivp, k, kko
+/*
+Clock divider with phase input.
+Syntax: kout ClkDiv ksig, kn [, iphase] (0 <= iphase < kn)
+*/
+ksig, kn, iphs xin
+kcount init iphs
+kout = 0
+if ksig != 0 then
+    kcount += 1
+endif
+if kcount >= abs(kn) then
+    kout = 1
+    kcount = 0
+endif
+xout kout
+endop
+
+
 opcode Taphath, kk[]k[], kk[]k[]k[]iOO
 /*
 Different rituals, but can grant you powers similar to those of the
@@ -203,7 +222,7 @@ ckgoto kfirst!=1, PastKOne
 kfirst = 0
 ;initial active step
 if kStepMode == 0 then
-    kAS = wrap(iInitStep-1, 0, ilen)%ilen ;Amy, listen! I know it looks stupid, but it's important! Leave it!
+    kAS = wrap(iInitStep-1, 0, ilen)%ilen ;Amy, listen! It's important! Leave it!
 else
     kAS = wrap(iInitStep, 0, ilen)
 endif
@@ -469,7 +488,7 @@ kTrigArr[]: Each step's trigger output.
 kTrig: Input trigger that runs the sequencer. Every k-cycle when this is
     non-zero will advance the sequencer (according to count and step mode)
 kCount[]: Count of how many input triggers it takes to move to next step
-    (how long a step is in clicks) These sould be integers.
+    (how long a step is in clicks) These sould be positive integers.
     The length of this array controls the length of the sequence.
 kGain[]: Increment to be added to the counth of each step each time
     that step is activated. (can be negative or fractional)
@@ -485,12 +504,12 @@ kStepMode: Direction in which the sequencer will move.
     0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
 kReset: Reset sequencer to its original (kCount) state when non-zero.(defaults to 0)
 */
-
 kTrig, kCount[], kGain[], kMin[], kMax[], kQArr[], kStepMode, kReset xin
-ilen            =       lenarray(kCount)
-kgainsum[]      init    ilen ;accumulates the gain values through sequencer run time
-knewcount[]     init    ilen ;accumulated gains + the input kCount
-kTrigArr[]      init    ilen
+ilen        =       lenarray(kCount)
+kgainsum[]  init    ilen ;accumulates the gain values through sequencer run time
+knewcount[] init    ilen ;accumulated gains + the input kCount
+kTrigArr[]  init    ilen
+kcnt        init    0
 
 ;first k-cycle stuff
 kfirst init 1
@@ -500,17 +519,16 @@ kfirst = 0
 kmem1[] = kCount
 ;pick initial step
 if kStepMode == 0 then
-    kAS = 0
-else
     kAS = (ilen-1)%ilen
+else
+    kAS = 0
 endif
 ;step biz
 knewcount[kAS] = wrap(kCount[kAS], kMin[kAS], kMax[kAS])
-;probably need to output a special first cycle click
 
 PastKOne:
 kTrigArr = 0
-if ClkDiv(kTrig, knewcount[kAS]) != 0 then
+if kcnt < 1 && kTrig != 0 then
     ; go to the next step
     kmax maxarray kQArr
     if kmax == 0 then ; no queued steps (max=0 means entire array's non-positive)
@@ -546,8 +564,12 @@ if ClkDiv(kTrig, knewcount[kAS]) != 0 then
     kgainsum[kAS] = kgainsum[kAS]+kGain[kAS]
     knewcount[kAS] = kgainsum[kAS]+kCount[kAS]
     knewcount[kAS] = wrap(knewcount[kAS], kMin[kAS], kMax[kAS])
-
     kTrigArr[kAS] = 1
+endif
+
+;counter
+if kTrig != 0 then
+    kcnt = (kcnt+1)%knewcount[kAS]
 endif
 
 if kReset != 0 then
