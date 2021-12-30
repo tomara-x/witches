@@ -523,8 +523,6 @@ if kStepMode == 0 then
 else
     kAS = 0
 endif
-;step biz
-knewcount[kAS] = wrap(kCount[kAS], kMin[kAS], kMax[kAS])
 
 PastKOne:
 kTrigArr = 0
@@ -575,6 +573,69 @@ endif
 if kReset != 0 then
     knewcount = kmem1
     kgainsum = 0
+endif
+
+xout kAS, kTrigArr
+endop
+
+
+opcode utBasemath, kk[], kk[]Oo
+/*
+Smaller tBasemath
+
+Syntax:
+kActiveStep, kTrigArr[] utBasemath kTrig, kCount[] [, kStepMode] [, iInitStep]
+
+Initialization:
+iInitStep: First active step in the sequence (defaults to 0)
+
+Performance:
+kActiveStep: Index of the currently active step (from 0 to lenarray(kCount))
+kTrigArr[]: Each step's trigger output.
+
+kTrig: Input trigger that runs the sequencer. Every k-cycle when this is
+    non-zero will advance the sequencer (according to count and step mode)
+kCount[]: Count of how many input triggers it takes to move to next step
+    (how long a step is in clicks) These sould be positive integers.
+    The length of this array controls the length of the sequence.
+kStepMode: Direction in which the sequencer will move.
+    0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
+*/
+kTrig, kCount[], kStepMode, iInitStep xin
+ilen        =       lenarray(kCount)
+kTrigArr[]  init    ilen
+kcnt        init    0
+
+;first k-cycle stuff
+kfirst init 1
+ckgoto kfirst!=1, PastKOne
+kfirst = 0
+;pick initial step
+if kStepMode == 0 then
+    kAS = wrap(iInitStep-1, 0, ilen)%ilen
+else
+    kAS = wrap(iInitStep, 0, ilen)
+endif
+
+PastKOne:
+kTrigArr = 0
+if kcnt < 1 && kTrig != 0 then
+    ; go to the next step
+    if kStepMode == 0 then
+        kAS = (kAS+1)%ilen ;step foreward
+    elseif kStepMode == 1 then
+        kAS = wrap(kAS-1, 0, ilen) ;step backward
+    elseif kStepMode == 2 then
+        kAS = trandom(kTrig, 0, ilen) ;go to random step
+    else
+    endif
+
+    kTrigArr[kAS] = 1
+endif
+
+;counter
+if kTrig != 0 then
+    kcnt = (kcnt+1)%kCount[kAS]
 endif
 
 xout kAS, kTrigArr

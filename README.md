@@ -11,10 +11,14 @@ Months after I lost my favorite instrument, I missed the magic, I wanted it in m
 
 - `Basemath` is an arbitrary-length, self-modulating rhythm sequencer.
 
-- `uTaphath` and `uBasemath` are minimal versions.
+- `tBasemath` is an external-trigger driven Basemath
+
+- `uTaphath`, `uBasemath`, and `utBasemath`  are minimal versions.
 
 ### opcodes.orc
 That's where the opcode definitions of Taphath and Basemath (and the u versions) are. You can place this in your project directory, #include it in your csd file, and that's it, you have the opcodes ready to use. (It also includes the documentation of the opcodes)
+
+There are also some other opcodes that I keep there.
 
 ### function-tables.orc
 Those are function tables used in my playing files. They're mostly just gen51 musical scales used with `Taphath` You can edit them, define your own, or something else.
