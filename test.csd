@@ -35,14 +35,21 @@ kAS2, kt2[] tBasemath ktrig1, kcnt2, kgain, kmin, kmax2, kQ
 schedkwhen kt2[kAS2], 0,0, "beep", 0, 0.05, 440*2^3
 endin
 
+instr 2
+ktrig1 metro 2
+ktrig2 metro 2.05
+schedkwhen ktrig1, 0,0, "beep", 0, 0.05, 440*2^2
+schedkwhen ktrig2, 0,0, "beep", 0, 0.05, 440*2^3
+endin
+
 instr beep
-out oscil(0.8, p4)
+out oscil(0.4, p4)
 endin
 
 </CsInstruments>
 <CsScore>
 t       0       120
-i1      0       120
+i2      0       240
 e
 </CsScore>
 </CsoundSynthesizer>
