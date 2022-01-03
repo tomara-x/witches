@@ -4,7 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-; TODO: expose envelopes only, for tibre fun!
+; TODO: expose envelopes only, for timbre fun!
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231

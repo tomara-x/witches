@@ -3,8 +3,6 @@
 //This work is free. You can redistribute it and/or modify it under the
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
-
-; Lets do acctual jazz this time, something slow and chill
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
@@ -23,44 +21,64 @@ alwayson "verb"
 gaDstSend init 0
 alwayson "dist"
 
-;instr 1
-;ktrig   metro $TEMPO*4/60
-;knote[] fillarray p4,p5,p6,p7
-;kgain[] fillarray p8,p9,p10,p11
-;kQ[]    fillarray 0, 0, 0, 0
-;kAS, kp[], kt[] Taphath ktrig, knote, kgain, kQ, gicm4
-;kcps    = kp[kAS]*4
-;aop1    Pmoscili 0.1, kcps*4, aop1*.8
-;aop2    Pmoscili 0.2, kcps/2
-;aop3    Pmoscili 0.8, kcps/1, aop1+aop2
-;aop4    Pmoscili 0.2, kcps/2, aop1+aop2
-;aop5    Pmoscili 0.1, kcps/4, aop1+aop2
-;aop6    Pmoscili 0.5, kcps/2, aop3
-;aop7    Pmoscili 0.5, kcps/4, aop4+aop7*0.5
-;aop8    Pmoscili 0.5, kcps/8, aop5
-;aout    = aop6 + aop7 + aop8
-;aout    = aout * 0.1
-;gaRvbSend += aout*p12
-;outs    aout, aout
-;endin
+instr kick
+iifrq   = 230
+iefrq   = 20
+aaenv   expsegr 1,p3,1,0.3,0.001
+afenv   expsegr iifrq,p3,iifrq,0.05,iefrq
+asig    oscili aaenv*.6, afenv
+asig    distort asig*2, 0.2, giftanh
+asig    limit asig, -0.5,0.5
+asig    += moogladder(asig, iifrq*2, .3)
+outs    asig, asig
+gaRvbSend += asig*0.03
+endin
 
-;instr 2
-;ktrig   metro $TEMPO*8/60
-;kcnt[]  fillarray 2, 2, 2, 2
-;kAS1, kt1[] utBasemath ktrig, kcnt
-;kcnt[3] = wrap(kcnt[3]-2*kt1[0], 2, 9)
-;kcnt[1] = wrap(kcnt[1]+2*kt1[0], 2, 9)
-;endin
-;
-;instr 3
-;ktrig   metro $TEMPO*4/60
-;knote[] fillarray p4, p5
-;kgain[] fillarray p6, p7
-;kQ[]    fillarray 0,  0
-;kAS,kp[],kt[] Taphath ktrig,knote,kgain,kQ,giud4
-;aout = Pmoscili(0.5, kp[kAS], aout*0.6)
-;outs aout, aout
-;endin
+instr snare
+ifreq   = 280
+kenv    expsegr 1,p3,1,1,0.001
+asprng  pluck kenv*0.8, ifreq, ifreq, 0, 3, 0.6
+aaenv   expsegr 1,p3,1,0.3,0.001
+afenv   expsegr ifreq,p3,ifreq,0.05,20
+adrm    oscili aaenv*.4, afenv
+asig    = (asprng+adrm)/2
+asig    distort asig, 0.4, giftanh
+asig    += moogladder(asig, ifreq, .5)*2
+outs    asig, asig
+gaRvbSend += asig*0.03
+endin
+
+instr hat
+aenv    expsegr 1,p3,1,0.25,0.001
+asig    noise   0.1*aenv, -0.9
+outs    asig, asig
+gaRvbSend += asig*0.06
+endin
+
+instr pluck1
+iplk    =           0.2 ;(0 to 1)
+kamp    init        0.15
+icps    =           p4
+kpick   init        0.8 ;pickup point
+krefl   init        p5 ;rate of decay? ]0,1[
+asig    wgpluck2    iplk,kamp,icps,kpick,krefl
+kenv2   linsegr     0,0.003,1,p3,1,p6,0 ;declick
+asig    *=          kenv2
+        outs        asig,asig
+gaDstSend += asig*p7
+gaRvbSend += asig*p8
+endin
+
+instr 1
+ktrig   metro $TEMPO*p5/60
+kcnt[]  fillarray p6, p7, p8, p9
+kAS1, kt1[] utBasemath ktrig, kcnt
+knote[] fillarray p10, p11, p12, p13
+kgain[] fillarray p14, p15, p16, p17
+kQ[]    fillarray 0, 0, 0, 0
+kAS2, kp[], kt2[] Taphath kt1[kAS1], knote, kgain, kQ, gicm4
+schedkwhen kt1[kAS1], 0,0, "pluck1", 0, p4, kp[kAS2], p18, p19, p20, p21
+endin
 
 instr dust
 aout dust .5, 10
@@ -87,8 +105,12 @@ endin
 </CsInstruments>
 <CsScore>
 ;read the manual, amy!
-t       0       128
-i1      0       64 1 37 21 0 4 -1 3 0.4
+t 0 128
+;           PD Mu Count         Notes        Trans        RD Rl Ds Rv
+i1  0   16 .80 08 04 02 01 02   21 13 42 04  00 01 07 00  .3 .8 .2 .2
+i1  +   16 .02 16 04 02 01 02   21 13 42 04  00 01 07 00  .3 .1 .2 .2
+i1  +   08 .02 16 04 02 01 02   21 13 42 04  01 -1 01 -1  .3 .1 .2 .2
+i1  +   08 .02 16 04 02 01 02   21 13 42 04  -1 01 -1 01  .3 .1 .2 .2
 e
 </CsScore>
 </CsoundSynthesizer>
