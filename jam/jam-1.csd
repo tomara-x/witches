@@ -20,8 +20,8 @@ ksmps   =   42
 nchnls  =   2
 0dbfs   =   1
 
-#include "function-tables.orc"
-#include "opcodes.orc"
+#include "../function-tables.orc"
+#include "../opcodes.orc"
 
 gaRvbSend init 0
 alwayson "verb"
