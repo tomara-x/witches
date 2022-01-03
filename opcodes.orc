@@ -1,6 +1,4 @@
-/*
-trans rights
-*/
+//trans rights
 
 /*
 Copyright © 2021 Amy Universe <nopenullnilvoid00@gmail.com>
