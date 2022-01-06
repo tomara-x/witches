@@ -1,30 +1,22 @@
-trans rights
+//trans rights
+//Copyright © 2021 Amy Universe <nopenullnilvoid00@gmail.com>
+//This work is free. You can redistribute it and/or modify it under the
+//terms of the Do What The Fuck You Want To Public License, Version 2,
+//as published by Sam Hocevar. See the COPYING file for more details.
 
-/*
-Copyright © 2021 Amy Universe <nopenullnilvoid00@gmail.com>
-This work is free. You can redistribute it and/or modify it under the
-terms of the Do What The Fuck You Want To Public License, Version 2,
-as published by Sam Hocevar. See the COPYING file for more details.
-*/
-
-; this one's for you, K
-
+; this one's for you, K (when I finish it)
 <CsoundSynthesizer>
 <CsOptions>
--odac -L stdin
+-odac -Lstdin -m231
 </CsOptions>
-; ==============================================
 <CsInstruments>
-
 sr      =   44100
-ksmps   =   42
-;kr     =   1050
+ksmps   =   42 ;kr=1050
 nchnls  =   2
 0dbfs   =   1
 
 #include "function-tables.orc"
 #include "opcodes.orc"
-
 gaRvbSend init 0
 alwayson "verb"
 
@@ -117,11 +109,10 @@ aRvbL,aRvbR  freeverb  gaRvbSend, gaRvbSend,kroomsize,kHFDamp
 endin
 
 </CsInstruments>
-; ==============================================
 <CsScore>
 ;read the manual, amy!
 t       0       256
-;1i1      0       128
+;i1      0       128
 i2      0       64
 e
 </CsScore>

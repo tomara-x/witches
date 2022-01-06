@@ -1,0 +1,868 @@
+0dBFS level = 32768.0
+--Csound version 6.16 (double samples) Oct 10 2021
+[commit: none]
+libsndfile-1.0.31
+UnifiedCSD:  float.csd
+Environment variable 'SADIR' has been set to '/root/csd/test'
+Environment variable 'SSDIR' has been set to '/root/csd/test'
+Environment variable 'INCDIR' has been set to '/root/csd/test'
+Environment variable 'MFDIR' has been set to '/root/csd/test'
+STARTING FILE
+Creating options
+Creating orchestra
+closing tag
+Creating score
+decode_long verbose
+rtaudio: ALSA module enabled
+rtmidi: ALSA Raw MIDI module enabled
+signalflowgraph: csoundModuleInit(0x30000152a0)
+Calling preprocess on >>
+sr      =   44100
+ksmps   =   441
+nchnls  =   1
+0dbfs   =   1
+
+instr 1
+print 1/(128/60)
+endin
+
+
+#exit
+<<
+
+yielding >>#source 1
+#line 9
+
+sr      =   44100
+ksmps   =   441
+nchnls  =   1
+0dbfs   =   1
+
+instr 1
+print 1/(128/60)
+endin
+
+
+<<
+
+Starting parse
+Entering state 0
+Stack now 0
+Reading a token
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 1
+Stack now 0 1
+Reducing stack by rule 47 (line 552):
+   $1 = token NEWLINE ()
+-> $$ = nterm statement ()
+Entering state 26
+Stack now 0 26
+Reducing stack by rule 30 (line 323):
+   $1 = nterm statement ()
+-> $$ = nterm topstatement ()
+Entering state 25
+Stack now 0 25
+Reducing stack by rule 5 (line 204):
+   $1 = nterm topstatement ()
+-> $$ = nterm rootstatement ()
+Entering state 22
+Stack now 0 22
+Reading a token
+Next token is token SRATE_TOKEN ()
+Shifting token SRATE_TOKEN ()
+Entering state 11
+Stack now 0 22 11
+Reducing stack by rule 162 (line 846):
+   $1 = token SRATE_TOKEN ()
+csound_orc_semantics(2079) line = 10
+
+-> $$ = nterm rident ()
+Entering state 31
+Stack now 0 22 31
+Reading a token
+Next token is token '=' ()
+Shifting token '=' ()
+Entering state 99
+Stack now 0 22 31 99
+Reading a token
+Next token is token INTEGER_TOKEN ()
+Shifting token INTEGER_TOKEN ()
+Entering state 50
+Stack now 0 22 31 99 50
+Reducing stack by rule 173 (line 877):
+   $1 = token INTEGER_TOKEN ()
+csound_orc_semantics(2079) line = 10
+
+-> $$ = nterm constant ()
+Entering state 65
+Stack now 0 22 31 99 65
+Reducing stack by rule 140 (line 793):
+   $1 = nterm constant ()
+-> $$ = nterm ifac ()
+Entering state 62
+Stack now 0 22 31 99 62
+Reducing stack by rule 138 (line 789):
+   $1 = nterm ifac ()
+-> $$ = nterm iterm ()
+Entering state 61
+Stack now 0 22 31 99 61
+Reducing stack by rule 129 (line 778):
+   $1 = nterm iterm ()
+-> $$ = nterm iexp ()
+Entering state 60
+Stack now 0 22 31 99 60
+Reading a token
+Next token is token NEWLINE ()
+Reducing stack by rule 120 (line 761):
+   $1 = nterm iexp ()
+-> $$ = nterm expr ()
+Entering state 179
+Stack now 0 22 31 99 179
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 253
+Stack now 0 22 31 99 179 253
+Reducing stack by rule 29 (line 315):
+   $1 = nterm rident ()
+   $2 = token '=' ()
+   $3 = nterm expr ()
+   $4 = token NEWLINE ()
+csound_orc_semantics(2079) line = 11
+
+-> $$ = nterm topstatement ()
+Entering state 77
+Stack now 0 22 77
+Reducing stack by rule 2 (line 192):
+   $1 = nterm rootstatement ()
+   $2 = nterm topstatement ()
+-> $$ = nterm rootstatement ()
+Entering state 22
+Stack now 0 22
+Reading a token
+Next token is token KSMPS_TOKEN ()
+Shifting token KSMPS_TOKEN ()
+Entering state 13
+Stack now 0 22 13
+Reducing stack by rule 164 (line 850):
+   $1 = token KSMPS_TOKEN ()
+csound_orc_semantics(2079) line = 11
+
+-> $$ = nterm rident ()
+Entering state 31
+Stack now 0 22 31
+Reading a token
+Next token is token '=' ()
+Shifting token '=' ()
+Entering state 99
+Stack now 0 22 31 99
+Reading a token
+Next token is token INTEGER_TOKEN ()
+Shifting token INTEGER_TOKEN ()
+Entering state 50
+Stack now 0 22 31 99 50
+Reducing stack by rule 173 (line 877):
+   $1 = token INTEGER_TOKEN ()
+csound_orc_semantics(2079) line = 11
+
+-> $$ = nterm constant ()
+Entering state 65
+Stack now 0 22 31 99 65
+Reducing stack by rule 140 (line 793):
+   $1 = nterm constant ()
+-> $$ = nterm ifac ()
+Entering state 62
+Stack now 0 22 31 99 62
+Reducing stack by rule 138 (line 789):
+   $1 = nterm ifac ()
+-> $$ = nterm iterm ()
+Entering state 61
+Stack now 0 22 31 99 61
+Reducing stack by rule 129 (line 778):
+   $1 = nterm iterm ()
+-> $$ = nterm iexp ()
+Entering state 60
+Stack now 0 22 31 99 60
+Reading a token
+Next token is token NEWLINE ()
+Reducing stack by rule 120 (line 761):
+   $1 = nterm iexp ()
+-> $$ = nterm expr ()
+Entering state 179
+Stack now 0 22 31 99 179
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 253
+Stack now 0 22 31 99 179 253
+Reducing stack by rule 29 (line 315):
+   $1 = nterm rident ()
+   $2 = token '=' ()
+   $3 = nterm expr ()
+   $4 = token NEWLINE ()
+csound_orc_semantics(2079) line = 12
+
+-> $$ = nterm topstatement ()
+Entering state 77
+Stack now 0 22 77
+Reducing stack by rule 2 (line 192):
+   $1 = nterm rootstatement ()
+   $2 = nterm topstatement ()
+-> $$ = nterm rootstatement ()
+Entering state 22
+Stack now 0 22
+Reading a token
+Next token is token NCHNLS_TOKEN ()
+Shifting token NCHNLS_TOKEN ()
+Entering state 14
+Stack now 0 22 14
+Reducing stack by rule 165 (line 852):
+   $1 = token NCHNLS_TOKEN ()
+csound_orc_semantics(2079) line = 12
+
+-> $$ = nterm rident ()
+Entering state 31
+Stack now 0 22 31
+Reading a token
+Next token is token '=' ()
+Shifting token '=' ()
+Entering state 99
+Stack now 0 22 31 99
+Reading a token
+Next token is token INTEGER_TOKEN ()
+Shifting token INTEGER_TOKEN ()
+Entering state 50
+Stack now 0 22 31 99 50
+Reducing stack by rule 173 (line 877):
+   $1 = token INTEGER_TOKEN ()
+csound_orc_semantics(2079) line = 12
+
+-> $$ = nterm constant ()
+Entering state 65
+Stack now 0 22 31 99 65
+Reducing stack by rule 140 (line 793):
+   $1 = nterm constant ()
+-> $$ = nterm ifac ()
+Entering state 62
+Stack now 0 22 31 99 62
+Reducing stack by rule 138 (line 789):
+   $1 = nterm ifac ()
+-> $$ = nterm iterm ()
+Entering state 61
+Stack now 0 22 31 99 61
+Reducing stack by rule 129 (line 778):
+   $1 = nterm iterm ()
+-> $$ = nterm iexp ()
+Entering state 60
+Stack now 0 22 31 99 60
+Reading a token
+Next token is token NEWLINE ()
+Reducing stack by rule 120 (line 761):
+   $1 = nterm iexp ()
+-> $$ = nterm expr ()
+Entering state 179
+Stack now 0 22 31 99 179
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 253
+Stack now 0 22 31 99 179 253
+Reducing stack by rule 29 (line 315):
+   $1 = nterm rident ()
+   $2 = token '=' ()
+   $3 = nterm expr ()
+   $4 = token NEWLINE ()
+csound_orc_semantics(2079) line = 13
+
+-> $$ = nterm topstatement ()
+Entering state 77
+Stack now 0 22 77
+Reducing stack by rule 2 (line 192):
+   $1 = nterm rootstatement ()
+   $2 = nterm topstatement ()
+-> $$ = nterm rootstatement ()
+Entering state 22
+Stack now 0 22
+Reading a token
+Next token is token ZERODBFS_TOKEN ()
+Shifting token ZERODBFS_TOKEN ()
+Entering state 16
+Stack now 0 22 16
+Reducing stack by rule 167 (line 856):
+   $1 = token ZERODBFS_TOKEN ()
+csound_orc_semantics(2079) line = 13
+
+-> $$ = nterm rident ()
+Entering state 31
+Stack now 0 22 31
+Reading a token
+Next token is token '=' ()
+Shifting token '=' ()
+Entering state 99
+Stack now 0 22 31 99
+Reading a token
+Next token is token INTEGER_TOKEN ()
+Shifting token INTEGER_TOKEN ()
+Entering state 50
+Stack now 0 22 31 99 50
+Reducing stack by rule 173 (line 877):
+   $1 = token INTEGER_TOKEN ()
+csound_orc_semantics(2079) line = 13
+
+-> $$ = nterm constant ()
+Entering state 65
+Stack now 0 22 31 99 65
+Reducing stack by rule 140 (line 793):
+   $1 = nterm constant ()
+-> $$ = nterm ifac ()
+Entering state 62
+Stack now 0 22 31 99 62
+Reducing stack by rule 138 (line 789):
+   $1 = nterm ifac ()
+-> $$ = nterm iterm ()
+Entering state 61
+Stack now 0 22 31 99 61
+Reducing stack by rule 129 (line 778):
+   $1 = nterm iterm ()
+-> $$ = nterm iexp ()
+Entering state 60
+Stack now 0 22 31 99 60
+Reading a token
+Next token is token NEWLINE ()
+Reducing stack by rule 120 (line 761):
+   $1 = nterm iexp ()
+-> $$ = nterm expr ()
+Entering state 179
+Stack now 0 22 31 99 179
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 253
+Stack now 0 22 31 99 179 253
+Reducing stack by rule 29 (line 315):
+   $1 = nterm rident ()
+   $2 = token '=' ()
+   $3 = nterm expr ()
+   $4 = token NEWLINE ()
+csound_orc_semantics(2079) line = 14
+
+-> $$ = nterm topstatement ()
+Entering state 77
+Stack now 0 22 77
+Reducing stack by rule 2 (line 192):
+   $1 = nterm rootstatement ()
+   $2 = nterm topstatement ()
+-> $$ = nterm rootstatement ()
+Entering state 22
+Stack now 0 22
+Reading a token
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 1
+Stack now 0 22 1
+Reducing stack by rule 47 (line 552):
+   $1 = token NEWLINE ()
+-> $$ = nterm statement ()
+Entering state 26
+Stack now 0 22 26
+Reducing stack by rule 30 (line 323):
+   $1 = nterm statement ()
+-> $$ = nterm topstatement ()
+Entering state 77
+Stack now 0 22 77
+Reducing stack by rule 2 (line 192):
+   $1 = nterm rootstatement ()
+   $2 = nterm topstatement ()
+-> $$ = nterm rootstatement ()
+Entering state 22
+Stack now 0 22
+Reading a token
+Next token is token INSTR_TOKEN ()
+Shifting token INSTR_TOKEN ()
+Entering state 7
+Stack now 0 22 7
+Reading a token
+Next token is token INTEGER_TOKEN ()
+Reducing stack by rule 14 (line 238):
+-> $$ = nterm $@1 ()
+Entering state 70
+Stack now 0 22 7 70
+Next token is token INTEGER_TOKEN ()
+Shifting token INTEGER_TOKEN ()
+Entering state 163
+Stack now 0 22 7 70 163
+Reading a token
+Next token is token NEWLINE ()
+Reducing stack by rule 12 (line 232):
+   $1 = token INTEGER_TOKEN ()
+csound_orc_semantics(2079) line = 16
+
+-> $$ = nterm instlist ()
+Entering state 165
+Stack now 0 22 7 70 165
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 244
+Stack now 0 22 7 70 165 244
+Reducing stack by rule 15 (line 240):
+-> $$ = nterm $@2 ()
+Entering state 276
+Stack now 0 22 7 70 165 244 276
+Reducing stack by rule 28 (line 312):
+-> $$ = nterm statementlist ()
+Entering state 291
+Stack now 0 22 7 70 165 244 276 291
+Reading a token
+Next token is token T_OPCODE0 ()
+Shifting token T_OPCODE0 ()
+Entering state 4
+Stack now 0 22 7 70 165 244 276 291 4
+Reducing stack by rule 183 (line 899):
+   $1 = token T_OPCODE0 ()
+csound_orc_semantics(2079) line = 16
+
+-> $$ = nterm opcode0 ()
+Entering state 34
+Stack now 0 22 7 70 165 244 276 291 34
+Reading a token
+Next token is token INTEGER_TOKEN ()
+Shifting token INTEGER_TOKEN ()
+Entering state 50
+Stack now 0 22 7 70 165 244 276 291 34 50
+Reducing stack by rule 173 (line 877):
+   $1 = token INTEGER_TOKEN ()
+csound_orc_semantics(2079) line = 16
+
+-> $$ = nterm constant ()
+Entering state 65
+Stack now 0 22 7 70 165 244 276 291 34 65
+Reducing stack by rule 140 (line 793):
+   $1 = nterm constant ()
+-> $$ = nterm ifac ()
+Entering state 62
+Stack now 0 22 7 70 165 244 276 291 34 62
+Reducing stack by rule 138 (line 789):
+   $1 = nterm ifac ()
+-> $$ = nterm iterm ()
+Entering state 61
+Stack now 0 22 7 70 165 244 276 291 34 61
+Reducing stack by rule 129 (line 778):
+   $1 = nterm iterm ()
+-> $$ = nterm iexp ()
+Entering state 60
+Stack now 0 22 7 70 165 244 276 291 34 60
+Reading a token
+Next token is token '/' ()
+Shifting token '/' ()
+Entering state 148
+Stack now 0 22 7 70 165 244 276 291 34 60 148
+Reading a token
+Next token is token '(' ()
+Shifting token '(' ()
+Entering state 115
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115
+Reading a token
+Next token is token INTEGER_TOKEN ()
+Shifting token INTEGER_TOKEN ()
+Entering state 50
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 50
+Reducing stack by rule 173 (line 877):
+   $1 = token INTEGER_TOKEN ()
+csound_orc_semantics(2079) line = 16
+
+-> $$ = nterm constant ()
+Entering state 65
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 65
+Reducing stack by rule 140 (line 793):
+   $1 = nterm constant ()
+-> $$ = nterm ifac ()
+Entering state 62
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 62
+Reducing stack by rule 138 (line 789):
+   $1 = nterm ifac ()
+-> $$ = nterm iterm ()
+Entering state 61
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 61
+Reducing stack by rule 129 (line 778):
+   $1 = nterm iterm ()
+-> $$ = nterm iexp ()
+Entering state 60
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 60
+Reading a token
+Next token is token '/' ()
+Shifting token '/' ()
+Entering state 148
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 60 148
+Reading a token
+Next token is token INTEGER_TOKEN ()
+Shifting token INTEGER_TOKEN ()
+Entering state 50
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 60 148 50
+Reducing stack by rule 173 (line 877):
+   $1 = token INTEGER_TOKEN ()
+csound_orc_semantics(2079) line = 16
+
+-> $$ = nterm constant ()
+Entering state 65
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 60 148 65
+Reducing stack by rule 140 (line 793):
+   $1 = nterm constant ()
+-> $$ = nterm ifac ()
+Entering state 62
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 60 148 62
+Reducing stack by rule 138 (line 789):
+   $1 = nterm ifac ()
+-> $$ = nterm iterm ()
+Entering state 61
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 60 148 61
+Reducing stack by rule 129 (line 778):
+   $1 = nterm iterm ()
+-> $$ = nterm iexp ()
+Entering state 231
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 60 148 231
+Reading a token
+Next token is token ')' ()
+Reducing stack by rule 132 (line 783):
+   $1 = nterm iexp ()
+   $2 = token '/' ()
+   $3 = nterm iexp ()
+-> $$ = nterm iterm ()
+Entering state 61
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 61
+Reducing stack by rule 129 (line 778):
+   $1 = nterm iterm ()
+-> $$ = nterm iexp ()
+Entering state 60
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 60
+Next token is token ')' ()
+Reducing stack by rule 120 (line 761):
+   $1 = nterm iexp ()
+-> $$ = nterm expr ()
+Entering state 123
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 123
+Next token is token ')' ()
+Shifting token ')' ()
+Entering state 193
+Stack now 0 22 7 70 165 244 276 291 34 60 148 115 123 193
+Reducing stack by rule 154 (line 810):
+   $1 = token '(' ()
+   $2 = nterm expr ()
+   $3 = token ')' ()
+-> $$ = nterm ifac ()
+Entering state 62
+Stack now 0 22 7 70 165 244 276 291 34 60 148 62
+Reducing stack by rule 138 (line 789):
+   $1 = nterm ifac ()
+-> $$ = nterm iterm ()
+Entering state 61
+Stack now 0 22 7 70 165 244 276 291 34 60 148 61
+Reducing stack by rule 129 (line 778):
+   $1 = nterm iterm ()
+-> $$ = nterm iexp ()
+Entering state 231
+Stack now 0 22 7 70 165 244 276 291 34 60 148 231
+Reading a token
+Next token is token NEWLINE ()
+Reducing stack by rule 132 (line 783):
+   $1 = nterm iexp ()
+   $2 = token '/' ()
+   $3 = nterm iexp ()
+-> $$ = nterm iterm ()
+Entering state 61
+Stack now 0 22 7 70 165 244 276 291 34 61
+Reducing stack by rule 129 (line 778):
+   $1 = nterm iterm ()
+-> $$ = nterm iexp ()
+Entering state 60
+Stack now 0 22 7 70 165 244 276 291 34 60
+Next token is token NEWLINE ()
+Reducing stack by rule 120 (line 761):
+   $1 = nterm iexp ()
+-> $$ = nterm expr ()
+Entering state 112
+Stack now 0 22 7 70 165 244 276 291 34 112
+Next token is token NEWLINE ()
+Reducing stack by rule 89 (line 719):
+   $1 = nterm expr ()
+-> $$ = nterm exprlist ()
+Entering state 110
+Stack now 0 22 7 70 165 244 276 291 34 110
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 188
+Stack now 0 22 7 70 165 244 276 291 34 110 188
+Reducing stack by rule 39 (line 477):
+   $1 = nterm opcode0 ()
+   $2 = nterm exprlist ()
+   $3 = token NEWLINE ()
+-> $$ = nterm statement ()
+Entering state 279
+Stack now 0 22 7 70 165 244 276 291 279
+Reducing stack by rule 27 (line 308):
+   $1 = nterm statementlist ()
+   $2 = nterm statement ()
+-> $$ = nterm statementlist ()
+Entering state 291
+Stack now 0 22 7 70 165 244 276 291
+Reading a token
+Next token is token ENDIN_TOKEN ()
+Shifting token ENDIN_TOKEN ()
+Entering state 299
+Stack now 0 22 7 70 165 244 276 291 299
+Reading a token
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 305
+Stack now 0 22 7 70 165 244 276 291 299 305
+Reducing stack by rule 16 (line 237):
+   $1 = token INSTR_TOKEN ()
+   $2 = nterm $@1 ()
+   $3 = nterm instlist ()
+   $4 = token NEWLINE ()
+   $5 = nterm $@2 ()
+   $6 = nterm statementlist ()
+   $7 = token ENDIN_TOKEN ()
+   $8 = token NEWLINE ()
+-> $$ = nterm instrdecl ()
+Entering state 75
+Stack now 0 22 75
+Reducing stack by rule 3 (line 196):
+   $1 = nterm rootstatement ()
+   $2 = nterm instrdecl ()
+-> $$ = nterm rootstatement ()
+Entering state 22
+Stack now 0 22
+Reading a token
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 1
+Stack now 0 22 1
+Reducing stack by rule 47 (line 552):
+   $1 = token NEWLINE ()
+-> $$ = nterm statement ()
+Entering state 26
+Stack now 0 22 26
+Reducing stack by rule 30 (line 323):
+   $1 = nterm statement ()
+-> $$ = nterm topstatement ()
+Entering state 77
+Stack now 0 22 77
+Reducing stack by rule 2 (line 192):
+   $1 = nterm rootstatement ()
+   $2 = nterm topstatement ()
+-> $$ = nterm rootstatement ()
+Entering state 22
+Stack now 0 22
+Reading a token
+Next token is token NEWLINE ()
+Shifting token NEWLINE ()
+Entering state 1
+Stack now 0 22 1
+Reducing stack by rule 47 (line 552):
+   $1 = token NEWLINE ()
+-> $$ = nterm statement ()
+Entering state 26
+Stack now 0 22 26
+Reducing stack by rule 30 (line 323):
+   $1 = nterm statement ()
+-> $$ = nterm topstatement ()
+Entering state 77
+Stack now 0 22 77
+Reducing stack by rule 2 (line 192):
+   $1 = nterm rootstatement ()
+   $2 = nterm topstatement ()
+-> $$ = nterm rootstatement ()
+Entering state 22
+Stack now 0 22
+Reading a token
+Now at end of input.
+Reducing stack by rule 1 (line 179):
+   $1 = nterm rootstatement ()
+ALL<ast>
+<tree (0x30001f2cc0 : 0x30001f2b80) type="61" name="=" loc="11:float.csd">
+ <treeleft (0x30001f2b20 : 0x30001f2ab0) type="292" name="SRATE_TOKEN" loc="10:float.csd">
+ </treeleft>
+ <treeright (0x30001f2c60 : 0x30001f2bf0) type="302" name="INTEGER_TOKEN" value="44100" loc="10:float.csd">
+ </treeright>
+</tree>
+<treenext (0x30001f2f30 : 0x30001f2df0) type="61" name="=" loc="12:float.csd">
+ <treeleft (0x30001f2d90 : 0x30001f2d20) type="294" name="KSMPS_TOKEN" loc="11:float.csd">
+ </treeleft>
+ <treeright (0x30001f2ed0 : 0x30001f2e60) type="302" name="INTEGER_TOKEN" value="441" loc="11:float.csd">
+ </treeright>
+</treenext>
+<treenext (0x30001f31a0 : 0x30001f3060) type="61" name="=" loc="13:float.csd">
+ <treeleft (0x30001f3000 : 0x30001f2f90) type="295" name="NCHNLS_TOKEN" loc="12:float.csd">
+ </treeleft>
+ <treeright (0x30001f3140 : 0x30001f30d0) type="302" name="INTEGER_TOKEN" value="1" loc="12:float.csd">
+ </treeright>
+</treenext>
+<treenext (0x30001f3410 : 0x30001f32d0) type="61" name="=" loc="14:float.csd">
+ <treeleft (0x30001f3270 : 0x30001f3200) type="297" name="ZERODBFS_TOKEN" loc="13:float.csd">
+ </treeleft>
+ <treeright (0x30001f33b0 : 0x30001f3340) type="302" name="INTEGER_TOKEN" value="1" loc="13:float.csd">
+ </treeright>
+</treenext>
+<treenext (0x30001f3d40 : (nil)) type="287" name="INSTR_TOKEN" loc="15:float.csd">
+ <treeleft (0x30001f34e0 : 0x30001f3470) type="302" name="INTEGER_TOKEN" value="1" loc="16:float.csd">
+ </treeleft>
+ <treeright (0x30001f3720 : 0x30001f36b0) type="275" name="T_OPCODE0" opname0="print" loc="16:float.csd">
+  <treeright (0x30001f3a50 : (nil)) type="47" name="/" loc="17:float.csd">
+   <treeleft (0x30001f37f0 : 0x30001f3780) type="302" name="INTEGER_TOKEN" value="1" loc="16:float.csd">
+   </treeleft>
+   <treeright (0x30001f39f0 : (nil)) type="47" name="/" loc="16:float.csd">
+    <treeleft (0x30001f38c0 : 0x30001f3850) type="302" name="INTEGER_TOKEN" value="128" loc="16:float.csd">
+    </treeleft>
+    <treeright (0x30001f3990 : 0x30001f3920) type="302" name="INTEGER_TOKEN" value="60" loc="16:float.csd">
+    </treeright>
+   </treeright>
+  </treeright>
+ </treeright>
+</treenext>
+</ast>
+Folded<ast>
+<tree (0x30001f2cc0 : 0x30001f2b80) type="61" name="=" loc="11:float.csd">
+ <treeleft (0x30001f2b20 : 0x30001f2ab0) type="292" name="SRATE_TOKEN" loc="10:float.csd">
+ </treeleft>
+ <treeright (0x30001f2c60 : 0x30001f2bf0) type="302" name="INTEGER_TOKEN" value="44100" loc="10:float.csd">
+ </treeright>
+</tree>
+<treenext (0x30001f2f30 : 0x30001f2df0) type="61" name="=" loc="12:float.csd">
+ <treeleft (0x30001f2d90 : 0x30001f2d20) type="294" name="KSMPS_TOKEN" loc="11:float.csd">
+ </treeleft>
+ <treeright (0x30001f2ed0 : 0x30001f2e60) type="302" name="INTEGER_TOKEN" value="441" loc="11:float.csd">
+ </treeright>
+</treenext>
+<treenext (0x30001f31a0 : 0x30001f3060) type="61" name="=" loc="13:float.csd">
+ <treeleft (0x30001f3000 : 0x30001f2f90) type="295" name="NCHNLS_TOKEN" loc="12:float.csd">
+ </treeleft>
+ <treeright (0x30001f3140 : 0x30001f30d0) type="302" name="INTEGER_TOKEN" value="1" loc="12:float.csd">
+ </treeright>
+</treenext>
+<treenext (0x30001f3410 : 0x30001f32d0) type="61" name="=" loc="14:float.csd">
+ <treeleft (0x30001f3270 : 0x30001f3200) type="297" name="ZERODBFS_TOKEN" loc="13:float.csd">
+ </treeleft>
+ <treeright (0x30001f33b0 : 0x30001f3340) type="302" name="INTEGER_TOKEN" value="1" loc="13:float.csd">
+ </treeright>
+</treenext>
+<treenext (0x30001f3d40 : (nil)) type="287" name="INSTR_TOKEN" loc="15:float.csd">
+ <treeleft (0x30001f34e0 : 0x30001f3470) type="302" name="INTEGER_TOKEN" value="1" loc="16:float.csd">
+ </treeleft>
+ <treeright (0x30001f3720 : 0x30001f36b0) type="275" name="T_OPCODE0" opname0="print" loc="16:float.csd">
+  <treeright (0x30001f3a50 : 0x30001f3780) type="303" name="NUMBER_TOKEN" value="0.468750" loc="17:float.csd">
+  </treeright>
+ </treeright>
+</treenext>
+</ast>
+-> $$ = nterm orcfile ()
+Entering state 21
+Stack now 0 21
+Now at end of input.
+Shifting token "end of file" ()
+Entering state 74
+Stack now 0 21 74
+Stack now 0 21 74
+Cleanup: popping token "end of file" ()
+Cleanup: popping nterm orcfile ()
+Semantic Analysis
+(0x30001f3560)Instr: 1
+  read(0x30001f3bf0): {  }
+  write:(0x30001f3b50) { ##wri }
+  read_write(0x30001f35c0): {  }
+Semantic Analysis Ends
+Parsing successful!
+csound_orc_semantics(2079) line = 0
+
+esr = 44100.0, ekr =   100.0, ksmps = 441, nchnls = 1 0dbfs = 1.0
+print args:	0.46875
+Compile State:
+String Pool:
+    0) 0.46875
+    1) instr
+    2) print
+    3) endin
+    4) ""
+    5) 1
+    6) 0
+Constants Pool:
+  7) 0.468750
+  8) 441.000000
+  9) 44100.000000
+  10) 1.000000
+  11) 0.000000
+Global Variables:
+  0) sr:r
+  1) kr:r
+  2) ksmps:r
+  3) nchnls:r
+  4) nchnls_i:r
+  5) 0dbfs:r
+  6) A4:r
+  7) $sr:r
+  8) $kr:r
+  9) $ksmps:r
+Instrument 0 0x3000224cd0 0x3000225960
+Variables
+Instrument 1 0x3000225960 (nil)
+Variables
+  0) ksmps:r
+  1) kr:r
+Elapsed time at end of orchestra compile: real: 0.062s, CPU: 0.056s
+sorting score ...
+yielding >>
+i1      0       1
+e
+
+e
+<<
+
+	... done
+Elapsed time at end of score sort: real: 0.063s, CPU: 0.056s
+Creating search path cache for 'SNAPDIR':
+Creating search path cache for 'SFDIR;SSDIR;INCDIR':
+    1: "/root/csd/test/"
+Creating search path cache for 'SFDIR':
+Creating search path cache for 'SADIR':
+    1: "/root/csd/test/"
+Creating search path cache for 'SFDIR;SSDIR':
+    1: "/root/csd/test/"
+graphics suppressed, ascii substituted
+0dBFS level = 1.0
+instance(): tp->act_instance = 0x30001f2ed0
+instr 0 allocated at 0x30001f2ed0
+	lclbas 0x30001f3068, opds 0x30001f3068
+orch now loaded
+stdmode = 00020002 Linefd = 0
+audio buffered in 256 sample-frame blocks
+not writing to sound disk
+SECTION 1:
+new event:  0.0000000000000  0.0000000000000
+activating instr 1 at 0
+new alloc for instr 1:
+instance(): tp->act_instance = 0x3000268940
+instr 1 allocated at 0x3000268940
+	lclbas 0x3000268ad8, opds 0x3000268af8
+op (print) allocated at 0x3000268af8
+insert(): tp->act_instance = 0x3000268940
+psave beg at 0x3000268ab0
+   ending at 0x3000268ab0
+init print:
+instr 1:[m  0.46875 = 0.469[m
+[minstr 1 now active:
+insno	instanc	nxtinst	prvinst	nxtact	prvact	nxtoff	actflg	offtim
+0	0x30001f2ed0	(nil)	(nil)	(nil)	(nil)	(nil)	1	0.0
+1	0x3000268940	(nil)	(nil)	(nil)	0x300001a440	(nil)	1	1.0
+removed instance of instr 1
+deactivated all notes to time   1.005
+frstoff = (nil)
+B  0.000 ..  1.000 T  1.000 TT  1.000 M:  0.00000
+Score finished in csoundPerform().
+removed instance of instr 0
+inactive allocs returned to freespace
+end of score.		   overall amps:  0.00000
+	   overall samples out of range:        0
+0 errors in performance
+Elapsed time at end of performance: real: 0.072s, CPU: 0.061s
+stdmode = 00020002 Linefd = 0
+no sound written to disk
+signalflowgraph: csoundModuleDestroy(0x30000152a0)...
+signalflowgraph: csoundModuleDestroy(0x30000152a0).
+jacko: csoundModuleDestroy(0x30000152a0)...
+jacko: csoundModuleDestroy(0x30000152a0).
