@@ -21,22 +21,22 @@ alwayson "verb"
 
 instr 1
 ktrig   metro $TEMPO*4/60
-knote[] fillarray 38, 10, 08, 02, 14, 21, 09, 32
-kgain[] fillarray 00, 00, 01, 00, 04, 00, -2, 00
+knote[] fillarray 23, 26, 08, 02, 14, 21, 09, 32
+kgain[] fillarray .5, 02, 01, 00, 04, 00, -2, 00
 kQ[]    fillarray 00, 00, 00, 00, 00, 00, 00, 00
 kAS, kp[], kt[] Taphath ktrig, knote, kgain, kQ, gicm4
 kcps    = kp[kAS]*4
-aop1    Pmoscili lfo((p04+1)/2,$TEMPO*p12/60,p20), kcps/p28, aop1*.8
-aop2    Pmoscili lfo((p05+1)/2,$TEMPO*p13/60,p21), kcps/p29
-aop3    Pmoscili lfo((p06+1)/2,$TEMPO*p14/60,p22), kcps/p30, aop1+aop2
-aop4    Pmoscili lfo((p07+1)/2,$TEMPO*p15/60,p23), kcps/p31, aop1+aop2
-aop5    Pmoscili lfo((p08+1)/2,$TEMPO*p16/60,p24), kcps/p32, aop1+aop2
-aop6    Pmoscili lfo((p09+1)/2,$TEMPO*p17/60,p25), kcps/p33, aop3
-aop7    Pmoscili lfo((p10+1)/2,$TEMPO*p18/60,p26), kcps/p34, aop4+aop7*0.5
-aop8    Pmoscili lfo((p11+1)/2,$TEMPO*p19/60,p27), kcps/p35, aop5
+aop1    Pmoscili p04, kcps/p12, aop1*.8
+aop2    Pmoscili p05, kcps/p13
+aop3    Pmoscili p06, kcps/p14, aop1+aop2
+aop4    Pmoscili p07, kcps/p15, aop1+aop2
+aop5    Pmoscili p08, kcps/p16, aop1+aop2
+aop6    Pmoscili p09, kcps/p17, aop3
+aop7    Pmoscili p10, kcps/p18, aop4+aop7*0.5
+aop8    Pmoscili p11, kcps/p19, aop5
 aout    = aop6 + aop7 + aop8
 aout    = aout * 0.1
-;gaRvbSend += aout*0.3
+gaRvbSend += aout*0.2
 outs    aout, aout
 endin
 
@@ -44,6 +44,19 @@ instr dust
 aout dust .5, 10
 gaRvbSend += aout*0.1
 outs aout, aout
+endin
+
+instr kick
+iifrq   = 230
+iefrq   = 20
+aaenv   expsegr 1,p3,1,0.5,0.001
+afenv   expsegr iifrq,p3,iifrq,0.05,iefrq
+asig    oscili aaenv*.6, afenv
+asig    distort asig*2, 0.2, giftanh
+asig    limit asig, -0.5,0.5
+asig    += moogladder(asig, iifrq*2, .3)
+outs    asig, asig
+gaRvbSend += asig*0.03
 endin
 
 instr verb ;reverb (stolen from the floss manual 05E01_freeverb.csd)
@@ -57,10 +70,17 @@ endin
 <CsScore>
 ;read the manual, amy!
 t 0 128
-i1  +  16  .1  .2  .8  .2  .1  .5  .5  .5   \
-           .02 .01 .02 .03 .01 .10 .01 .01  \
-            1   5   2   5   1   1   4   2   \
-           .25  2   1   4   4   2   4   8
+i1  +  08  .1 .2 .0 .0 .0 .5 .2 .5  002 002 001 004 004 004 004 008
+i1  +  08  .1 .2 .8 .2 .1 .5 .5 .5  .50 004 002 004 004 008 004 004
+i1  +  08  .1 .2 .8 .2 .1 .5 .5 .5  002 001 004 004 004 .25 004 002
+i1  +  08  .1 .2 .8 .2 .1 .5 .5 .5  001 004 008 004 004 016 004 001
+i1  +  08  .1 .4 .2 .1 .4 .5 .5 .5  .50 004 008 004 004 016 016 001
+i1  +  08  .2 .4 .2 .1 .4 .5 .5 .5  .50 008 008 004 004 016 016 001
+i1  +  08  .1 .2 .1 .1 .1 .5 .5 .5  002 001 008 004 004 002 004 001
+i"kick" ^+8 0.00001
+i1  +  08  .1 .4 .2 .1 .4 .5 .5 .5  .50 004 008 004 004 016 016 001
+i"kick" ^+8 0.00001
+i1  +  08  .1 .4 .2 .2 .4 .5 .5 .5  .50 004 008 008 004 016 016 001
 e
 </CsScore>
 </CsoundSynthesizer>
