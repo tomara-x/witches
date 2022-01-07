@@ -13,14 +13,12 @@ nchnls  =   1
 ;syntax: ares Pmoscili xamp, kfreq [,aphase] [,ifn]
 opcode Pmoscili, a, kkaj
 kamp, kfreq, aphs, ifn xin
-;setksmps 1
 acarrier    phasor kfreq
 asig        tablei acarrier+aphs, ifn, 1,0,1
 xout        asig*kamp
 endop
 opcode Pmoscili, a, akaj ;overload for doing AM
 aamp, kfreq, aphs, ifn xin
-;setksmps 1
 acarrier    phasor kfreq
 asig        tablei acarrier+aphs, ifn, 1,0,1
 xout        asig*aamp
@@ -36,18 +34,9 @@ endop
 
 instr 1
 setksmps 1
-asig1, asig2 init 0
-asig1 = Pmoscili(1, 110)
-asig2 = Pmoscili(1, 220, asig2*0.3)
-out asig2*0.1
-endin
-
-instr 2
-setksmps 1
-acarrier    phasor 220
-asig        init 0
-asig        tablei acarrier+asig*0.4, -1, 1,0,1
-out         asig*0.1
+asig init 0
+asig = Pmoscili(1, 220, asig*0.2)
+out asig*0.1
 endin
 
 </CsInstruments>
