@@ -16,10 +16,7 @@ nchnls  =   2
 #define TEMPO #86#
 #include "../opcodes.orc"
 #include "../function-tables.orc"
-gaRvbSend init 0
-alwayson "verb"
-gaDstSend init 0
-alwayson "dist"
+#include "../send-effects.orc"
 
 instr kick
 iifrq   = 230
@@ -85,33 +82,16 @@ aout dust .5, 10
 gaRvbSend += aout*0.1
 outs aout, aout
 endin
-
-instr dist ;distortion
-kdist = 0.4
-ihp = 10
-istor = 0
-ares        distort gaDstSend, kdist, giftanh, ihp, istor
-outs        ares, ares
-clear       gaDstSend
-endin
-
-instr verb ;reverb (stolen from the floss manual 05E01_freeverb.csd)
-kroomsize    init      0.85         ; room size (range 0 to 1)
-kHFDamp      init      0.5          ; high freq. damping (range 0 to 1)
-aRvbL,aRvbR  freeverb  gaRvbSend, gaRvbSend,kroomsize,kHFDamp
-             outs      aRvbL, aRvbR
-             clear     gaRvbSend
-endin
 </CsInstruments>
 <CsScore>
 ;read the manual, amy!
 t 0 86
 ;           PD Mu  Count        Notes        Trans        RD Rl Ds Rv
 i1  +   08  04 01  08 00 00 00  07 00 00 00  00 00 00 00  .7 .4 .4 .2
-i1  +   16 .80 08  04 02 01 02  21 13 42 04  00 01 07 00  .3 .8 .2 .2
-i1  +   16 .02 16  04 02 01 02  21 13 42 04  00 01 07 00  .3 .1 .2 .2
+i1  +   08 .80 08  04 02 01 02  21 13 42 04  00 01 07 00  .3 .8 .2 .2
+i1  +   08 .02 16  04 02 01 02  21 13 42 04  00 01 07 00  .3 .1 .2 .2
 i1  +   08 .02 16  04 02 01 02  21 13 42 04  -1 -1 -1 -1  .3 .1 .2 .2
-i1  +   16 .40 08  04 02 01 02  14 17 49 12  01 01 03 01  .3 .1 .4 .2
+i1  +   12 .40 08  04 02 01 02  14 17 49 12  01 01 03 01  .3 .1 .4 .2
 i1  +   16 .01 32  08 02 01 06  06 10 11 04  00 01 .5 .2  .2 .1 00 .2
 e
 </CsScore>

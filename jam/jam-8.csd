@@ -16,27 +16,29 @@ nchnls  =   2
 #define TEMPO #128#
 #include "../opcodes.orc"
 #include "../function-tables.orc"
-gaRvbSend init 0
-alwayson "verb"
+#include "../send-effects.orc"
+alwayson "taphy"
 
-instr 1
+instr taphy
 ktrig   metro $TEMPO*4/60
 knote[] fillarray 23, 26, 08, 02, 14, 21, 09, 32
 kgain[] fillarray .5, 02, 01, 00, 04, 00, -2, 00
 kQ[]    fillarray 00, 00, 00, 00, 00, 00, 00, 00
-kAS, kp[], kt[] Taphath ktrig, knote, kgain, kQ, gicm4
-kcps    = kp[kAS]*4
-aop1    Pmoscili p04, kcps/p12, aop1*.8
-aop2    Pmoscili p05, kcps/p13
-aop3    Pmoscili p06, kcps/p14, aop1+aop2
-aop4    Pmoscili p07, kcps/p15, aop1+aop2
-aop5    Pmoscili p08, kcps/p16, aop1+aop2
-aop6    Pmoscili p09, kcps/p17, aop3
-aop7    Pmoscili p10, kcps/p18, aop4+aop7*0.5
-aop8    Pmoscili p11, kcps/p19, aop5
+kAS, kp[], kt[] Taphath ktrig, knote, kgain, kQ, gicm4, 0, ClkDiv(kt[0], 8)
+gkcps = kp[kAS]*4
+endin
+instr 1
+aop1    Pmoscili p04, gkcps/p12, aop1*.8
+aop2    Pmoscili p05, gkcps/p13
+aop3    Pmoscili p06, gkcps/p14, aop1+aop2
+aop4    Pmoscili p07, gkcps/p15, aop1+aop2
+aop5    Pmoscili p08, gkcps/p16, aop1+aop2
+aop6    Pmoscili p09, gkcps/p17, aop3
+aop7    Pmoscili p10, gkcps/p18, aop4+aop7*0.5
+aop8    Pmoscili p11, gkcps/p19, aop5
 aout    = aop6 + aop7 + aop8
 aout    = aout * 0.1
-gaRvbSend += aout*0.2
+gaRvbSend += aout*0.05
 outs    aout, aout
 endin
 
@@ -57,14 +59,6 @@ asig    limit asig, -0.5,0.5
 asig    += moogladder(asig, iifrq*2, .3)
 outs    asig, asig
 gaRvbSend += asig*0.05
-endin
-
-instr verb ;reverb (stolen from the floss manual 05E01_freeverb.csd)
-kroomsize    init      0.85         ; room size (range 0 to 1)
-kHFDamp      init      0.5          ; high freq. damping (range 0 to 1)
-aRvbL,aRvbR  freeverb  gaRvbSend, gaRvbSend,kroomsize,kHFDamp
-             outs      aRvbL, aRvbR
-             clear     gaRvbSend
 endin
 </CsInstruments>
 <CsScore>

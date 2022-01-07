@@ -1,9 +1,7 @@
 trans rights
 <CsoundSynthesizer>
 <CsOptions>
-; Real-time / render / no sound
 -odac -L stdin -m 231
-; -o rose.wav
 </CsOptions>
 <CsInstruments>
 sr      =   44100
@@ -22,13 +20,13 @@ instr 1
 asig = Pmoscili(.2, 220, asig*1.1) ;works
 asig = Pmoscili(.2, 220, asig*0.1) ;works
 asig = Pmoscili(.2, 220, asig*1.0) ;workn't
-
+asig = Pmoscili(.2, 220, asig)     ;workn't
 out asig
 endin
 
 </CsInstruments>
 <CsScore>
-i1      0       1
+i1 0 1
 e
 </CsScore>
 </CsoundSynthesizer>
