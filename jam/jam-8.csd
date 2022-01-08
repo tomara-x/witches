@@ -28,6 +28,7 @@ kAS, kp[], kt[] Taphath ktrig, knote, kgain, kQ, gicm4, 0, ClkDiv(kt[0], 8)
 gkcps = kp[kAS]*4
 endin
 instr 1
+;setksmps 1 ;messes up the global sends of course, but for some reason the kick too
 aop1    Pmoscili p04, gkcps/p12, aop1*.8
 aop2    Pmoscili p05, gkcps/p13
 aop3    Pmoscili p06, gkcps/p14, aop1+aop2
