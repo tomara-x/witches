@@ -29,6 +29,7 @@ gkcps = kp[kAS]*4
 endin
 instr 1
 ;setksmps 1 ;messes up the global sends of course, but for some reason the kick too
+aop1, aop2, aop3, aop4, aop5, aop6, aop7, aop8 init 0
 aop1    Pmoscili p04, gkcps/p12, aop1*.8
 aop2    Pmoscili p05, gkcps/p13
 aop3    Pmoscili p06, gkcps/p14, aop1+aop2
@@ -65,7 +66,6 @@ endin
 <CsScore>
 ;read the manual, amy!
 t 0 128
-i1      +   08  .1 .8 .2 .4 .2 .5 .5 .5  .50 008 008 004 008 016 016 002
 i1      +   08  .1 .2 .0 .0 .0 .5 .2 .5  002 002 001 004 004 004 004 008
 i1      +   08  .1 .2 .0 .0 .0 .5 .4 .5  002 002 001 004 004 004 004 008
 i1      +   08  .1 .2 .1 .1 .1 .5 .4 .5  002 002 001 004 004 004 004 008
@@ -84,6 +84,9 @@ i1      +   08  .1 .4 .2 .1 .4 .5 .5 .5  .50 004 008 004 004 016 016 001
 i"kick" ^+4 0.00001
 i"kick" ^+4 0.00001
 i1      +   08  .1 .4 .2 .1 .4 .5 .5 .5  .50 004 008 004 004 016 016 001
+i"kick" ^+4 0.00001
+i"kick" ^+4 0.00001
+i1      +   08  .1 .8 .2 .4 .2 .5 .5 .5  .50 008 008 004 008 016 016 002
 i"kick" ^+4 0.00001
 e
 </CsScore>
