@@ -52,3 +52,9 @@ giframp ftgen 0,0,64,7, -1,64,1
 ;tanh function for distortion
 giftanh ftgen 0,0,1024,"tanh", -5, 5, 0
 
+;sawtooth wave
+gifsaw ftgen 0,0,2^13,7, 0,2^12,1,0,-1,2^12,0
+
+;square wave
+gifsqur ftgen 0,0,2^13,7, 1,2^12,1,0,-1,2^12,-1
+
