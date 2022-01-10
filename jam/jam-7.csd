@@ -84,7 +84,7 @@ outs aout, aout
 endin
 </CsInstruments>
 <CsScore>
-;read the manual, amy!
+;read the manual, amy! <- Pfft! Manuaals! Who does that?!
 t 0 86
 ;           PD Mu  Count        Notes        Trans        RD Rl Ds Rv
 i1  +   08  04 01  08 00 00 00  07 00 00 00  00 00 00 00  .7 .4 .4 .2
