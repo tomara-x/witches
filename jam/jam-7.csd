@@ -53,7 +53,7 @@ gaRvbSend += asig*0.06
 endin
 
 instr pluck1
-iplk    =           0.2 ;(0 to 1)
+iplk    =           0.2 ;(0 to 1) ;I WANNA HAVE THIS PASSED AS INPUT!
 kamp    init        0.15
 icps    =           p4
 kpick   init        0.8 ;pickup point
