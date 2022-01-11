@@ -31,6 +31,7 @@ kQ[kAS] = kQ[kAS] * 0
 ; sigil
 knote[4] = knote[4]+kt[2]
 kgain[2] = kgain[2]+kt[4] ;I'm evil
+kQ[2]    = kQ[2]+ClkDiv(kt[4], 2) ;every other trig from node 4 enqueues node 2
 endin
 instr 1
 aop1, aop2, aop3, aop4, aop5, aop6, aop7, aop8 init 0

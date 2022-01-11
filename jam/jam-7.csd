@@ -53,7 +53,7 @@ gaRvbSend += asig*0.06
 endin
 
 instr pluck1
-iplk    =           0.2 ;(0 to 1) ;I WANNA HAVE THIS PASSED AS INPUT!
+iplk    =           p8 ;(0 to 1)
 kamp    init        0.15
 icps    =           p4
 kpick   init        0.8 ;pickup point
@@ -63,7 +63,7 @@ kenv2   linsegr     0,0.003,1,p3,1,p6,0 ;declick
 asig    *=          kenv2
         outs        asig,asig
 gaDstSend += asig*p7
-gaRvbSend += asig*p8
+gaRvbSend += asig*0.2
 endin
 
 instr 1
@@ -86,8 +86,9 @@ endin
 <CsScore>
 ;read the manual, amy! <- Pfft! Manuaals! Who does that?!
 t 0 86
-;           PD Mu  Count        Notes        Trans        RD Rl Ds Rv
-i1  +   08  04 01  08 00 00 00  07 00 00 00  00 00 00 00  .7 .4 .4 .2
+;           P3 xf  Count        Notes        Trans        RD PR Ds Pl
+i1  +   08  05 01  08 00 00 00  07 00 00 00  00 00 00 00  .5 .4 .4 .5
+i1  +   08  05 01  08 00 00 00  07 00 00 00  00 00 00 00  .5 .4 .4 .1
 i1  +   08 .80 08  04 02 01 02  21 13 42 04  00 01 07 00  .3 .8 .2 .2
 i1  +   08 .02 16  04 02 01 02  21 13 42 04  00 01 07 00  .3 .1 .2 .2
 i1  +   08 .02 16  04 02 01 02  21 13 42 04  -1 -1 -1 -1  .3 .1 .2 .2
