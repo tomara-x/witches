@@ -8,6 +8,8 @@ gaRvbSend init 0
 alwayson "verb"
 gaDstSend init 0
 alwayson "dist"
+gaRvb2Send init 0
+alwayson "verb2"
 
 instr dist ;distortion
 kdist = 0.4
@@ -24,5 +26,13 @@ kHFDamp      init      0.5          ; high freq. damping (range 0 to 1)
 aRvbL,aRvbR  freeverb  gaRvbSend, gaRvbSend,kroomsize,kHFDamp
              outs      aRvbL, aRvbR
              clear     gaRvbSend
+endin
+
+instr verb2 ;bigger reverb
+kroomsize    init      1            ; room size (range 0 to 1)
+kHFDamp      init      0.9          ; high freq. damping (range 0 to 1)
+aRvbL,aRvbR  freeverb  gaRvb2Send, gaRvb2Send,kroomsize,kHFDamp
+             outs      aRvbL, aRvbR
+             clear     gaRvb2Send
 endin
 
