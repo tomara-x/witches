@@ -6,7 +6,9 @@
 
 gaRvbSend init 0
 gaDstSend init 0
+gaDst2Send init 0
 gaRvb2Send init 0
+gaCmpDstSend init 0
 ;gaPltVrbSnd init 0
 
 instr dist ;distortion
@@ -14,8 +16,26 @@ kdist = 0.4
 ihp = 10
 istor = 0
 ares        distort gaDstSend, kdist, giftanh, ihp, istor
+;ares        compress ares, ares, 0, 20, 60, 2, 0.1, 0.5, 0.02 
 outs        ares, ares
 clear       gaDstSend
+endin
+
+instr dist2 ;we need to address this! pretty soon we gonna have a colony of these!
+kdist = 0.4
+ihp = 10
+istor = 0
+ares        distort gaDst2Send, kdist, giftanh, ihp, istor
+ares        limit ares, -.01, .01
+outs        ares, ares
+clear       gaDst2Send
+endin
+
+instr cmpdist ;comparitor distortion
+ares    cmp gaCmpDstSend, ">", 0.1
+        ares *= 0.02
+        outs ares, ares
+        clear gaCmpDstSend
 endin
 
 instr verb ;reverb (stolen from the floss manual 05E01_freeverb.csd)
