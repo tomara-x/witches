@@ -1,10 +1,10 @@
 //trans rights
-//Copyright © 2021 Amy Universe <nopenullnilvoid00@gmail.com>
+//Copyright © 2022 Amy Universe <nopenullnilvoid00@gmail.com>
 //This work is free. You can redistribute it and/or modify it under the
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-; This one's for me
+; This one's for me.. and you.. cheers!
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
@@ -25,7 +25,7 @@ alwayson "dist"
 alwayson "dist2"
 ;alwayson "taphy"
 
-instr taphy
+instr taphy1
 ktrig   metro $TEMPO/4/60
 kn1[]   fillarray 05, 00, 00, 00, 00, 00, 00, 00
 kn2[]   fillarray 00, 00, 10, 20, 00, 30, 00, 13
@@ -61,6 +61,33 @@ kQ[5]    = kQ[5]+ClkDiv(kt1[3], 3)
 kQ[0]    = kQ[0]+ClkDiv(kt1[4], 6)
 kQ[7]    = kQ[7]+ClkDiv(kt1[4], 3)
 kQ[6]    = kQ[6]+ClkDiv(kt1[4], 5)
+endin
+instr taphy2
+ktrig   metro $TEMPO/60
+kn1[]   fillarray 05, 00, 00, 00, 00, 00, 00, 00
+kg1[]   fillarray 21, 07, -8, 03, 15, 14, 00, 06
+kQ[]    fillarray 00, 00, 00, 00, 00, 00, 00, 00
+kAS1, kp1[], kt1[] Taphath ktrig, kn1, kg1, kQ, gism2
+schedkwhen kt1[kAS1], 0,0, "pluck", 0, 0.2, kp1[kAS1]*4, 0.6, 0.2, 0.0, 0.01
+endin
+instr taphy3
+ktrig   metro $TEMPO/60
+kn1[]   fillarray 05, 00, 00, 00, 00, 00, 00, 00
+kg1[]   fillarray 21, 07, -8, 03, 15, 14, 00, 06
+kQ[]    fillarray 00, 00, 00, 00, 00, 00, 00, 00
+kAS1, kp1[], kt1[] Taphath ktrig, kn1, kg1, kQ, gism2
+kQ[kAS1] = kQ[kAS1] * 0
+kQ[2]    = kQ[2]+ClkDiv(kt1[4], 2)
+kQ[5]    = kQ[5]+ClkDiv(kt1[3], 3)
+kQ[0]    = kQ[0]+ClkDiv(kt1[4], 6)
+kQ[7]    = kQ[7]+ClkDiv(kt1[4], 3)
+kQ[6]    = kQ[6]+ClkDiv(kt1[4], 5)
+;schedkwhen kt1[kAS1], 0,0, "pluck", 0, 0.2, kp1[kAS1]*2, 0.6, 0.2, 0.0, 0.01
+asig1    oscili .01, tlineto(kp1[kAS1]*2^3, 0.01, kt1[kAS1])
+asig2    oscili asig1, tlineto(kp1[kAS1]*2^4, 0.01, kt1[kAS1])
+aout = asig2
+gaRvb2Send += aout*0.5
+outs aout, aout
 endin
 
 instr fm
@@ -113,14 +140,14 @@ gaDst2Send += asig*p7
 gaRvbSend += asig*0.3
 endin
 
-instr 1
+instr taphy4
 ktrig   metro $TEMPO*p5/60
 kcnt[]  fillarray p6, p7, p8, p9
 kAS1, kt1[] utBasemath ktrig, kcnt
 knote[] fillarray p10, p11, p12, p13
 kgain[] fillarray p14, p15, p16, p17
 kQ[]    fillarray 0, 0, 0, 0
-kAS2, kp[], kt2[] Taphath kt1[kAS1], knote, kgain, kQ, gicm4
+kAS2, kp[], kt2[] Taphath kt1[kAS1], knote, kgain, kQ, gism4
 schedkwhen kt1[kAS1], 0,0, "pluck", 0, p4, kp[kAS2], p18, p19, p20, p21
 endin
 
@@ -128,13 +155,13 @@ endin
 <CsScore>
 ;mixer ops, amy! (and amp converters)
 t 0 256
-i"taphy" 0 256
-;;           P3 xf  Count        Notes        Trans        RD PR Ds Pl
-;i1  +   16 .01 02  08 04 01 01  06 10 11 04  00 01 .5 .2  .6 .8 00 .2
-;i1  +   16 .01 36  08 02 01 06  06 10 11 04  00 01 .5 .2  .6 .8 00 .2
-;i1  +   08 .80 09  04 02 01 02  21 13 42 04  00 01 07 00  .3 .8 .2 .2
-;i1  +   08 .02 18  04 02 01 02  21 13 42 04  00 01 07 00  .3 .1 .2 .2
-;i1  +   08 .40 09  04 02 01 02  14 17 49 12  01 01 03 01  .3 .1 .4 .2
+i"taphy1" 32 256
+i"taphy2" 16 256
+i"taphy3" 00 256
+;;                  P3 xf   Count        Notes        Trans        RD PR Ds Pl
+;i"taphy4"  +   32 .80 009  16 08 04 08  21 13 42 04  00 01 07 00  .3 .8 .1 .2
+;i"taphy4"  +   32 .02 018  16 08 04 08  21 13 42 04  00 01 07 00  .3 .1 .1 .2
+;i"taphy4"  +   32 .40 009  16 08 04 08  14 17 49 12  01 01 03 01  .3 .1 .2 .2
 </CsScore>
 </CsoundSynthesizer>
 
