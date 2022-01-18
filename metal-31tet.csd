@@ -4,7 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-; this one's for you, K (when I finish it)
+; This one's for you, K (when it's done and epic)
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
@@ -15,106 +15,123 @@ ksmps   =   42 ;kr=1050
 nchnls  =   2
 0dbfs   =   1
 
+#define TEMPO #256#
 #include "function-tables.orc"
 #include "opcodes.orc"
-gaRvbSend init 0
+#include "send-effects2.orc"
 alwayson "verb"
+alwayson "dist"
+;alwayson "taphy"
 
-instr 1
-ktempo      =           256 ;bpm
-ktimeunit   =           1/(ktempo/60)
-klen[]      fillarray   1,    1,    1,    1
-kbAS,kbtrig[] uBasemath ktimeunit, klen
+instr taphy
+ktrig   metro $TEMPO/4/60
+kn1[]   fillarray 05, 00, 00, 00, 00, 00, 00, 00
+kn2[]   fillarray 00, 00, 10, 20, 00, 30, 00, 13
+kn3[]   fillarray 17, 10, 08, 13, 09, 00, 16, 23
+kg1[]   fillarray 21, 07, 11, 03, 15, 14, 00, 06
+;kg2[]   fillarray 21, 07, -8, 03, 15, 14, 00, 06
+;kg3[]   fillarray 21, 07, 02, 03, 15, 14, 00, 06
+kQ[]    fillarray 00, 00, 00, 00, 00, 00, 00, 00
+kAS1, kp1[], kt1[] Taphath ktrig, kn1, kg1, kQ, gicm4
+kAS2, kp2[], kt2[] Taphath ktrig, kn2, kg1, kQ, gicm4
+kAS3, kp3[], kt3[] Taphath ktrig, kn3, kg1, kQ, gicm4
 
-knotes[]    fillarray   0,    9,    0,    4
-kincs[]     fillarray   1,    3,    3,    0
-kQ[]        fillarray   0,    0,    0,    0
-ktAS, kpitch[], kttrig[] Taphath kbtrig[kbAS], knotes, kincs, kQ, gi31tet
-kQ[ktAS]     = kQ[ktAS] * 0
-
-schedkwhen  kbtrig[kbAS], 0, 0, "string", 0, .1, kpitch[ktAS]
+;pluck a string                                 RD   PR   Ds   Pl
+schedkwhen kt1[kAS1], 0,0, "pluck", 0, 04, kp1[kAS1], 0.3, 0.5, 0.4, 0.2
+schedkwhen kt2[kAS2], 0,0, "pluck", 0, 04, kp2[kAS2], 0.3, 0.5, 0.4, 0.2
+schedkwhen kt3[kAS3], 0,0, "pluck", 0, 04, kp3[kAS3], 0.3, 0.5, 0.4, 0.2
+/*
+;send to another instr
+gkcps[] init 3
+kn = 2
+gkcps[0] = tlineto(kp1[kn], 0.1, kt1[kn])
+gkcps[1] = tlineto(kp2[kn], 0.2, kt2[kn])
+gkcps[2] = tlineto(kp3[kn], 0.3, kt3[kn])
+*/
+; Q mode (0=reset, 1=keep)
+kQ[kAS1] = kQ[kAS1] * 0
+; sigil
+;knote[4] = knote[4]+kt[2]
+;kgain[2] = kgain[2]+kt[4]
+;kgain[5] = kgain[5]+kt[4]*2
+;kQ[2]    = kQ[2]+ClkDiv(kt1[4], 2)
+;kQ[5]    = kQ[5]+ClkDiv(kt1[3], 3)
+;kQ[0]    = kQ[0]+ClkDiv(kt1[4], 6)
+;kQ[7]    = kQ[7]+ClkDiv(kt1[4], 3)
+;kQ[6]    = kQ[6]+ClkDiv(kt1[4], 5)
 endin
 
-instr 2
-ktempo      =           256 ;bpm
-ktimeunit   =           1/(ktempo/60)
-klen[]      fillarray   0,    0,    0,    8
-kbAS,kbtrig[] uBasemath ktimeunit, klen
-
-knotes[]    fillarray   0,    0,    0,    1
-ktAS,kpitch[],kttrig[] uTaphath kbtrig[kbAS], knotes, gi31tet
-schedkwhen  kbtrig[kbAS], 0, 0, "string", 0, .1, kpitch[ktAS]
+instr fm
+iz = 0.00001
+aenv    expsegr 1, p3, 1, 2, iz
+kfreq = p4
+aop1, aop2 init 0
+aop1    Pmoscili 0.1, kfreq/2, aop1*0.2
+aop2    Pmoscili 0.1, kfreq, aop1
+aout = aop2*0.2
+aout *= aenv
+gaRvbSend += aout*0.1
+outs aout, aout
 endin
 
-instr string
-iplk    =           0.1 ;(0 to 1)
-kamp    init        0.15
-icps    =           p4
-kpick   init        0.9 ;pickup point
-krefl   init        0.9 ;rate of decay? ]0,1[
-asig    wgpluck2    iplk,kamp,icps,kpick,krefl
-
-kenv1   linsegr     1,0.4,0,0.5,0
-asig    bqrez       asig, kenv1*p4*4, 10
-;adist   cmp         asig, ">", 0
-;adist   bqrez       adist, 500, 40
-asig    limit       asig, -0.4,0.4
-
-kenv2   linsegr     1,p3,1,0.5,0 ;to avoid end click
-asig    *=          kenv2
-
-        outs        asig,asig
-gaRvbSend += asig*0.1
-endin
-
-;instr 5
-;ktempo      =   256
-;ktimeunit   =   1/(ktempo/60) ;whole note
-;
-;klen[]      fillarray   1,    1,    1,    1
-;klgain[]    fillarray   0,    0,    0,    0
-;kminlen[]   fillarray   0,    0,    0,    0
-;kmaxlen[]   fillarray   8,    8,    8,    8
-;
-;kdiv[]      fillarray   0,    0,    0,    1
-;kdgain[]    fillarray   0,    0,    0,    0
-;kmaxdiv[]   fillarray   8,    8,    8,    8
-;
-;kQ[]        fillarray   0,    0,    0,    0
-;
-;kbAS, kbtrig[], kbdiv[] Basemath ktimeunit, klen,klgain,kminlen,kmaxlen, kdiv,kdgain,kmaxdiv, kQ
-;schedkwhen  kbtrig[kbAS], 0, 0, "test", 0, .1, 440*(2^3)
-;schedkwhen  kbdiv[kbAS], 0, 0, "test", 0, .1, 440*(2^4)
-;endin
-
-instr test
-asig oscil 0.8, p4
-outs asig, asig
+instr kick
+iifrq   = 230
+iefrq   = 20
+aaenv   expsegr 1,0.5,0.001
+afenv   expsegr iifrq,p3,iifrq,0.05,iefrq
+asig    oscili aaenv*.6, afenv
+asig    distort asig*2, k(aaenv)*0.4, giftanh
+asig    limit asig, -0.5,0.5
+asig    += moogladder(asig, iifrq*2, .3)
+asig *= 0.5
+outs    asig, asig
+gaRvbSend += asig*0.15
 endin
 
 instr hat
-aenv    expsegr 1,p3,1,0.08,0.001
-asig    noise   0.1*aenv, 0
+aenv    expsegr 1,p3,1,0.07,0.001
+asig    noise   0.06*aenv, -0.9
 outs    asig, asig
-gaRvbSend += asig*0.8
+asig *= 0.1
+gaRvbSend += asig*0.2
 endin
 
-; stolen from the floss manual (05E01_freeverb.csd)
-instr verb ; reverb - always on
-kroomsize    init      0.85         ; room size (range 0 to 1)
-kHFDamp      init      0.5          ; high freq. damping (range 0 to 1)
-aRvbL,aRvbR  freeverb  gaRvbSend, gaRvbSend,kroomsize,kHFDamp
-             outs      aRvbL, aRvbR
-             clear     gaRvbSend
+instr pluck
+iplk    =           p8 ;(0 to 1)
+kamp    init        0.15
+icps    =           p4
+kpick   init        0.8 ;pickup point
+krefl   init        p5 ;rate of decay? ]0,1[
+asig    wgpluck2    iplk,kamp,icps,kpick,krefl
+kenv2   linsegr     0,0.003,1,p3,1,p6,0 ;declick
+asig    *=          kenv2
+        outs        asig,asig
+gaDstSend += asig*p7
+gaRvbSend += asig*0.2
+endin
+
+instr 1
+ktrig   metro $TEMPO*p5/60
+kcnt[]  fillarray p6, p7, p8, p9
+kAS1, kt1[] utBasemath ktrig, kcnt
+knote[] fillarray p10, p11, p12, p13
+kgain[] fillarray p14, p15, p16, p17
+kQ[]    fillarray 0, 0, 0, 0
+kAS2, kp[], kt2[] Taphath kt1[kAS1], knote, kgain, kQ, gicm4
+schedkwhen kt1[kAS1], 0,0, "pluck", 0, p4, kp[kAS2], p18, p19, p20, p21
 endin
 
 </CsInstruments>
 <CsScore>
-;read the manual, amy!
+;slew limiters are just control signal filters!
 t       0       256
-;i1      0       128
-i2      0       64
-e
+i"taphy" 0 256
+;;           P3 xf  Count        Notes        Trans        RD PR Ds Pl
+;i1  +   16 .01 02  08 04 01 01  06 10 11 04  00 01 .5 .2  .6 .8 00 .2
+;i1  +   16 .01 36  08 02 01 06  06 10 11 04  00 01 .5 .2  .6 .8 00 .2
+;i1  +   08 .80 09  04 02 01 02  21 13 42 04  00 01 07 00  .3 .8 .2 .2
+;i1  +   08 .02 18  04 02 01 02  21 13 42 04  00 01 07 00  .3 .1 .2 .2
+;i1  +   08 .40 09  04 02 01 02  14 17 49 12  01 01 03 01  .3 .1 .4 .2
 </CsScore>
 </CsoundSynthesizer>
 
