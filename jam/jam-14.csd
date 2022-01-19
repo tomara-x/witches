@@ -69,9 +69,13 @@ kg1[]   fillarray 21, 07, -8, 03, 15, 14, 00, 06
 kQ[]    fillarray 00, 00, 00, 00, 00, 00, 00, 00
 kmin[]    fillarray 00, 00, 00, 00, 00, 21, 21, 21
 kmax[]    fillarray 14, 14, 14, 14, 14, 35, 35, 35
-kfn = gism6
+kfn init gism6
 kAS1, kp1[], kt1[] Taphath ktrig, kn1, kg1, kQ, kmin, kmax, kfn
 schedkwhen kt1[kAS1], 0,0, "pluck", 0, 0.2, kp1[kAS1], 0.6, 0.2, 0.0, 0.01
+if ClkDiv(kt1[0], 4) == 1 then
+    kfn = giud7
+endif
+printk2 kfn
 endin
 instr taphy3
 ktrig   metro $TEMPO/60
