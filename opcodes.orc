@@ -50,9 +50,10 @@ Different rituals, but can grant you powers similar to those of the
 Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 [https://aria.dog/modules/]
 
+
 Syntax:
 kActiveStep, kPitchArr[], kTrigArr[] Taphath kTrig, kNoteIndx[],    \
-    kNdxGain[], kQArr[], iFn [, kStepMode] [, kReset]
+    kNdxGain[], kQArr[], [kMin[], kMax[],] i/kFn [, kStepMode] [, kReset]
 
 Initialization:
 iFn: Function table containing pitch information (using gen51 for example)
@@ -90,6 +91,10 @@ kQArr[]: The queue inputs for eaxh step. Queued steps take priority over
         kQueueArr[kActiveStep] = kQueueArr[kActiveStep]*kToggle
         kToggle = 0 for reset, and kToggle = 1 for keep.
         Positive values add corresponding steps to queue, non-positive remove them.
+kMin[], kMax[]: Minimum and maximum indexes along the function table for each step
+        (for selecting the range of each step) (can be ommited for full ft)
+kFn: A k-rate variable holding the number to the function table, unlike using
+        an iFn, this can be changed in performance time.
 kStepMode: How the sequencer will behave upon receiving a trigger.
         0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
 kReset: Reset the sequencer to its original (kNoteIndex) state when non zero.
@@ -175,17 +180,8 @@ endif
 
 xout kAS, kPitchArr, kTrigArr
 endop
-opcode Taphath, kk[]k[], kk[]k[]k[]k[]k[]iOO
-/*
-An overload to allow optional range selection arrays
-PUT THIS IN THE MAIN DOC!
-Syntax:
-kActiveStep, kPitchArr[], kTrigArr[] Taphath kTrig, kNoteIndx[],    \
-    kNdxGain[], kQArr[], kMin[], kMax[], iFn [, kStepMode] [, kReset]
 
-Performance:
-kMin[], kMax[]: Minimum and maximum indexes along the function table for each step
-*/
+opcode Taphath, kk[]k[], kk[]k[]k[]k[]k[]iOO  ;range selection arrays overoad
 kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], iFn, kStepMode, kReset xin
 
 ilen        =       lenarray(kNoteIndx)
