@@ -10,7 +10,7 @@ nchnls = 1
 
 ia = cpspch(8)
 gifn1 ftgen 0,0,-8,-2, ia/4, ia/2, ia, ia*2, ia*4, ia*8, ia*16, ia*32
-gifn2 ftgen 0,0,-12,-51,11,2,cpspch(8),3,
+gifn2 ftgen 0,0,-24,-51,12,2,cpspch(9),0,
 2^(0/12),
 2^(1/12),
 2^(2/12),
@@ -35,24 +35,16 @@ print(table3(3.5, gifn2))
 endin
 
 instr 1
-io=1
-print(table3(io+(0/12), gifn1))
-print(table3(io+(1/12), gifn1))
-print(table3(io+(2/12), gifn1))
-print(table3(io+(3/12), gifn1))
-print(table3(io+(4/12), gifn1))
-print(table3(io+(5/12), gifn1))
-print(table3(io+(6/12), gifn1))
-print(table3(io+(7/12), gifn1))
-print(table3(io+(8/12), gifn1))
-print(table3(io+(9/12), gifn1))
-print(table3(io+(10/12), gifn1))
-print(table3(io+(11/12), gifn1))
-print(table3(io+(12/12), gifn1))
+io=3
+ii=0
+while ii < 13 do
+    print(table3(io+(ii/12), gifn1), table(ii, gifn2))
+    ii += 1
+od
 endin
 
 </CsInstruments>
 <CsScore>
-i3 0 .1
+i1 0 .1
 </CsScore>
 </CsoundSynthesizer>
