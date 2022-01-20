@@ -23,6 +23,11 @@ gifn2 ftgen 0,0,-12,-51,11,2,cpspch(8),3,
 2^(9/12),
 2^(10/12),
 2^(11/12)
+gifn3 ftgen 0,0,16,-7, 0,16,16
+
+instr 3
+print(tablei(0.8, gifn3))
+endin
 
 instr 2
 ftprint(gifn2)
@@ -48,6 +53,6 @@ endin
 
 </CsInstruments>
 <CsScore>
-i2 0 .1
+i3 0 .1
 </CsScore>
 </CsoundSynthesizer>
