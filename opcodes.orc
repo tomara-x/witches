@@ -44,7 +44,7 @@ xout kout
 endop
 
 
-opcode Taphath, kk[]k[], kk[]k[]k[]iOO
+opcode Taphath, kk[]k[], kk[]k[]k[]iOOO
 /*
 Different rituals, but can grant you powers similar to those of the
 Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
@@ -53,7 +53,7 @@ Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 
 Syntax:
 kActiveStep, kPitchArr[], kTrigArr[] Taphath kTrig, kNoteIndx[],    \
-    kNdxGain[], kQArr[], [kMin[], kMax[],] i/kFn [, kStepMode] [, kReset]
+    kNdxGain[], kQArr[], [kMin[], kMax[],] i/kFn [, kStepMode] [, kReset] [, kIntrp]
 
 Initialization:
 iFn: Function table containing pitch information (using gen51 for example)
@@ -99,12 +99,14 @@ kStepMode: How the sequencer will behave upon receiving a trigger.
         0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
 kReset: Reset the sequencer to its original (kNoteIndex) state when non zero.
         (defaults to 0)
+kIntrp: Interpolation mode for fractional indexes (0=raw index, 1=linear, 2=cubic)
+        (other values will be treated as 0) (defauts to 0)
 
 Note: The GEN51 plays a big role in this opcode's operation.
         It acts as a pitch quantizer and a pitch range limiter.
         Might wanna check out its documentation.
 */
-kTrig, kNoteIndx[], kNdxGain[], kQArr[], iFn, kStepMode, kReset xin
+kTrig, kNoteIndx[], kNdxGain[], kQArr[], iFn, kStepMode, kReset, kIntrp xin
 
 ilen        =       lenarray(kNoteIndx)
 kmem[]      init    ilen ;storing the initial notes state
@@ -128,7 +130,13 @@ endif
 ;initialize the pitch array
 kn = 0
 while kn < ilen do
-    kPitchArr[kn] = table(kNoteIndx[kn], iFn, 0, 0, 1)
+    if kIntrp == 1 then
+        kPitchArr[kn] = tablei(kNoteIndx[kn], iFn, 0, 0, 1)
+    elseif kIntrp == 2 then
+        kPitchArr[kn] = table3(kNoteIndx[kn], iFn, 0, 0, 1)
+    else
+        kPitchArr[kn] = table(kNoteIndx[kn], iFn, 0, 0, 1)
+    endif
     kn += 1
 od
 
@@ -170,7 +178,14 @@ if kTrig != 0 then
     ksum[kAS] = ksum[kAS]+kNdxGain[kAS] ;accumulate the increments
     knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values (whisper: THIS WAS ADDING THE WHOLE ARRAYS FOR SOME REASON!)
     kTrigArr[kAS] = 1 ;current step's trigger output
-    kPitchArr[kAS] = table(knewindex[kAS], iFn, 0, 0, 1) ;output transposed index's value
+    ;output transposed index's value
+    if kIntrp == 1 then
+        kPitchArr[kAS] = tablei(knewindex[kAS], iFn, 0, 0, 1)
+    elseif kIntrp == 2 then
+        kPitchArr[kAS] = table3(knewindex[kAS], iFn, 0, 0, 1)
+    else
+        kPitchArr[kAS] = table(knewindex[kAS], iFn, 0, 0, 1)
+    endif
 endif
 
 if kReset != 0 then
@@ -181,8 +196,8 @@ endif
 xout kAS, kPitchArr, kTrigArr
 endop
 
-opcode Taphath, kk[]k[], kk[]k[]k[]k[]k[]iOO  ;range selection arrays overoad
-kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], iFn, kStepMode, kReset xin
+opcode Taphath, kk[]k[], kk[]k[]k[]k[]k[]iOOO  ;range selection arrays overoad
+kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], iFn, kStepMode, kReset, kIntrp xin
 
 ilen        =       lenarray(kNoteIndx)
 kmem[]      init    ilen ;storing the initial notes state
@@ -206,7 +221,196 @@ endif
 ;initialize the pitch array
 kn = 0
 while kn < ilen do
-    kPitchArr[kn] = table(wrap(kNoteIndx[kn], kMin[kn], kMax[kn]), iFn, 0, 0, 1)
+    if kIntrp == 1 then
+        kPitchArr[kn] = tablei(wrap(kNoteIndx[kn], kMin[kn],kMax[kn]), iFn, 0, 0, 1)
+    elseif kIntrp == 2 then
+        kPitchArr[kn] = table3(wrap(kNoteIndx[kn], kMin[kn],kMax[kn]), iFn, 0, 0, 1)
+    else
+        kPitchArr[kn] = table(wrap(kNoteIndx[kn], kMin[kn],kMax[kn]), iFn, 0, 0, 1)
+    endif
+    kn += 1
+od
+
+PastKOne:
+kTrigArr = 0 ;clear trigger outputs
+if kTrig != 0 then
+    ; go to the next step
+    kmax maxarray kQArr
+    if kmax == 0 then ; no queued steps (max=0 means entire array's non-positive)
+        if kStepMode == 0 then
+            kAS = (kAS+1)%ilen ;step foreward
+        elseif kStepMode == 1 then
+            kAS = wrap(kAS-1, 0, ilen) ;step backward
+        elseif kStepMode == 2 then
+            kAS = trandom(kTrig, 0, ilen) ;go to random step
+        else
+        endif
+    else ;there are queued steps
+        if kStepMode == 0 then
+            kAS = (kAS+1)%ilen ;make sure to not get stuck if current step is queued
+            while kQArr[kAS] <= 0 do ;go to nearest queued step forward
+                kAS = (kAS+1)%ilen
+            od
+        elseif kStepMode == 1 then
+            kAS = wrap(kAS-1, 0, ilen) ;same deal but we're moving backward
+            while kQArr[kAS] <= 0 do
+                kAS = wrap(kAS-1, 0, ilen) ;wrap is easier than dealing with neg %
+            od
+        elseif kStepMode == 2 then
+            kAS = trandom(kTrig, 0, ilen) ;jump to random step..
+            while kQArr[kAS] <= 0 do ; ..then go to nearest queued step foreward
+                kAS = (kAS+1)%ilen
+            od
+        else
+        endif
+    endif
+
+    ; do the step biz
+    ksum[kAS] = ksum[kAS]+kNdxGain[kAS] ;accumulate the increments
+    knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values
+    knewindex[kAS] = wrap(knewindex[kAS], kMin[kAS], kMax[kAS]) ;wrap to limits
+    kTrigArr[kAS] = 1 ;current step's trigger output
+    ;output transposed index's value
+    if kIntrp == 1 then
+        kPitchArr[kAS] = tablei(knewindex[kAS], iFn, 0, 0, 1)
+    elseif kIntrp == 2 then
+        kPitchArr[kAS] = table3(knewindex[kAS], iFn, 0, 0, 1)
+    else
+        kPitchArr[kAS] = table(knewindex[kAS], iFn, 0, 0, 1)
+    endif
+endif
+
+if kReset != 0 then
+    knewindex = kmem ;revert to initial state
+    ksum = 0 ;clear accumulated increments
+endif
+
+xout kAS, kPitchArr, kTrigArr
+endop
+
+opcode Taphath, kk[]k[], kk[]k[]k[]kOOO  ;kFt overload
+kTrig, kNoteIndx[], kNdxGain[], kQArr[], kFn, kStepMode, kReset, kIntrp xin
+
+ilen        =       lenarray(kNoteIndx)
+kmem[]      init    ilen ;storing the initial notes state
+ksum[]      init    ilen ;for accumulating the gain
+knewindex[] init    ilen ;sum of note indexes and gain
+kPitchArr[] init    ilen
+kTrigArr[]  init    ilen
+
+;do this only on the first k-cycle the opcode runs
+kfirst  init 1
+ckgoto kfirst!=1, PastKOne
+kfirst = 0
+;store initial notes
+kmem = kNoteIndx
+;initial active step
+if kStepMode == 0 then
+    kAS = (ilen-1)%ilen
+else
+    kAS = 0
+endif
+;initialize the pitch array
+kn = 0
+while kn < ilen do
+    if kIntrp == 1 then
+        kPitchArr[kn] = tableikt(kNoteIndx[kn], kFn, 0, 0, 1)
+    elseif kIntrp == 2 then
+        kPitchArr[kn] = tablexkt(kNoteIndx[kn], kFn, 0, 4, 0, 0, 1) ;kw nah, 4=cubic
+    else
+        kPitchArr[kn] = tablekt(kNoteIndx[kn], kFn, 0, 0, 1)
+    endif
+    kn += 1
+od
+
+PastKOne:
+kTrigArr = 0 ;clear trigger outputs
+if kTrig != 0 then
+    ; go to the next step
+    kmax maxarray kQArr
+    if kmax == 0 then ; no queued steps (max=0 means entire array's non-positive)
+        if kStepMode == 0 then
+            kAS = (kAS+1)%ilen ;step foreward
+        elseif kStepMode == 1 then
+            kAS = wrap(kAS-1, 0, ilen) ;step backward
+        elseif kStepMode == 2 then
+            kAS = trandom(kTrig, 0, ilen) ;go to random step
+        else
+        endif
+    else ;there are queued steps
+        if kStepMode == 0 then
+            kAS = (kAS+1)%ilen ;make sure to not get stuck if current step is queued
+            while kQArr[kAS] <= 0 do ;go to nearest queued step forward
+                kAS = (kAS+1)%ilen
+            od
+        elseif kStepMode == 1 then
+            kAS = wrap(kAS-1, 0, ilen) ;same deal but we're moving backward
+            while kQArr[kAS] <= 0 do
+                kAS = wrap(kAS-1, 0, ilen) ;wrap is easier than dealing with neg %
+            od
+        elseif kStepMode == 2 then
+            kAS = trandom(kTrig, 0, ilen) ;jump to random step..
+            while kQArr[kAS] <= 0 do ; ..then go to nearest queued step foreward
+                kAS = (kAS+1)%ilen
+            od
+        else
+        endif
+    endif
+
+    ; do the step biz
+    ksum[kAS] = ksum[kAS]+kNdxGain[kAS] ;accumulate the increments
+    knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values (whisper: THIS WAS ADDING THE WHOLE ARRAYS FOR SOME REASON!)
+    kTrigArr[kAS] = 1 ;current step's trigger output
+    ;output transposed index's value
+    if kIntrp == 1 then
+        kPitchArr[kAS] = tableikt(knewindex[kAS], kFn, 0, 0, 1)
+    elseif kIntrp == 2 then
+        kPitchArr[kAS] = tablexkt(knewindex[kAS], kFn, 0, 4, 0, 0, 1);kw nah,4=cubic
+    else
+        kPitchArr[kAS] = tablekt(knewindex[kAS], kFn, 0, 0, 1)
+    endif
+endif
+
+if kReset != 0 then
+    knewindex = kmem ;revert to initial state
+    ksum = 0 ;clear accumulated increments
+endif
+
+xout kAS, kPitchArr, kTrigArr
+endop
+
+opcode Taphath, kk[]k[], kk[]k[]k[]k[]k[]kOOO  ;kFt and range arrays overload
+kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], kFn, kStepMode, kReset, kIntrp xin
+
+ilen        =       lenarray(kNoteIndx)
+kmem[]      init    ilen ;storing the initial notes state
+ksum[]      init    ilen ;for accumulating the gain
+knewindex[] init    ilen ;sum of note indexes and gain
+kPitchArr[] init    ilen
+kTrigArr[]  init    ilen
+
+;do this only on the first k-cycle the opcode runs
+kfirst  init 1
+ckgoto kfirst!=1, PastKOne
+kfirst = 0
+;store initial notes
+kmem = kNoteIndx
+;initial active step
+if kStepMode == 0 then
+    kAS = (ilen-1)%ilen
+else
+    kAS = 0
+endif
+;initialize the pitch array
+kn = 0
+while kn < ilen do
+    if kIntrp == 1 then
+        kPitchArr[kn] = tableikt(wrap(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,0,1)
+    elseif kIntrp == 2 then
+        kPitchArr[kn] = tablexkt(wrap(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,4,0,0,1)
+    else
+        kPitchArr[kn] = tablekt(wrap(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,0,1)
+    endif
     kn += 1
 od
 
@@ -249,164 +453,14 @@ if kTrig != 0 then
     knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values
     knewindex[kAS] = wrap(knewindex[kAS], kMin[kAS], kMax[kAS])
     kTrigArr[kAS] = 1 ;current step's trigger output
-    kPitchArr[kAS] = table(knewindex[kAS], iFn, 0, 0, 1) ;output transposed index's value
-endif
-
-if kReset != 0 then
-    knewindex = kmem ;revert to initial state
-    ksum = 0 ;clear accumulated increments
-endif
-
-xout kAS, kPitchArr, kTrigArr
-endop
-
-opcode Taphath, kk[]k[], kk[]k[]k[]kOO  ;kFt overload
-kTrig, kNoteIndx[], kNdxGain[], kQArr[], kFn, kStepMode, kReset xin
-
-ilen        =       lenarray(kNoteIndx)
-kmem[]      init    ilen ;storing the initial notes state
-ksum[]      init    ilen ;for accumulating the gain
-knewindex[] init    ilen ;sum of note indexes and gain
-kPitchArr[] init    ilen
-kTrigArr[]  init    ilen
-
-;do this only on the first k-cycle the opcode runs
-kfirst  init 1
-ckgoto kfirst!=1, PastKOne
-kfirst = 0
-;store initial notes
-kmem = kNoteIndx
-;initial active step
-if kStepMode == 0 then
-    kAS = (ilen-1)%ilen
-else
-    kAS = 0
-endif
-;initialize the pitch array
-kn = 0
-while kn < ilen do
-    kPitchArr[kn] = tablekt(kNoteIndx[kn], kFn, 0, 0, 1)
-    kn += 1
-od
-
-PastKOne:
-kTrigArr = 0 ;clear trigger outputs
-if kTrig != 0 then
-    ; go to the next step
-    kmax maxarray kQArr
-    if kmax == 0 then ; no queued steps (max=0 means entire array's non-positive)
-        if kStepMode == 0 then
-            kAS = (kAS+1)%ilen ;step foreward
-        elseif kStepMode == 1 then
-            kAS = wrap(kAS-1, 0, ilen) ;step backward
-        elseif kStepMode == 2 then
-            kAS = trandom(kTrig, 0, ilen) ;go to random step
-        else
-        endif
-    else ;there are queued steps
-        if kStepMode == 0 then
-            kAS = (kAS+1)%ilen ;make sure to not get stuck if current step is queued
-            while kQArr[kAS] <= 0 do ;go to nearest queued step forward
-                kAS = (kAS+1)%ilen
-            od
-        elseif kStepMode == 1 then
-            kAS = wrap(kAS-1, 0, ilen) ;same deal but we're moving backward
-            while kQArr[kAS] <= 0 do
-                kAS = wrap(kAS-1, 0, ilen) ;wrap is easier than dealing with neg %
-            od
-        elseif kStepMode == 2 then
-            kAS = trandom(kTrig, 0, ilen) ;jump to random step..
-            while kQArr[kAS] <= 0 do ; ..then go to nearest queued step foreward
-                kAS = (kAS+1)%ilen
-            od
-        else
-        endif
+    ;output transposed index's value
+    if kIntrp == 1 then
+        kPitchArr[kAS] = tableikt(knewindex[kAS], kFn, 0, 0, 1)
+    elseif kIntrp == 2 then
+        kPitchArr[kAS] = tablexkt(knewindex[kAS], kFn, 0, 4, 0, 0, 1);kw nah,4=cubic
+    else
+        kPitchArr[kAS] = tablekt(knewindex[kAS], kFn, 0, 0, 1)
     endif
-
-    ; do the step biz
-    ksum[kAS] = ksum[kAS]+kNdxGain[kAS] ;accumulate the increments
-    knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values (whisper: THIS WAS ADDING THE WHOLE ARRAYS FOR SOME REASON!)
-    kTrigArr[kAS] = 1 ;current step's trigger output
-    kPitchArr[kAS] = tablekt(knewindex[kAS], kFn, 0, 0, 1) ;output transposed index's value
-endif
-
-if kReset != 0 then
-    knewindex = kmem ;revert to initial state
-    ksum = 0 ;clear accumulated increments
-endif
-
-xout kAS, kPitchArr, kTrigArr
-endop
-
-opcode Taphath, kk[]k[], kk[]k[]k[]k[]k[]kOO  ;kFt and range arrays overload
-kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], kFn, kStepMode, kReset xin
-
-ilen        =       lenarray(kNoteIndx)
-kmem[]      init    ilen ;storing the initial notes state
-ksum[]      init    ilen ;for accumulating the gain
-knewindex[] init    ilen ;sum of note indexes and gain
-kPitchArr[] init    ilen
-kTrigArr[]  init    ilen
-
-;do this only on the first k-cycle the opcode runs
-kfirst  init 1
-ckgoto kfirst!=1, PastKOne
-kfirst = 0
-;store initial notes
-kmem = kNoteIndx
-;initial active step
-if kStepMode == 0 then
-    kAS = (ilen-1)%ilen
-else
-    kAS = 0
-endif
-;initialize the pitch array
-kn = 0
-while kn < ilen do
-    kPitchArr[kn] = tablekt(wrap(kNoteIndx[kn], kMin[kn], kMax[kn]), kFn, 0, 0, 1)
-    kn += 1
-od
-
-PastKOne:
-kTrigArr = 0 ;clear trigger outputs
-if kTrig != 0 then
-    ; go to the next step
-    kmax maxarray kQArr
-    if kmax == 0 then ; no queued steps (max=0 means entire array's non-positive)
-        if kStepMode == 0 then
-            kAS = (kAS+1)%ilen ;step foreward
-        elseif kStepMode == 1 then
-            kAS = wrap(kAS-1, 0, ilen) ;step backward
-        elseif kStepMode == 2 then
-            kAS = trandom(kTrig, 0, ilen) ;go to random step
-        else
-        endif
-    else ;there are queued steps
-        if kStepMode == 0 then
-            kAS = (kAS+1)%ilen ;make sure to not get stuck if current step is queued
-            while kQArr[kAS] <= 0 do ;go to nearest queued step forward
-                kAS = (kAS+1)%ilen
-            od
-        elseif kStepMode == 1 then
-            kAS = wrap(kAS-1, 0, ilen) ;same deal but we're moving backward
-            while kQArr[kAS] <= 0 do
-                kAS = wrap(kAS-1, 0, ilen) ;wrap is easier than dealing with neg %
-            od
-        elseif kStepMode == 2 then
-            kAS = trandom(kTrig, 0, ilen) ;jump to random step..
-            while kQArr[kAS] <= 0 do ; ..then go to nearest queued step foreward
-                kAS = (kAS+1)%ilen
-            od
-        else
-        endif
-    endif
-
-    ; do the step biz
-    ksum[kAS] = ksum[kAS]+kNdxGain[kAS] ;accumulate the increments
-    knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values
-    knewindex[kAS] = wrap(knewindex[kAS], kMin[kAS], kMax[kAS])
-    kTrigArr[kAS] = 1 ;current step's trigger output
-    kPitchArr[kAS] = tablekt(knewindex[kAS], kFn, 0, 0, 1) ;output transposed index's value
 endif
 
 if kReset != 0 then
