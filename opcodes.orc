@@ -400,12 +400,33 @@ endif
 ;initialize the pitch array
 kn = 0
 while kn < ilen do
-    if kIntrp == 1 then
-        kPitchArr[kn] = tableikt(kNoteIndx[kn], kFn, 0, 0, 1)
-    elseif kIntrp == 2 then
-        kPitchArr[kn] = tablexkt(kNoteIndx[kn], kFn, 0, 4, 0, 0, 1) ;kw nah, 4=cubic
+    ; limit mode
+    if kLmtMode == 1 then
+        if kIntrp == 1 then
+            kPitchArr[kn] = tableikt(kNoteIndx[kn], kFn) ;linear
+        elseif kIntrp == 2 then
+            kPitchArr[kn] = tablexkt(kNoteIndx[kn], kFn, 0, 4) ;cubic
+        else
+            kPitchArr[kn] = tablekt(kNoteIndx[kn], kFn) ;raw index (default)
+        endif
+    ; mirror mode
+    elseif kLmtMode == 2 then
+        if kIntrp == 1 then
+            kPitchArr[kn] = tableikt(mirror(kNoteIndx[kn],0,ftlen(i(kFn))), kFn)
+        elseif kIntrp == 2 then
+            kPitchArr[kn] = tablexkt(mirror(kNoteIndx[kn],0,ftlen(i(kFn))), kFn,0,4)
+        else
+            kPitchArr[kn] = tablekt(mirror(kNoteIndx[kn],0,ftlen(i(kFn))), kFn)
+        endif
+    ; wrap mode (default)
     else
-        kPitchArr[kn] = tablekt(kNoteIndx[kn], kFn, 0, 0, 1)
+        if kIntrp == 1 then
+            kPitchArr[kn] = tableikt(kNoteIndx[kn], kFn, 0, 0, 1)
+        elseif kIntrp == 2 then
+            kPitchArr[kn] = tablexkt(kNoteIndx[kn], kFn, 0,4, 0,0,1)
+        else
+            kPitchArr[kn] = tablekt(kNoteIndx[kn], kFn, 0, 0, 1)
+        endif
     endif
     kn += 1
 od
@@ -449,12 +470,33 @@ if kTrig != 0 then
     knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values (whisper: THIS WAS ADDING THE WHOLE ARRAYS FOR SOME REASON!)
     kTrigArr[kAS] = 1 ;current step's trigger output
     ;output transposed index's value
-    if kIntrp == 1 then
-        kPitchArr[kAS] = tableikt(knewindex[kAS], kFn, 0, 0, 1)
-    elseif kIntrp == 2 then
-        kPitchArr[kAS] = tablexkt(knewindex[kAS], kFn, 0, 4, 0, 0, 1);kw nah,4=cubic
+    ; limit mode
+    if kLmtMode == 1 then
+        if kIntrp == 1 then
+            kPitchArr[kAS] = tableikt(knewindex[kAS], kFn) ; linear
+        elseif kIntrp == 2 then
+            kPitchArr[kAS] = tablexkt(knewindex[kAS], kFn, 0,4) ; cubic
+        else
+            kPitchArr[kAS] = tablekt(knewindex[kAS], kFn) ; raw index (default)
+        endif
+    ; mirror mode
+    elseif kLmtMode == 2 then
+        if kIntrp == 1 then
+            kPitchArr[kAS] = tableikt(mirror(knewindex[kAS],0,ftlen(i(kFn))), kFn)
+        elseif kIntrp == 2 then
+            kPitchArr[kAS] = tablexkt(mirror(knewindex[kAS],0,ftlen(i(kFn))), kFn, 0,4)
+        else
+            kPitchArr[kAS] = tablekt(mirror(knewindex[kAS],0,ftlen(i(kFn))), kFn)
+        endif
+    ; wrap mode (default)
     else
-        kPitchArr[kAS] = tablekt(knewindex[kAS], kFn, 0, 0, 1)
+        if kIntrp == 1 then
+            kPitchArr[kAS] = tableikt(knewindex[kAS], kFn, 0, 0, 1)
+        elseif kIntrp == 2 then
+            kPitchArr[kAS] = tablexkt(knewindex[kAS], kFn, 0,4, 0, 0, 1)
+        else
+            kPitchArr[kAS] = tablekt(knewindex[kAS], kFn, 0, 0, 1)
+        endif
     endif
 endif
 
