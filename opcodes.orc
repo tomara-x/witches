@@ -44,7 +44,7 @@ xout kout
 endop
 
 
-opcode Taphath, kk[]k[], kk[]k[]k[]iOOO
+opcode Taphath, kk[]k[], kk[]k[]k[]iOOOO
 /*
 Different rituals, but can grant you powers similar to those of the
 Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
@@ -53,7 +53,8 @@ Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 
 Syntax:
 kActiveStep, kPitchArr[], kTrigArr[] Taphath kTrig, kNoteIndx[],    \
-    kNdxGain[], kQArr[], [kMin[], kMax[],] i/kFn [, kStepMode] [, kReset] [, kIntrp]
+    kNdxGain[], kQArr[], [kMin[], kMax[],] i/kFn [, kStepMode]      \
+    [, kReset] [, kLmtMode] [, kIntrp]
 
 Initialization:
 iFn: Function table containing pitch information (using gen51 for example)
@@ -99,6 +100,9 @@ kStepMode: How the sequencer will behave upon receiving a trigger.
         0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
 kReset: Reset the sequencer to its original (kNoteIndex) state when non zero.
         (defaults to 0)
+kLmtMode: How to behave around the boundaries of the function table.
+        (0=wrap (default), 1=limit, 2=mirror) (other values are treated as 0)
+        note: mirror mode won't work in kFn mode unless you use kMin[] and kMax[]
 kIntrp: Interpolation mode for fractional indexes (0=raw index, 1=linear, 2=cubic)
         (other values will be treated as 0) (defauts to 0)
 
@@ -106,7 +110,7 @@ Note: The GEN51 plays a big role in this opcode's operation.
         It acts as a pitch quantizer and a pitch range limiter.
         Might wanna check out its documentation.
 */
-kTrig, kNoteIndx[], kNdxGain[], kQArr[], iFn, kStepMode, kReset, kIntrp xin
+kTrig, kNoteIndx[], kNdxGain[], kQArr[], iFn, kStepMode, kReset, kLmtMode, kIntrp xin
 
 ilen        =       lenarray(kNoteIndx)
 kmem[]      init    ilen ;storing the initial notes state
@@ -130,12 +134,33 @@ endif
 ;initialize the pitch array
 kn = 0
 while kn < ilen do
-    if kIntrp == 1 then
-        kPitchArr[kn] = tablei(kNoteIndx[kn], iFn, 0, 0, 1)
-    elseif kIntrp == 2 then
-        kPitchArr[kn] = table3(kNoteIndx[kn], iFn, 0, 0, 1)
+    ; limit mode
+    if kLmtMode == 1 then
+        if kIntrp == 1 then
+            kPitchArr[kn] = tablei(kNoteIndx[kn], iFn) ;linear
+        elseif kIntrp == 2 then
+            kPitchArr[kn] = table3(kNoteIndx[kn], iFn) ;cubic
+        else
+            kPitchArr[kn] = table(kNoteIndx[kn], iFn) ;raw index (default)
+        endif
+    ; mirror mode
+    elseif kLmtMode == 2 then
+        if kIntrp == 1 then
+            kPitchArr[kn] = tablei(mirror(kNoteIndx[kn], 0, ftlen(iFn)), iFn)
+        elseif kIntrp == 2 then
+            kPitchArr[kn] = table3(mirror(kNoteIndx[kn], 0, ftlen(iFn)), iFn)
+        else
+            kPitchArr[kn] = table(mirror(kNoteIndx[kn], 0, ftlen(iFn)), iFn)
+        endif
+    ; wrap mode (default)
     else
-        kPitchArr[kn] = table(kNoteIndx[kn], iFn, 0, 0, 1)
+        if kIntrp == 1 then
+            kPitchArr[kn] = tablei(kNoteIndx[kn], iFn, 0, 0, 1)
+        elseif kIntrp == 2 then
+            kPitchArr[kn] = table3(kNoteIndx[kn], iFn, 0, 0, 1)
+        else
+            kPitchArr[kn] = table(kNoteIndx[kn], iFn, 0, 0, 1)
+        endif
     endif
     kn += 1
 od
@@ -179,12 +204,33 @@ if kTrig != 0 then
     knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values (whisper: THIS WAS ADDING THE WHOLE ARRAYS FOR SOME REASON!)
     kTrigArr[kAS] = 1 ;current step's trigger output
     ;output transposed index's value
-    if kIntrp == 1 then
-        kPitchArr[kAS] = tablei(knewindex[kAS], iFn, 0, 0, 1)
-    elseif kIntrp == 2 then
-        kPitchArr[kAS] = table3(knewindex[kAS], iFn, 0, 0, 1)
+    ; limit mode
+    if kLmtMode == 1 then
+        if kIntrp == 1 then
+            kPitchArr[kAS] = tablei(knewindex[kAS], iFn) ; linear
+        elseif kIntrp == 2 then
+            kPitchArr[kAS] = table3(knewindex[kAS], iFn) ; cubic
+        else
+            kPitchArr[kAS] = table(knewindex[kAS], iFn) ; raw index (default)
+        endif
+    ; mirror mode
+    elseif kLmtMode == 2 then
+        if kIntrp == 1 then
+            kPitchArr[kAS] = tablei(mirror(knewindex[kAS], 0, ftlen(iFn)), iFn)
+        elseif kIntrp == 2 then
+            kPitchArr[kAS] = table3(mirror(knewindex[kAS], 0, ftlen(iFn)), iFn)
+        else
+            kPitchArr[kAS] = table(mirror(knewindex[kAS], 0, ftlen(iFn)), iFn)
+        endif
+    ; wrap mode (default)
     else
-        kPitchArr[kAS] = table(knewindex[kAS], iFn, 0, 0, 1)
+        if kIntrp == 1 then
+            kPitchArr[kAS] = tablei(knewindex[kAS], iFn, 0, 0, 1)
+        elseif kIntrp == 2 then
+            kPitchArr[kAS] = table3(knewindex[kAS], iFn, 0, 0, 1)
+        else
+            kPitchArr[kAS] = table(knewindex[kAS], iFn, 0, 0, 1)
+        endif
     endif
 endif
 
@@ -196,8 +242,8 @@ endif
 xout kAS, kPitchArr, kTrigArr
 endop
 
-opcode Taphath, kk[]k[], kk[]k[]k[]k[]k[]iOOO  ;range selection arrays overoad
-kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], iFn, kStepMode, kReset, kIntrp xin
+opcode Taphath, kk[]k[], kk[]k[]k[]k[]k[]iOOOO  ;range selection arrays overoad
+kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], iFn, kStepMode, kReset, kLmtMode, kIntrp xin
 
 ilen        =       lenarray(kNoteIndx)
 kmem[]      init    ilen ;storing the initial notes state
@@ -221,12 +267,33 @@ endif
 ;initialize the pitch array
 kn = 0
 while kn < ilen do
-    if kIntrp == 1 then
-        kPitchArr[kn] = tablei(wrap(kNoteIndx[kn], kMin[kn],kMax[kn]), iFn, 0, 0, 1)
-    elseif kIntrp == 2 then
-        kPitchArr[kn] = table3(wrap(kNoteIndx[kn], kMin[kn],kMax[kn]), iFn, 0, 0, 1)
+    ; limit mode
+    if kLmtMode == 1 then
+        if kIntrp == 1 then
+            kPitchArr[kn] = tablei(limit(kNoteIndx[kn],kMin[kn],kMax[kn]),iFn)
+        elseif kIntrp == 2 then
+            kPitchArr[kn] = table3(limit(kNoteIndx[kn],kMin[kn],kMax[kn]),iFn)
+        else
+            kPitchArr[kn] = table(limit(kNoteIndx[kn],kMin[kn],kMax[kn]),iFn)
+        endif
+    ; mirror mode
+    elseif kLmtMode == 2 then
+        if kIntrp == 1 then
+            kPitchArr[kn] = tablei(mirror(kNoteIndx[kn],kMin[kn],kMax[kn]),iFn)
+        elseif kIntrp == 2 then
+            kPitchArr[kn] = table3(mirror(kNoteIndx[kn],kMin[kn],kMax[kn]),iFn)
+        else
+            kPitchArr[kn] = table(mirror(kNoteIndx[kn],kMin[kn],kMax[kn]),iFn)
+        endif
+    ; wrap mode (defaut)
     else
-        kPitchArr[kn] = table(wrap(kNoteIndx[kn], kMin[kn],kMax[kn]), iFn, 0, 0, 1)
+        if kIntrp == 1 then
+            kPitchArr[kn] = tablei(wrap(kNoteIndx[kn],kMin[kn],kMax[kn]),iFn,0,0,1)
+        elseif kIntrp == 2 then
+            kPitchArr[kn] = table3(wrap(kNoteIndx[kn],kMin[kn],kMax[kn]),iFn,0,0,1)
+        else
+            kPitchArr[kn] = table(wrap(kNoteIndx[kn],kMin[kn],kMax[kn]),iFn,0,0,1)
+        endif
     endif
     kn += 1
 od
@@ -268,15 +335,35 @@ if kTrig != 0 then
     ; do the step biz
     ksum[kAS] = ksum[kAS]+kNdxGain[kAS] ;accumulate the increments
     knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values
-    knewindex[kAS] = wrap(knewindex[kAS], kMin[kAS], kMax[kAS]) ;wrap to limits
     kTrigArr[kAS] = 1 ;current step's trigger output
     ;output transposed index's value
-    if kIntrp == 1 then
-        kPitchArr[kAS] = tablei(knewindex[kAS], iFn, 0, 0, 1)
-    elseif kIntrp == 2 then
-        kPitchArr[kAS] = table3(knewindex[kAS], iFn, 0, 0, 1)
+    ; limit mode
+    if kLmtMode == 1 then
+        if kIntrp == 1 then
+            kPitchArr[kAS] = tablei(limit(knewindex[kAS],kMin[kAS],kMax[kAS]),iFn)
+        elseif kIntrp == 2 then
+            kPitchArr[kAS] = table3(limit(knewindex[kAS],kMin[kAS],kMax[kAS]),iFn)
+        else
+            kPitchArr[kAS] = table(limit(knewindex[kAS],kMin[kAS],kMax[kAS]),iFn)
+        endif
+    ; mirror mode
+    elseif kLmtMode == 2 then
+        if kIntrp == 1 then
+            kPitchArr[kAS] = tablei(mirror(knewindex[kAS],kMin[kAS],kMax[kAS]),iFn)
+        elseif kIntrp == 2 then
+            kPitchArr[kAS] = table3(mirror(knewindex[kAS],kMin[kAS],kMax[kAS]),iFn)
+        else
+            kPitchArr[kAS] = table(mirror(knewindex[kAS],kMin[kAS],kMax[kAS]),iFn)
+        endif
+    ; wrap mode (default)
     else
-        kPitchArr[kAS] = table(knewindex[kAS], iFn, 0, 0, 1)
+        if kIntrp == 1 then
+            kPitchArr[kAS] = tablei(wrap(knewindex[kAS],kMin[kAS],kMax[kAS]),iFn,0,0,1)
+        elseif kIntrp == 2 then
+            kPitchArr[kAS] = table3(wrap(knewindex[kAS],kMin[kAS],kMax[kAS]),iFn,0,0,1)
+        else
+            kPitchArr[kAS] = table(wrap(knewindex[kAS],kMin[kAS],kMax[kAS]),iFn,0,0,1)
+        endif
     endif
 endif
 
@@ -288,8 +375,8 @@ endif
 xout kAS, kPitchArr, kTrigArr
 endop
 
-opcode Taphath, kk[]k[], kk[]k[]k[]kOOO  ;kFt overload
-kTrig, kNoteIndx[], kNdxGain[], kQArr[], kFn, kStepMode, kReset, kIntrp xin
+opcode Taphath, kk[]k[], kk[]k[]k[]kOOOO  ;kFt overload
+kTrig, kNoteIndx[], kNdxGain[], kQArr[], kFn, kStepMode, kReset, kLmtMode, kIntrp xin
 
 ilen        =       lenarray(kNoteIndx)
 kmem[]      init    ilen ;storing the initial notes state
@@ -379,8 +466,8 @@ endif
 xout kAS, kPitchArr, kTrigArr
 endop
 
-opcode Taphath, kk[]k[], kk[]k[]k[]k[]k[]kOOO  ;kFt and range arrays overload
-kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], kFn, kStepMode, kReset, kIntrp xin
+opcode Taphath, kk[]k[], kk[]k[]k[]k[]k[]kOOOO  ;kFt and range arrays overload
+kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], kFn, kStepMode, kReset, kLmtMode, kIntrp xin
 
 ilen        =       lenarray(kNoteIndx)
 kmem[]      init    ilen ;storing the initial notes state
