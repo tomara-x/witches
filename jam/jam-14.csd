@@ -29,10 +29,10 @@ ktrig   metro $TEMPO*4/60
 kn1[]   fillarray 00, 00, 00, 00, 00, 00, 00, 00
 kg1[]   fillarray 00, 02, 00, 00, 00, 00, 00, 00
 kQ1[]   fillarray 00, 00, 00, 00, 00, 00, 00, 00
-kmn1[]  fillarray 00, 00, 00, 00, 00, 00, 00, 00
+kmn1[]  fillarray 00, 10, 00, 00, 00, 00, 00, 00
 kmx1[]  fillarray 14, 24, 14, 14, 14, 35, 35, 35
 kft init giud4
-kAS1, kp1[], kt1[] Taphath ktrig, kn1, kg1, kQ1, /*kmn1, kmx1,*/ kft, 0, 0, 2
+kAS1, kp1[], kt1[] Taphath ktrig, kn1, kg1, kQ1, kmn1, kmx1, kft, 0, 0, 2
 asig oscil .05, kp1[kAS1]
 outs asig, asig
 ;schedkwhen kt1[kAS1], 0,0, "", 0, 0.5, kp1[kAS1]
