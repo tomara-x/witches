@@ -102,7 +102,8 @@ kReset: Reset the sequencer to its original (kNoteIndex) state when non zero.
         (defaults to 0)
 kLmtMode: How to behave around the boundaries of the function table.
         (0=wrap (default), 1=limit, 2=mirror) (other values are treated as 0)
-        note: mirror mode won't work in kFn mode unless you use kMin[] and kMax[]
+        note: when given kFn and no range arrays, mirror mode will work according
+        to the length of the init value of kFn
 kIntrp: Interpolation mode for fractional indexes (0=raw index, 1=linear, 2=cubic)
         (other values will be treated as 0) (defauts to 0)
 
