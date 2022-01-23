@@ -202,7 +202,7 @@ if kTrig != 0 then
 
     ; do the step biz
     ksum[kAS] = ksum[kAS]+kNdxGain[kAS] ;accumulate the increments
-    knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values (whisper: THIS WAS ADDING THE WHOLE ARRAYS FOR SOME REASON!)
+    knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values
     kTrigArr[kAS] = 1 ;current step's trigger output
     ;output transposed index's value
     ; limit mode
@@ -468,7 +468,7 @@ if kTrig != 0 then
 
     ; do the step biz
     ksum[kAS] = ksum[kAS]+kNdxGain[kAS] ;accumulate the increments
-    knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values (whisper: THIS WAS ADDING THE WHOLE ARRAYS FOR SOME REASON!)
+    knewindex[kAS] = kNoteIndx[kAS]+ksum[kAS] ;add increments and index values
     kTrigArr[kAS] = 1 ;current step's trigger output
     ;output transposed index's value
     ; limit mode
