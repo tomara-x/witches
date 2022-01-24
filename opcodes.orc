@@ -716,7 +716,7 @@ xout kAS, kPitchArr, kTrigArr
 endop
 
 
-opcode Basemath, kk[]k[], kk[]k[]k[]k[]k[]k[]k[]k[]OO
+opcode Basemath, kk[]k[], kk[]k[]k[]k[]k[]k[]k[]k[]OOO
 /*
 Sister of Taphath. She modulates time and subdivisions instead of pitch/value.
 Inspired by the seqtime opcode, the Laundry Soup sequencer by computerscare,
@@ -727,7 +727,7 @@ computerscare [https://github.com/freddyz]
 Syntax:
 kActiveStep, kTrigArr[], kDivArr[] Basemath kTimeUnit, kLength[], kLenGain[],   \
     kMinLen[], kMaxLen[], kDivision[], kDivGain[], kMaxDiv[], kQArr[]           \
-    [, kStepMode] [, Reset]
+    [, kStepMode] [, kReset] [, kLmtMode]
 
 Performance:
 kActiveStep: Index of the currently active step (from 0 to lenarray(kLength))
@@ -762,6 +762,8 @@ kStepMode: Direction in which the sequencer will move.
     0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
 kReset: Reset sequencer to its original (kLength and kDivision) state when non zero.
     (defaults to 0)
+kLmtMode: How to behave around the boundaries. (0=wrap (default), 1=limit, 2=mirror)
+        (other values are treated as 0)
 
 Note: All input arrays can be modified mid-performance and the sequencer will
     react accordingly. Just don't change the length of the arrays please!
@@ -769,7 +771,7 @@ Note: I guess you can think of kLength as frequency dividers, and kDivision
     as frequency multipliers? (frequency being 1/kTimeUnit Hz)
 */
 
-kTimeUnit, kLength[], kLenGain[], kMinLen[], kMaxLen[], kDivision[], kDivGain[], kMaxDiv[], kQArr[], kStepMode, kReset xin
+kTimeUnit, kLength[], kLenGain[], kMinLen[], kMaxLen[], kDivision[], kDivGain[], kMaxDiv[], kQArr[], kStepMode, kReset, kLmtMode xin
 
 ilen            =       lenarray(kLength)
 klengainsum[]   init    ilen ;accumulates the gain values through sequencer run time
@@ -796,8 +798,19 @@ endif
 ;step biz
 knewlen[kAS] = klengainsum[kAS]+kLength[kAS]
 knewdiv[kAS] = kdivgainsum[kAS]+kDivision[kAS]
-knewlen[kAS] = wrap(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
-knewdiv[kAS] = wrap(knewdiv[kAS], 0, kMaxDiv[kAS])
+; limit mode
+if kLmtMode == 1 then
+    knewlen[kAS] = limit(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
+    knewdiv[kAS] = limit(knewdiv[kAS], 0, kMaxDiv[kAS])
+; mirror mode
+elseif kLmtMode == 2 then
+    knewlen[kAS] = mirror(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
+    knewdiv[kAS] = mirror(knewdiv[kAS], 0, kMaxDiv[kAS])
+; wrap mode
+else
+    knewlen[kAS] = wrap(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
+    knewdiv[kAS] = wrap(knewdiv[kAS], 0, kMaxDiv[kAS])
+endif
 
 PastKOne:
 kfreq = 1/(kTimeUnit == 0? 1 : abs(kTimeUnit))
@@ -846,9 +859,19 @@ if ktrig != 0 then
     kdivgainsum[kAS] = kdivgainsum[kAS]+kDivGain[kAS]
     knewlen[kAS] = klengainsum[kAS]+kLength[kAS]
     knewdiv[kAS] = kdivgainsum[kAS]+kDivision[kAS]
-    knewlen[kAS] = wrap(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
-    knewdiv[kAS] = wrap(knewdiv[kAS], 0, kMaxDiv[kAS])
-
+    ; limit mode
+    if kLmtMode == 1 then
+        knewlen[kAS] = limit(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
+        knewdiv[kAS] = limit(knewdiv[kAS], 0, kMaxDiv[kAS])
+    ; mirror mode
+    elseif kLmtMode == 2 then
+        knewlen[kAS] = mirror(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
+        knewdiv[kAS] = mirror(knewdiv[kAS], 0, kMaxDiv[kAS])
+    ; wrap mode
+    else
+        knewlen[kAS] = wrap(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
+        knewdiv[kAS] = wrap(knewdiv[kAS], 0, kMaxDiv[kAS])
+    endif
     kTrigArr[kAS] = 1
 endif
 
@@ -932,7 +955,7 @@ xout kAS, kTrigArr
 endop
 
 
-opcode tBasemath, kk[], kk[]k[]k[]k[]k[]OO
+opcode tBasemath, kk[], kk[]k[]k[]k[]k[]OOO
 /*
 Basemath that takes an external trigger input. (metro, metro2, etc)
 Instead of the length there's a count input for how many triggers are in a step.
@@ -940,7 +963,7 @@ Instead of the length there's a count input for how many triggers are in a step.
 
 Syntax:
 kActiveStep, kTrigArr[] tBasemath kTrig, kCount[], kGain[], kMin[], kMax[], \
-    kQArr[] [, kStepMode] [, Reset]
+    kQArr[] [, kStepMode] [, kReset] [, kLmtMode]
 
 Performance:
 kActiveStep: Index of the currently active step (from 0 to lenarray(kCount))
@@ -964,8 +987,10 @@ kQArr[]: The queue inputs for eaxh step. Queued steps take priority over other
 kStepMode: Direction in which the sequencer will move.
     0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
 kReset: Reset sequencer to its original (kCount) state when non-zero.(defaults to 0)
+kLmtMode: How to behave around the boundaries. (0=wrap (default), 1=limit, 2=mirror)
+        (other values are treated as 0)
 */
-kTrig, kCount[], kGain[], kMin[], kMax[], kQArr[], kStepMode, kReset xin
+kTrig, kCount[], kGain[], kMin[], kMax[], kQArr[], kStepMode, kReset, kLmtMode xin
 ilen        =       lenarray(kCount)
 kgainsum[]  init    ilen ;accumulates the gain values through sequencer run time
 knewcount[] init    ilen ;accumulated gains + the input kCount
@@ -1022,7 +1047,16 @@ if kcnt < 1 && kTrig != 0 then
     ;step biz
     kgainsum[kAS] = kgainsum[kAS]+kGain[kAS]
     knewcount[kAS] = kgainsum[kAS]+kCount[kAS]
-    knewcount[kAS] = wrap(knewcount[kAS], kMin[kAS], kMax[kAS])
+    ; limit mode
+    if kLmtMode == 1 then
+        knewcount[kAS] = limit(knewcount[kAS], kMin[kAS], kMax[kAS])
+    ; mirror mode
+    elseif kLmtMode == 2 then
+        knewcount[kAS] = mirror(knewcount[kAS], kMin[kAS], kMax[kAS])
+    ; wrap mode
+    else
+        knewcount[kAS] = wrap(knewcount[kAS], kMin[kAS], kMax[kAS])
+    endif
     kTrigArr[kAS] = 1
 endif
 
