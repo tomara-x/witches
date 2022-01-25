@@ -27,23 +27,34 @@ alwayson "verb"
 instr taphy1
 ktrig   metro $TEMPO*4/60
 kn1[]   fillarray 00, 00, 00, 00, 00, 00, 00, 00
-kg1[]   fillarray 10, 02, 00, 02, 03, 00, 00, 00
+kg1[]   fillarray 00, 16, 08, 00, 24, 08, 00, 16
 kQ1[]   fillarray 00, 00, 00, 00, 00, 00, 00, 00
 kmn1[]  fillarray 36, 36, 36, 36, 36, 36, 36, 36
-kmx1[]  fillarray 60, 60, 60, 60, 60, 60, 60, 60
-kAS1, kp1[], kt1[] Taphath ktrig, kn1, kg1, kQ1, kmn1, kmx1, gi12tet
+kmx1[]  fillarray 60, 60, 60, 84, 84, 60, 60, 84
+kAS1, kp1[], kt1[] Taphath ktrig, kn1, kg1, kQ1, kmn1, kmx1, gi12tet, 0, 0, 2
 
-asig adsynt2 0.1, kp1[kAS1]/4, gifsin, gifreqfn, giampfn, 64
-kn = 0
-;while kn < 64 do
-;    tablew(randomi:k(0, .05, 5), kn, giampfn)
-;    tablew(randomi:k(1, 8, 1), kn, gifreqfn)
-;    kn += 1
-;od
-tablew(randomi:k(0, .1, 5), randomi:k(0,64, 8), giampfn)
-tablew(ceil(randomi:k(1, 8, 1)), randomi:k(0,64, 5), gifreqfn)
+asig1 adsynt2 0.1, kp1[kAS1]/4, gifsin, gifreqfn, giampfn, 64
 
+ii = 0
+while ii < 64 do
+    tablew(0.05, ii, giampfn)
+    ii += 1
+od
+
+ii = 0
+ival1 = p4
+ival2 = p5
+while ii < 32 do
+    tablew(ival1, ii, gifreqfn)
+    tablew(ival2, ii+32, gifreqfn)
+    ii += 1
+    ival1 += p6
+    ival2 += p7
+od
+
+asig = asig1
 outs asig, asig
+;gaRvbSend += asig*0.2
 endin
 
 instr kick
@@ -62,7 +73,7 @@ endin
 </CsInstruments>
 <CsScore>
 t 0 128
-i"taphy1" 0 128
+i"taphy1" 0 64 1 8 1 0.1
 </CsScore>
 </CsoundSynthesizer>
 
