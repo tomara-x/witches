@@ -16,19 +16,20 @@ Months after I lost my favorite instrument, I missed the magic, I wanted it in m
 - `uTaphath`, `uBasemath`, and `utBasemath`  are minimal versions.
 
 ### opcodes.orc
-That's where the opcode definitions of Taphath and Basemath (and the u versions) are. You can place this in your project directory, #include it in your csd file, and that's it, you have the opcodes ready to use. (It also includes the documentation of the opcodes)
+That's where you'll find the opcode definitions and the documentation of `Taphath`, `Basemath`, and `tBasemath` (and the u versions). You can place this in your project directory, `#include` it in your csd file, and that's it, you have the opcodes ready to use.
 
-There are also some other opcodes that I keep there.
+There are also some other opcodes that I keep there. (I find that `ClkDiv` comes in very handy with MSR-stlye patching)
 
 ### function-tables.orc
 Those are function tables used in my playing files. They're mostly just gen51 musical scales used with `Taphath` You can edit them, define your own, or something else.
+I think in the future I'll be using `ftgenonce` more and keep function tables within instruments that use them.
 
 ### all other files
-Those files are just me playing around. Who knows what'll be there! Check them out for examples/seeing the sequencers in action.
+Those files are just me playing around. Who knows what'll be there! I try to keep musical/fun sounds files in jam/ and testing files in test/. Check them out for examples/seeing the sequencers in action.
 
 Here's my [soundcloud](https://soundcloud.com/nope-null) where you can find some renders of some of the files here.
 
-If you make something with these, I'd love love love to have a listen/look!
+If you make something with these, I'd love love love to have a listen/look! Also if you find anything confusing please feel free to message me 💜
 
 ###### Made using [Vim](https://www.vim.org/) and [Csound](https://csound.com/) installed on a [Fedora](https://fedoraproject.org/) ([Void](https://voidlinux.org/) now) proot on [Termux](https://termux.com/) on an android (version 8.1) phone, void of any analog warmth! [[setup recipe]](https://github.com/tomara-x/csound-proot-distro-recipe)
 
