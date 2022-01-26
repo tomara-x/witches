@@ -10,6 +10,7 @@ gaDst2Send init 0
 gaRvb2Send init 0
 gaCmpDstSend init 0
 ;gaPltVrbSnd init 0
+gaBCrushSend init 0
 
 instr dist ;distortion
 kdist = 0.4
@@ -68,4 +69,10 @@ endin
 ;        outs al, ar
 ;        clear gaPltVrbSnd
 ;endin
+
+instr bcrush
+asig table (gaBCrushSend+1)/2, giframp, 1, 0, 1
+outs asig, asig
+clear gaBCrushSend
+endin
 

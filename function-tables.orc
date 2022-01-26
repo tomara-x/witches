@@ -89,6 +89,7 @@ gifsin ftgen 0,0,2^13,10,1
 gifcos ftgen 0,0,2^14,11,1
 
 ; additive tables
-gifreqfn ftgen 0,0,64,-2,0
-giampfn  ftgen 0,0,64,-2,0
+;giftmp1  ftgen 0,0,64,10, 1
+;giampfn  ftgen 0,0,64,-24, giftmp1, 0, 0.05 ;rescale
+;gifreqfn ftgen 0,0,64,-2,0
 

@@ -9,11 +9,12 @@ ksmps = 441
 nchnls = 1
 0dbfs  = 1
 
-gifn1 ftgen 0,0,-9,-2, 0,1,2,3,4,5,6,7,8
+giftmp1  ftgen 0,0,64, 10, 1
+giampfn  ftgen 0,0,64,-24, giftmp1, 0, 0.05 ;rescale
 
 instr 1
-print(ftlen(gifn1))
-ftprint gifn1
+print(ftlen(giampfn))
+ftprint giampfn
 endin
 
 </CsInstruments>

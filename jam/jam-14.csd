@@ -23,38 +23,29 @@ alwayson "verb"
 ;alwayson "verb2"
 ;alwayson "dist"
 ;alwayson "dist2"
+alwayson "bcrush"
 
 instr taphy1
+ism ftgenonce 0,0,-7*10,-51, 7,2,cpspch(4),0,
+2^(0/12),2^(1/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
 ktrig   metro $TEMPO*4/60
-kn1[]   fillarray 00, 00, 00, 00, 00, 00, 00, 00
-kg1[]   fillarray 00, 16, 08, 00, 24, 08, 00, 16
+kn1[]   fillarray 00, 05, 11, 11, 00, 00, 05, 05
+kg1[]   fillarray 02, 02, 01, 01, 02, 02, 02, 02
 kQ1[]   fillarray 00, 00, 00, 00, 00, 00, 00, 00
-kmn1[]  fillarray 36, 36, 36, 36, 36, 36, 36, 36
-kmx1[]  fillarray 60, 60, 60, 84, 84, 60, 60, 84
-kAS1, kp1[], kt1[] Taphath ktrig, kn1, kg1, kQ1, kmn1, kmx1, gi12tet, 0, 0, 2
+kmn1[]  fillarray 21, 21, 20, 20, 21, 21, 21, 21
+kmx1[]  fillarray 41, 41, 37, 37, 41, 41, 41, 41
+kAS1, kp1[], kt1[] Taphath ktrig, kn1, kg1, kQ1, kmn1, kmx1, ism, 0, 0, p5
 
-asig1 adsynt2 0.1, kp1[kAS1]/4, gifsin, gifreqfn, giampfn, 64
+ifn1 ftgenonce 0,0,64, 10, 1
+;ifn2 ftgenonce 0,0,64, 7, 1, 64, 1
+ifnamp ftgenonce 0,0,64,-24, ifn1, 0, 0.05 ;rescale
+ifnfrq ftgenonce 0,0,64,-7, 1, 32,1.00004, 0,16, 32,16.256
+asig1 adsynt2 0.1, kp1[kAS1]*p4/2, gifsin, ifnfrq, ifnamp, 64
 
-ii = 0
-while ii < 64 do
-    tablew(0.05, ii, giampfn)
-    ii += 1
-od
-
-ii = 0
-ival1 = p4
-ival2 = p5
-while ii < 32 do
-    tablew(ival1, ii, gifreqfn)
-    tablew(ival2, ii+32, gifreqfn)
-    ii += 1
-    ival1 += p6
-    ival2 += p7
-od
-
-asig = asig1
-outs asig, asig
-;gaRvbSend += asig*0.2
+aout = asig1
+outs aout, aout
+gaBCrushSend += aout*0.2
+gaRvbSend += aout*0.3
 endin
 
 instr kick
@@ -73,7 +64,13 @@ endin
 </CsInstruments>
 <CsScore>
 t 0 128
-i"taphy1" 0 64 1 8 1 0.1
+i"taphy1" +  16 .5 0
+i"taphy1" +  32  4 0
+i"taphy1" +  32 .5 2
+i"taphy1" 48 32  4 2
+i"taphy1" 80 32  1 2
+i"taphy1" 80 32  8 2
+e
 </CsScore>
 </CsoundSynthesizer>
 
