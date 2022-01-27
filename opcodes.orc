@@ -86,7 +86,7 @@ kNdxGain[]: Each time the corresponding step is active, add the this value
         indexes we're dealing with, the jump will only happen when the increments
         add up to an integer.
         (this should be same length as kNoteIndex, to avoid out-of-range indexing)
-kQArr[]: The queue inputs for eaxh step. Queued steps take priority over
+kQArr[]: The queue inputs for each step. Queued steps take priority over
         other steps. This won't be modified by the sequencer but can be
         from within the calling instrument after invoking the sequencer. Example:
         kQueueArr[kActiveStep] = kQueueArr[kActiveStep]*kToggle
@@ -752,7 +752,7 @@ kDivGain[]: Amount to increase each step's divisions every time it's activated.
     (just like kLenGain but for the divisions) (psst! fractions do fun stuff here!)
 kMaxDiv[]: Maximum number of subdivisions in a step before wraping around (modulo).
     (up to, but not including)
-kQArr[]: The queue inputs for eaxh step. Queued steps take priority over other
+kQArr[]: The queue inputs for each step. Queued steps take priority over other
     steps. This won't be modified by the sequencer but can be from within the
     calling instrument after invoking the sequencer. Example:
     kQueueArr[kActiveStep] = kQueueArr[kActiveStep]*kToggle
@@ -978,7 +978,7 @@ kGain[]: Increment to be added to the counth of each step each time
     that step is activated. (can be negative or fractional)
     (should be the same length as kCount to avoid out-of-range idexing)
 kMin[], kMax[]: Minimum and maximum count for each step (kMin <= count < kMax)
-kQArr[]: The queue inputs for eaxh step. Queued steps take priority over other
+kQArr[]: The queue inputs for each step. Queued steps take priority over other
     steps. This won't be modified by the sequencer but can be from within the
     calling instrument after invoking the sequencer. Example:
     kQueueArr[kActiveStep] = kQueueArr[kActiveStep]*kToggle
