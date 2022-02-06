@@ -5,6 +5,7 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 // Engine settings
+// run using: 'csound demon.csd'
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin --port=10000 -m231 ;-t128
