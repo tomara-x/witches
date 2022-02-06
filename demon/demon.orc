@@ -21,7 +21,7 @@ for executing the current line
 ;#include "../send-effects2.orc"
 
 ; write a send-effects3 with moduar instrs and ftgenonce for thier tables
-alwayson "verb"
+;alwayson "verb"
 ;alwayson "verb2"
 ;alwayson "dist"
 ;alwayson "dist2"
@@ -33,14 +33,15 @@ instr t1
 ;kn0p1 inletk "n0+"
 ism ftgenonce 0,0,-7*10,-51, 7,2,cpspch(4),0,
 2^(0/12),2^(1/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
-ktrig   metro $TEMPO*4/60
-kn[]    fillarray 00, 05, 11, 11, 00, 00, 05, 05
-kg[]    fillarray 00, 00, 00, 00, 00, 00, 00, 00
-kQ[]    fillarray 00, 00, 00, 00, 00, 00, 00, 00
-kmn[]   fillarray 21, 21, 21, 21, 21, 21, 21, 21
-kmx[]   fillarray 48, 48, 48, 48, 48, 48, 48, 48
+ktrig   metro $TEMPO/60
+kn[]    fillarray 00, 05, 11, 11
+kg[]    fillarray 00, 00, 00, 00
+kQ[]    fillarray 00, 00, 00, 00
+kmn[]   fillarray 21, 21, 21, 21
+kmx[]   fillarray 48, 48, 48, 48
 kAS, kp[], kt[] Taphath ktrig, kn, kg, kQ, kmn, kmx, ism, p4, 0, p5
 kn += ClkDiv(kt[0],4)
+
 outletk "pitch", kp[kAS]
 endin
 }
@@ -63,13 +64,17 @@ aout =  aop6+aop7+aop8
 outs aout, aout
 endin
 }
+; how do you disconnect this?
 connect "t1", "pitch", "fm", "pitch"
 
+alwayson "t1"
+print(active("t1"))
 
 ; durations are in seconds here, we are in the orc
-gitmp nstance "t1",0,8/($TEMPO/60),0,0
-gitmp nstance "fm",0,8/($TEMPO/60),-4,02, 8,-4, -4,2, -8,3, .14,.04,.04,.08,.01
-turnoff(gitmp)
+git1 nstance "t1",0,64/($TEMPO/60),0,0
+gifm nstance "fm",0,4/($TEMPO/60),-4,3, -4,-8, -2,2, 3,3, .14,.04,.04,.08,.01
+turnoff(git1)
+turnoff(gifm)
 
 ; $ to send score lines
 $
