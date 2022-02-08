@@ -14,36 +14,37 @@ for executing the current line
 
 alwayson "t1"
 alwayson "sine"
-alwayson "patch"
 
-instr 99
+{
+instr 99 ;connections instrument
 gkcps = gkp[gkAS]
 gkg[2] = gkg[2] + gkt[0]
 endin
+}
 
-instr patch
-ktrg metro 1/4
+instr patch ;invokes the connections instr
+ktrg metro 1/4 ;every 4 seconds
 if ktrg == 1 then
     turnoff2(99, 0, 0)
-    schedulek(99,0,-1)
+    schedulek(99, 0, -1)
 endif
 endin
-
+alwayson "patch"
 
 {
-#define TEMPO #128# ;"parser failed due to no input" when executed alone
+#define TEMPO #128# ;"parser failed due to no input" when executed alone (but works)
 #include "../opcodes.orc"
 instr t1
 ism ftgenonce 0,0,-7*4,-51, 7,2,cpspch(6),0,
 1,2^(1/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
 ktrig   metro $TEMPO/60
 gkn[]   fillarray 00, 05, 11, 11
-gkg[]   fillarray 00, 00, 00, 03
+gkg[]   fillarray 00, 00, 00, 00
 gkQ[]   fillarray 00, 00, 00, 00
 gkAS, gkp[], gkt[] Taphath ktrig, gkn, gkg, gkQ, ism
 endin
 instr sine
-gkcps   init 440
+gkcps   init 220
 asig oscil 0.1, gkcps
 outs asig, asig
 endin
