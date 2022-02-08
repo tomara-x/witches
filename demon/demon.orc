@@ -12,41 +12,47 @@ with visual mode range selected, or:
 for executing the current line
 */
 
-alwayson "t1"
-alwayson "sine"
+schedule("clock", 0, -1)
+schedule("t1", 0, -1)
+schedule("sine", 0, -1)
+schedule("patch", 0, -1)
 
 {
 instr 99 ;connections instrument
-gkcps = gkp[gkAS]
-gkg[2] = gkg[2] + gkt[0]
+gk_t1_trig = gk_clock_out ;patching a clock to the sequencer taphy
+gk_sine_cps = gk_t1_p[gk_t1_AS] ;patching taphy's pitch output to the sine instr
+gk_t1_g[2] = gk_t1_g[2] + gk_t1_t[0] ;patching taphy to herself
 endin
 }
 
+
+{
+#define TEMPO #128# ;"parser failed due to no input" when executed alone (but works)
+#include "../opcodes.orc"
+#include "../modular-effects.orc"
+instr clock
+gk_clock_out metro $TEMPO/60
+endin
+instr t1
+ism ftgenonce 0,0,-7*4,-51, 7,2,cpspch(6),0,
+1,2^(1/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
+gk_t1_trig   init 0
+gk_t1_n[]    fillarray 00, 05, 11, 11
+gk_t1_g[]    fillarray 00, 00, 00, 00
+gk_t1_Q[]    fillarray 00, 00, 00, 00
+gk_t1_AS, gk_t1_p[], gk_t1_t[] Taphath gk_t1_trig, gk_t1_n, gk_t1_g, gk_t1_Q, ism
+endin
+instr sine
+gk_sine_cps init 220
+asig oscil 0.1, gk_sine_cps
+outs asig, asig
+endin
 instr patch ;invokes the connections instr
 ktrg metro 1/4 ;every 4 seconds
 if ktrg == 1 then
     turnoff2(99, 0, 0)
     schedulek(99, 0, -1)
 endif
-endin
-alwayson "patch"
-
-{
-#define TEMPO #128# ;"parser failed due to no input" when executed alone (but works)
-#include "../opcodes.orc"
-instr t1
-ism ftgenonce 0,0,-7*4,-51, 7,2,cpspch(6),0,
-1,2^(1/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
-ktrig   metro $TEMPO/60
-gkn[]   fillarray 00, 05, 11, 11
-gkg[]   fillarray 00, 00, 00, 00
-gkQ[]   fillarray 00, 00, 00, 00
-gkAS, gkp[], gkt[] Taphath ktrig, gkn, gkg, gkQ, ism
-endin
-instr sine
-gkcps   init 220
-asig oscil 0.1, gkcps
-outs asig, asig
 endin
 }
 
