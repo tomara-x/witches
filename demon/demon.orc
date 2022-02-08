@@ -12,62 +12,46 @@ with visual mode range selected, or:
 for executing the current line
 */
 
-;umm can't define macros for a running engine or something?
-;It gives an error (parser failed due to no input) but it works!
-#define TEMPO #128#
-
-#include "../opcodes.orc"
-;#include "../function-tables.orc"
-;#include "../send-effects2.orc"
-
-; write a send-effects3 with moduar instrs and ftgenonce for thier tables
-;alwayson "verb"
-;alwayson "verb2"
-;alwayson "dist"
-;alwayson "dist2"
-;alwayson "bcrush"
-
-; {} to ensure server gets the whole code
-{
-instr t1
-;kn0p1 inletk "n0+"
-ism ftgenonce 0,0,-7*10,-51, 7,2,cpspch(4),0,
-2^(0/12),2^(1/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
-ktrig   metro $TEMPO/60
-kn[]    fillarray 00, 05, 11, 11
-kg[]    fillarray 00, 00, 00, 00
-kQ[]    fillarray 00, 00, 00, 00
-kmn[]   fillarray 21, 21, 21, 21
-kmx[]   fillarray 48, 48, 48, 48
-kAS, kp[], kt[] Taphath ktrig, kn, kg, kQ, kmn, kmx, ism, p4, 0, p5
-kn += ClkDiv(kt[0],4)
-
-outletk "pitch", kp[kAS]
-endin
-}
-{
-instr fm
-kcps    inletk "pitch"
-ke1     linseg p4,p3/($TEMPO/60),p5
-ke2     linseg p6,p3/($TEMPO/60),p7
-ke3     linseg p8,p3/($TEMPO/60),p9
-ke4     linseg p10,p3/($TEMPO/60),p11
-aop1    Pmoscili p12, kcps*2^ke1
-aop2    Pmoscili p13, kcps*2^ke2,   aop1
-aop3    Pmoscili p14, kcps/8,       aop1
-aop4    Pmoscili p15, kcps/1,       aop1
-aop5    Pmoscili p16, kcps*2^ke3,   aop2+aop3+aop4
-aop6    Pmoscili .02, kcps/4,       aop5
-aop7    Pmoscili .02, kcps*2^ke4,   aop5
-aop8    Pmoscili .02, kcps/2,       aop5
-aout =  aop6+aop7+aop8
-outs aout, aout
-endin
-}
-; how do you disconnect this?
-connect "t1", "pitch", "fm", "pitch"
-
 alwayson "t1"
+alwayson "sine"
+alwayson "patch"
+
+instr 99
+gkcps = gkp[gkAS]
+gkg[2] = gkg[2] + gkt[0]
+endin
+
+instr patch
+ktrg metro 1/4
+if ktrg == 1 then
+    turnoff2(99, 0, 0)
+    schedulek(99,0,-1)
+endif
+endin
+
+
+{
+#define TEMPO #128# ;"parser failed due to no input" when executed alone
+#include "../opcodes.orc"
+instr t1
+ism ftgenonce 0,0,-7*4,-51, 7,2,cpspch(6),0,
+1,2^(1/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
+ktrig   metro $TEMPO/60
+gkn[]   fillarray 00, 05, 11, 11
+gkg[]   fillarray 00, 00, 00, 03
+gkQ[]   fillarray 00, 00, 00, 00
+gkAS, gkp[], gkt[] Taphath ktrig, gkn, gkg, gkQ, ism
+endin
+instr sine
+gkcps   init 440
+asig oscil 0.1, gkcps
+outs asig, asig
+endin
+}
+
+
+;----------------------------------------
+
 print(active("t1"))
 
 ; durations are in seconds here, we are in the orc
