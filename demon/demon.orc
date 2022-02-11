@@ -51,7 +51,7 @@ endin
 instr patch ;invokes the connections instr
 ktrg metro 1/4 ;every 4 seconds
 if ktrg == 1 then
-    turnoff2(99, 0, 0)
+    turnoff2(99, 0, 0) ;same as: schedulek(-99, 0, 1)
     schedulek(99, 0, -1)
 endif
 endin
