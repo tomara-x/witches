@@ -22,6 +22,7 @@ instr 99 ;connections instrument
 gk_t1_trig = gk_clock_out ;patching a clock to the sequencer taphy
 gk_sine_cps = gk_t1_p[gk_t1_AS] ;patching taphy's pitch output to the sine instr
 gk_t1_g[2] = gk_t1_g[2] + gk_t1_t[0] ;patching taphy to herself
+gk_t1_n[0] = gk_t1_n[0] + gk_t1_t[0]*5
 endin
 }
 
