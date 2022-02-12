@@ -18,11 +18,15 @@ schedule("sine", 0, -1)
 schedule("patch", 0, -1)
 
 {
-instr 99 ;connections instrument
+instr cables ;connections instrument
 gk_t1_trig = gk_clock_out ;patching a clock to the sequencer taphy
 gk_sine_cps = gk_t1_p[gk_t1_AS] ;patching taphy's pitch output to the sine instr
-gk_t1_g[2] = gk_t1_g[2] + gk_t1_t[0] ;patching taphy to herself
+;gk_t1_g[2] = gk_t1_g[2] + gk_t1_t[0] ;patching taphy to herself
+;gk_t1_g = 0
 gk_t1_n[0] = gk_t1_n[0] + gk_t1_t[0]*5
+gk_t1_n[3] = gk_t1_n[3] + gk_t1_t[2]*2
+gk_t1_n[2] = gk_t1_n[2] + gk_t1_t[3]*1
+gk_t1_n[1] = gk_t1_n[1] + gk_t1_t[3]*-2
 endin
 }
 
@@ -51,8 +55,8 @@ endin
 instr patch ;invokes the connections instr
 ktrg metro 1/4 ;every 4 seconds
 if ktrg == 1 then
-    turnoff2(99, 0, 0) ;same as: schedulek(-99, 0, 1)
-    schedulek(99, 0, -1)
+    turnoff2(nstrnum("cables"), 0, 0) ;same as: schedulek(-nstrnum("cables"), 0, 1)
+    schedulek("cables", 0, -1)
 endif
 endin
 }
