@@ -30,8 +30,14 @@ print ilen
 ;od
 endin
 
+instr fa
+iarr[] fillarray 2, 4, 5
+printarray iarr
+endin
+schedule("fa", 0, 1)
+
 </CsInstruments>
 <CsScore>
-i1 0 .1
+;i1 0 .1
 </CsScore>
 </CsoundSynthesizer>
