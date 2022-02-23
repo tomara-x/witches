@@ -87,7 +87,9 @@ kTrig2      metro $TEMPO*8/60
 kC2[]       fillarray 03, 01, 03, 01, 02, 02, 02, 02
 kAS2, kT2[] utBasemath kTrig2, kC2
 
+;bitch, use scoreline! <- no?
 if kAS1 > 3 then
+;melody (instr where I hook taphy and fm, scheduled after them both) <- maybe?
     schedkwhen(kT2[0]+kT2[4], 0,0, "Kick", 0, 0.0001)
     kDrmTrg = kT2[kAS2]-(kT2[2]+kT2[4]+kT2[7])
     schedkwhen(kDrmTrg,0,0,"Drum",0,0.0001,.3,.1,2,440,55,220)
@@ -95,17 +97,23 @@ else
     schedkwhen(kT2[0]+kT2[5], 0,0, "Kick", 0, 0.0001)
 endif
 if kAS1 >= 0 && kAS1 < 5 then
-    gkTaphyP[] init 9
+    gkTaphyP[] init 9 ; because main will finish its cycle before scheduling taphy
     schedkwhen(kT1[0], 0,0, "Taphy", 0, -1, 0, 0, 4)
     schedkwhen(kT1[0], 0,0, "Fm",0, -1)
     gkTaphyTrig = kT2[kAS2]
-    gkFmCps = gkTaphyP
+    gkFmCps = gkTaphyP ; taht's why we need the init above
     gkFmAmp = 0.02
 endif
-if kT1[5] == 1 then
+if kT1[5] == 1 then ;silence (could just edit the mix)
     schedulek(-nstrnum("Taphy"), 0, 1)
     schedulek(-nstrnum("Fm"), 0, 1)
     clear(gaFmOut)
+endif
+
+; something
+if ClkDiv(kT1[3], 2) == 1 then
+    schedule("Taphy", 0, -1, 0, 2, 4)
+    schedule("Fm", 0, -1)
 endif
 
 schedule("Verb",0,-1)
@@ -123,8 +131,7 @@ aOutR += gaFmOut
 
 outs aOutL, aOutR
 endin
-schedule("Main", 0, -1)
-schedule(-nstrnum("Main"), 120, 1)
+schedule("Main", 0, 120*($TEMPO/60) ;run for 120 beats (30 bars)
 </CsInstruments>
 </CsoundSynthesizer>
 
