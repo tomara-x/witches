@@ -4,10 +4,10 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-//
+//in search of a comfy arrangement setup
 <CsoundSynthesizer>
 <CsOptions>
--odac -Lstdin -m231 ;-t128
+-odac -Lstdin -m231
 </CsOptions>
 <CsInstruments>
 sr      =   44100
@@ -18,10 +18,12 @@ nchnls  =   2
 #define TEMPO #69#
 #include "../opcodes.orc"
 
-instr Taphy
+instr Taphy ;girl, I might take you inside main
+;multiple instances would need 2d arrays (getrow/setrow) (need an extra p-field)
 iScale ftgenonce 0,0,-7*10,-51, 7,2,cpspch(p6),0,
 2^(0/12),2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
-gkTaphyTrig init 0
+gkTaphyTrig init 0 ;this would need to be a 1d array and outside (main)
+;and those would need to be 2d each and in main
 gkTaphyNote[]   fillarray 00, 05, 11, 11, 00, 00, 05, 05
 gkTaphyGain[]   fillarray 04, 02, 00, 00, 01, 04, -1, 00
 gkTaphyQ[]      fillarray 00, 00, 00, 00, 00, 00, 00, 00
@@ -29,9 +31,15 @@ gkTaphyMin[]    fillarray 21, 21, 21, 21, 21, 21, 21, 21
 gkTaphyMax[]    fillarray 48, 48, 48, 48, 48, 48, 48, 48
 gkTaphyAS, gkTaphyP[], kT[] Taphath gkTaphyTrig, gkTaphyNote, gkTaphyGain, 
         gkTaphyQ, gkTaphyMin, gkTaphyMax, iScale, p4, 0, p5
+
+;so it would be something like: (assuming p4 is channel selection)
+kAS, kP[], kT[] Taphath gkTaphyTrig[p4], getrow(gkTaphyNote,p4), ;and so on
+gkTaphyAS[p4] = kAS
+setrow(gkTaphyP,p4)
+;dont need the trigger array
 endin
 
-gkFmAmp[] init 8
+gkFmAmp[] init 8 ;hi!
 gkFmCps[] init 8
 instr Fm
 aOp1    Pmoscili gkFmAmp[0], gkFmCps[0]
@@ -46,6 +54,8 @@ gaFmOut = (aOp6 + aOp7 + aOp8)
 endin
 
 instr Kick
+;get release and xtratim opcodes in here maybe
+;and use a fixed duration (the p3 being the entire duration including release)
 iTanh   ftgenonce 0,0,1024,"tanh", -5, 5, 0
 iIFrq   = 230
 iEFrq   = 40
@@ -104,17 +114,17 @@ if kAS1 >= 0 && kAS1 < 5 then
     gkFmCps = gkTaphyP ;taht's why we need the init above
     gkFmAmp = 0.02
 endif
-if kT1[5] == 1 then ;silence (could just edit the mix)
+if kT1[5] == 1 then ;silence (more efficient than muting)
     schedulek(-nstrnum("Taphy"), 0, 1)
     schedulek(-nstrnum("Fm"), 0, 1)
     clear(gaFmOut)
 endif
 
-;this assumes I'll have a looping timeline. nah! I'll just % (or || for readability)
-if ClkDiv(kT1[3], 2) == 1 then
-    schedule("Taphy", 0, -1, 0, 2, 4)
-    schedule("Fm", 0, -1)
-endif
+;this assumes I'll have a looping timeline. nah, I'll have a long one and use ||
+;if ClkDiv(kT1[3], 2) == 1 then
+;    schedule("Taphy", 0, -1, 0, 2, 4)
+;    schedule("Fm", 0, -1)
+;endif
 
 schedule("Verb",0,-1)
 gaVerbIn = gaKickOut*0.1 + gaFmOut*0.3
