@@ -97,11 +97,11 @@ else
     schedkwhen(kT2[0]+kT2[5], 0,0, "Kick", 0, 0.0001)
 endif
 if kAS1 >= 0 && kAS1 < 5 then
-    gkTaphyP[] init 9 ; because main will finish its cycle before scheduling taphy
+    gkTaphyP[] init 9 ;because main will finish its cycle before scheduling taphy
     schedkwhen(kT1[0], 0,0, "Taphy", 0, -1, 0, 0, 4)
     schedkwhen(kT1[0], 0,0, "Fm",0, -1)
     gkTaphyTrig = kT2[kAS2]
-    gkFmCps = gkTaphyP ; taht's why we need the init above
+    gkFmCps = gkTaphyP ;taht's why we need the init above
     gkFmAmp = 0.02
 endif
 if kT1[5] == 1 then ;silence (could just edit the mix)
@@ -110,7 +110,7 @@ if kT1[5] == 1 then ;silence (could just edit the mix)
     clear(gaFmOut)
 endif
 
-; something
+;this assumes I'll have a looping timeline. nah! I'll just % (or || for readability)
 if ClkDiv(kT1[3], 2) == 1 then
     schedule("Taphy", 0, -1, 0, 2, 4)
     schedule("Fm", 0, -1)
@@ -131,7 +131,8 @@ aOutR += gaFmOut
 
 outs aOutL, aOutR
 endin
-schedule("Main", 0, 120*($TEMPO/60) ;run for 120 beats (30 bars)
+schedule("Main", 0, 120*($TEMPO/60) ;120 beats. yeet cps factor for time in seconds
 </CsInstruments>
+;I miss the score!
 </CsoundSynthesizer>
 
