@@ -34,8 +34,9 @@ gkTaphyAS, gkTaphyP[], kT[] Taphath gkTaphyTrig, gkTaphyNote, gkTaphyGain,
 
 ;so it would be something like: (assuming p4 is channel selection)
 kAS, kP[], kT[] Taphath gkTaphyTrig[p4], getrow(gkTaphyNote,p4), ;and so on
+;(or maybe store that getrow in a local first)
 gkTaphyAS[p4] = kAS
-setrow(gkTaphyP,p4)
+gkTaphyP setrow kP, p4
 ;dont need the trigger array
 endin
 
