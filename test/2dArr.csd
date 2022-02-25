@@ -82,7 +82,7 @@ printarray(karr)
 endin
 ;schedule("Arr8", 0, .1)
 
-instr Arr9 ;seg fault (WHY?!)
+instr Arr9 ;seg fault (WHY?!) (is it like a re-declaration thing?)
 karr[][]    init 4, 8
 kv          init 0
 kv += 1
@@ -92,7 +92,7 @@ printarray(karr)
 endin
 ;schedule("Arr9", 0, .1)
 
-instr Arr10 ;for some reason you gotta init before fillarraying here? (unlike Arr8)
+instr Arr10 ;hmm works! you gotta init before fillarraying here? (unlike Arr8)
 karr[][]    init 4, 8
 krow[]      init 8
 kv          init 0
@@ -101,7 +101,16 @@ krow = fillarray(1,1,1,kv,1,1,1,1)
 karr = setrow(krow, 2)
 printarray(karr)
 endin
-schedule("Arr10", 0, .1)
+;schedule("Arr10", 0, .1)
+
+instr Arr11 ;interesting! another seg fault!
+karr[][]    init 4, 8
+kv          init 0
+kv += 1
+karr = setrow(fillarray(1,1,1,kv,1,1,1,1), 2)
+printarray(karr)
+endin
+schedule("Arr11", 0, .1)
 
 </CsInstruments>
 </CsoundSynthesizer>
