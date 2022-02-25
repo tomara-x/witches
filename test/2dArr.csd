@@ -72,7 +72,7 @@ karr = setrow(krow, 2)
 endin
 ;schedule("Arr7", 0, 4)
 
-instr Arr8
+instr Arr8 ;works! cutest language ever!
 kv init 0
 kv += 1
 if kv < 4 then
@@ -80,7 +80,28 @@ if kv < 4 then
 endif
 printarray(karr)
 endin
-schedule("Arr8", 0, .1)
+;schedule("Arr8", 0, .1)
+
+instr Arr9 ;seg fault (WHY?!)
+karr[][]    init 4, 8
+kv          init 0
+kv += 1
+krow[] = fillarray(1,1,1,kv,1,1,1,1)
+karr = setrow(krow, 2)
+printarray(karr)
+endin
+;schedule("Arr9", 0, .1)
+
+instr Arr10 ;for some reason you gotta init before fillarraying here? (unlike Arr8)
+karr[][]    init 4, 8
+krow[]      init 8
+kv          init 0
+kv += 1
+krow = fillarray(1,1,1,kv,1,1,1,1)
+karr = setrow(krow, 2)
+printarray(karr)
+endin
+schedule("Arr10", 0, .1)
 
 </CsInstruments>
 </CsoundSynthesizer>
