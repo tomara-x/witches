@@ -87,7 +87,7 @@ karr[][]    init 4, 8
 kv          init 0
 kv += 1
 krow[] = fillarray(1,1,1,kv,1,1,1,1)
-karr = setrow(krow, 2)
+karr = setrow(krow, 2) ;yep something's up here!
 printarray(karr)
 endin
 ;schedule("Arr9", 0, .1)
@@ -112,7 +112,7 @@ printarray(karr)
 endin
 ;schedule("Arr11", 0, .1)
 
-instr Arr12
+instr Arr12 ;works
 kv init 0
 kv += 1
 karr[] = fillarray(1,1,1,kv,1,1,1,1)
@@ -120,12 +120,29 @@ printarray(karr)
 endin
 ;schedule("Arr12", 0, .1)
 
-instr Arr13
+instr Arr13 ;works
 kv init 0
 kv += 1
 printarray(fillarray(1,1,1,kv,1,1,1,1))
 endin
 ;schedule("Arr13", 0, .1)
+
+instr Arr14 ;something's off here
+karr[][]    init 4, 8
+kcol[]      init 4
+kcol = fillarray(1,2,3,4) ;will seg fault too if using array with k-values (without init)
+karr = setcol(kcol, 0)
+printarray(karr)
+endin
+schedule("Arr14", 0, .01)
+
+instr Arr15 ;okay getcol works as expected, unlike setcol
+karr[][]    init 3, 4
+karr = fillarray(1,0,0,0,1,0,0,0,1,0,0,0)
+printarray(karr)
+printarray(getcol(karr,0))
+endin
+;schedule("Arr15", 0, .1)
 
 </CsInstruments>
 </CsoundSynthesizer>
