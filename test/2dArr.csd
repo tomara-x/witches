@@ -110,7 +110,22 @@ kv += 1
 karr = setrow(fillarray(1,1,1,kv,1,1,1,1), 2)
 printarray(karr)
 endin
-schedule("Arr11", 0, .1)
+;schedule("Arr11", 0, .1)
+
+instr Arr12
+kv init 0
+kv += 1
+karr[] = fillarray(1,1,1,kv,1,1,1,1)
+printarray(karr)
+endin
+;schedule("Arr12", 0, .1)
+
+instr Arr13
+kv init 0
+kv += 1
+printarray(fillarray(1,1,1,kv,1,1,1,1))
+endin
+;schedule("Arr13", 0, .1)
 
 </CsInstruments>
 </CsoundSynthesizer>
