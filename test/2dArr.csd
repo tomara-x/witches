@@ -134,15 +134,24 @@ kcol = fillarray(1,2,3,4) ;will seg fault too if using array with k-values (with
 karr = setcol(kcol, 0)
 printarray(karr)
 endin
-schedule("Arr14", 0, .01)
+;schedule("Arr14", 0, .01)
 
 instr Arr15 ;okay getcol works as expected, unlike setcol
-karr[][]    init 3, 4
-karr = fillarray(1,0,0,0,1,0,0,0,1,0,0,0)
+karr[][]    init 3,8
+karr = fillarray(1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0)
 printarray(karr)
 printarray(getcol(karr,0))
 endin
 ;schedule("Arr15", 0, .1)
+
+instr Arr16
+karr[][]    init 3,5 ;it's counting by column length+1 instead of row length
+kcol[]      init 4
+kcol = fillarray(1,1,1)
+karr = setcol(kcol, 0)
+printarray(karr)
+endin
+schedule("Arr16", 0, .01)
 
 </CsInstruments>
 </CsoundSynthesizer>
