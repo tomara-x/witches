@@ -18,45 +18,55 @@ nchnls  =   2
 #define TEMPO #69#
 #include "../opcodes.orc"
 
-instr Taphy ;girl, I might take you inside main
-;multiple instances would need 2d arrays (getrow/setrow) (need an extra p-field)
-iScale ftgenonce 0,0,-7*10,-51, 7,2,cpspch(p6),0,
-2^(0/12),2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
-gkTaphyTrig init 0 ;this would need to be a 1d array and outside (main)
-;and those would need to be 2d each and in main
-gkTaphyNote[]   fillarray 00, 05, 11, 11, 00, 00, 05, 05
-gkTaphyGain[]   fillarray 04, 02, 00, 00, 01, 04, -1, 00
-gkTaphyQ[]      fillarray 00, 00, 00, 00, 00, 00, 00, 00
-gkTaphyMin[]    fillarray 21, 21, 21, 21, 21, 21, 21, 21
-gkTaphyMax[]    fillarray 48, 48, 48, 48, 48, 48, 48, 48
-gkTaphyAS, gkTaphyP[], kT[] Taphath gkTaphyTrig, gkTaphyNote, gkTaphyGain, 
-        gkTaphyQ, gkTaphyMin, gkTaphyMax, iScale, p4, 0, p5
+#define ROW #4# ;global array rows (number of simultanious instances)
+#define COL #8# ;global array columns (length)
 
-;so it would be something like: (assuming p4 is channel selection)
-kAS, kP[], kT[] Taphath gkTaphyTrig[p4], getrow(gkTaphyNote,p4), ;and so on
-;(or maybe store that getrow in a local first)
+;taphy
+gkTaphyAS[]     init $ROW
+gkTaphyP[][]    init $ROW, $COL
+gkTaphyT[][]    init $ROW, $COL
+
+gkTaphyTrig[]   init $ROW
+gkTaphyNote[][] init $ROW, $COL
+gkTaphyGain[][] init $ROW, $COL
+gkTaphyQ[][]    init $ROW, $COL
+;gkTaphyMin[][]  init $ROW, $COL
+;gkTaphyMax[][]  init $ROW, $COL
+
+;FM
+gkFmAmp[][]     init $ROW, $COL
+gkFmCps[][]     init $ROW, $COL
+gaFmOut[]       init $ROW
+
+instr Taphy
+iScale ftgenonce 0,0,-7*4,-51, 7,2,cpspch(6),0,
+2^(0/12),2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
+
+kAS, kP[], kT[] Taphath gkTaphyTrig[p4],getrow(gkTaphyNote,p4),
+                getrow(gkTaphyGain, p4),getrow(gkTaphyQ, p4),
+                /*getrow(gkTaphyMin, p4), getrow(gkTaphyMax, p4),*/ iScale
+
 gkTaphyAS[p4] = kAS
 gkTaphyP setrow kP, p4
-;dont need the trigger array
+gkTaphyT setrow kT, p4
 endin
 
-gkFmAmp[] init 8 ;hi!
-gkFmCps[] init 8
 instr Fm
-aOp1    Pmoscili gkFmAmp[0], gkFmCps[0]
-aOp2    Pmoscili gkFmAmp[1], gkFmCps[1],  aOp1
-aOp3    Pmoscili gkFmAmp[2], gkFmCps[2],  aOp1
-aOp4    Pmoscili gkFmAmp[3], gkFmCps[3],  aOp1
-aOp5    Pmoscili gkFmAmp[4], gkFmCps[4],  aOp2+aOp3+aOp4
-aOp6    Pmoscili gkFmAmp[5], gkFmCps[5],  aOp5
-aOp7    Pmoscili gkFmAmp[6], gkFmCps[6],  aOp5
-aOp8    Pmoscili gkFmAmp[7], gkFmCps[7],  aOp5
-gaFmOut = (aOp6 + aOp7 + aOp8)
+kAmp[] getrow gkFmAmp, p4
+kCps[] getrow gkFmCps, p4
+aOp1    Pmoscili kAmp[0], kCps[0]
+aOp2    Pmoscili kAmp[1], kCps[1],  aOp1
+aOp3    Pmoscili kAmp[2], kCps[2],  aOp1
+aOp4    Pmoscili kAmp[3], kCps[3],  aOp1
+aOp5    Pmoscili kAmp[4], kCps[4],  aOp2+aOp3+aOp4
+aOp6    Pmoscili kAmp[5], kCps[5],  aOp5
+aOp7    Pmoscili kAmp[6], kCps[6],  aOp5
+aOp8    Pmoscili kAmp[7], kCps[7],  aOp5
+gaFmOut[p4] = (aOp6 + aOp7 + aOp8)
 endin
 
 instr Kick
-;get release and xtratim opcodes in here maybe
-;and use a fixed duration (the p3 being the entire duration including release)
+;use a fixed duration (the p3 being the entire duration including release)
 iTanh   ftgenonce 0,0,1024,"tanh", -5, 5, 0
 iIFrq   = 230
 iEFrq   = 40
@@ -97,53 +107,63 @@ kAS1, kT1[] utBasemath kTrig1, kC1
 kTrig2      metro $TEMPO*8/60
 kC2[]       fillarray 03, 01, 03, 01, 02, 02, 02, 02
 kAS2, kT2[] utBasemath kTrig2, kC2
+kTrig3      metro $TEMPO*4/60
+kC3[]       fillarray 03, 01, 03, 01, 02, 02, 02, 02
+kAS3, kT3[] utBasemath kTrig3, kC3
 
-;bitch, use scoreline! <- no?
+gkTaphyTrig[0] = kTrig2
+gkTaphyTrig[1] = kTrig3
+gkTaphyNote = setrow(fillarray(3, 20, 4, 3, 6, 7, 8, 0), 0)
+gkTaphyNote = setrow(fillarray(4, 21, 5, 4, 7, 8, 9, 1), 1)
+
+schedule("Taphy", 0, p3, 0)
+schedule("Taphy", 0, p3, 1)
+
+gkFmAmp = setrow(fillarray(0.07,0.05,0.05,0.05,0.05,0.05,0.05,0.05), 0)
+gkFmAmp = setrow(fillarray(0.12,0.05,0.05,0.05,0.35,0.05,0.05,0.05), 1)
+if kTrig2 == 1 then ;np need to do this faster than the fastest trigger
+    ktmp = 0
+    while ktmp < $COL do
+        gkFmCps[0][ktmp] = gkTaphyP[0][gkTaphyAS[0]]
+        gkFmCps[1][ktmp] = gkTaphyP[1][gkTaphyAS[1]]
+        ktmp += 1
+    od
+endif
+;gkFmCps = setrow(getrow(gkTaphyP, 0), 0)
+;gkFmCps = setrow(getrow(gkTaphyP, 1), 1)
+
+schedule("Fm", 0, p3, 0)
+schedule("Fm", 0, p3, 1)
+
+;drums
 if kAS1 > 3 then
-;melody (instr where I hook taphy and fm, scheduled after them both) <- maybe?
     schedkwhen(kT2[0]+kT2[4], 0,0, "Kick", 0, 0.0001)
     kDrmTrg = kT2[kAS2]-(kT2[2]+kT2[4]+kT2[7])
     schedkwhen(kDrmTrg,0,0,"Drum",0,0.0001,.3,.1,2,440,55,220)
 else
     schedkwhen(kT2[0]+kT2[5], 0,0, "Kick", 0, 0.0001)
 endif
-if kAS1 >= 0 && kAS1 < 5 then
-    gkTaphyP[] init 9 ;because main will finish its cycle before scheduling taphy
-    schedkwhen(kT1[0], 0,0, "Taphy", 0, -1, 0, 0, 4)
-    schedkwhen(kT1[0], 0,0, "Fm",0, -1)
-    gkTaphyTrig = kT2[kAS2]
-    gkFmCps = gkTaphyP ;taht's why we need the init above
-    gkFmAmp = 0.02
-endif
-if kT1[5] == 1 then ;silence (more efficient than muting)
-    schedulek(-nstrnum("Taphy"), 0, 1)
-    schedulek(-nstrnum("Fm"), 0, 1)
-    clear(gaFmOut)
-endif
 
-;this assumes I'll have a looping timeline. nah, I'll have a long one and use ||
-;if ClkDiv(kT1[3], 2) == 1 then
-;    schedule("Taphy", 0, -1, 0, 2, 4)
-;    schedule("Fm", 0, -1)
-;endif
-
+;verb
 schedule("Verb",0,-1)
-gaVerbIn = gaKickOut*0.1 + gaFmOut*0.3
+gaVerbIn = gaKickOut*0.1 + gaFmOut[0]*0.3 + gaFmOut[1]
 
 ;mix
-aOutL = gaKickOut+gaVerbOutL
-aOutR = gaKickOut+gaVerbOutR
+aOutL = gaVerbOutL
+aOutR = gaVerbOutR
+
+aOutL += gaKickOut
+aOutR += gaKickOut
 
 aOutL += gaDrumOut
 aOutR += gaDrumOut
 
-aOutL += gaFmOut
-aOutR += gaFmOut
+aOutL += gaFmOut[0]+gaFmOut[1]
+aOutR += gaFmOut[0]+gaFmOut[1]
 
 outs aOutL, aOutR
 endin
-schedule("Main", 0, 120*($TEMPO/60) ;120 beats. yeet cps factor for time in seconds
+schedule("Main", 0, 120*($TEMPO/60)) ;120 beats
 </CsInstruments>
-;I miss the score!
 </CsoundSynthesizer>
 
