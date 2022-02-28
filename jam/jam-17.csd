@@ -30,8 +30,8 @@ gkTaphyTrig[]   init $ROW
 gkTaphyNote[][] init $ROW, $COL
 gkTaphyGain[][] init $ROW, $COL
 gkTaphyQ[][]    init $ROW, $COL
-;gkTaphyMin[][]  init $ROW, $COL
-;gkTaphyMax[][]  init $ROW, $COL
+gkTaphyMin[][]  init $ROW, $COL
+gkTaphyMax[][]  init $ROW, $COL
 
 ;FM
 gkFmAmp[][]     init $ROW, $COL
@@ -39,12 +39,12 @@ gkFmCps[][]     init $ROW, $COL
 gaFmOut[]       init $ROW
 
 instr Taphy
-iScale ftgenonce 0,0,-7*4,-51, 7,2,cpspch(6),0,
+iScale ftgenonce 0,0,-7*10,-51, 7,2,cpspch(6),0,
 2^(0/12),2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
 
 kAS, kP[], kT[] Taphath gkTaphyTrig[p4],getrow(gkTaphyNote,p4),
                 getrow(gkTaphyGain, p4),getrow(gkTaphyQ, p4),
-                /*getrow(gkTaphyMin, p4), getrow(gkTaphyMax, p4),*/ iScale
+                getrow(gkTaphyMin, p4), getrow(gkTaphyMax, p4), iScale
 
 gkTaphyAS[p4] = kAS
 gkTaphyP setrow kP, p4
@@ -111,22 +111,37 @@ kTrig3      metro $TEMPO*4/60
 kC3[]       fillarray 03, 01, 03, 01, 02, 02, 02, 02
 kAS3, kT3[] utBasemath kTrig3, kC3
 
-gkTaphyTrig[0] = kTrig2
-gkTaphyTrig[1] = kTrig3
+;Taphy
+gkTaphyTrig[0] = kTrig3
+gkTaphyTrig[1] = kT3[kAS3]-(kT3[2]+kT3[4]+kT3[7])
 gkTaphyNote = setrow(fillarray(3, 20, 4, 3, 6, 7, 8, 0), 0)
 gkTaphyNote = setrow(fillarray(4, 21, 5, 4, 7, 8, 9, 1), 1)
+gkTaphyGain = setrow(fillarray(0, 1, 0, 2, 0, 1, 0, 0), 0)
+gkTaphyGain = setrow(fillarray(4, 1, 2, 0, 1, -4, 0, 8), 1)
+kc2 init 0
+while kc2 < $COL do
+    gkTaphyMin[0][kc2] = 0
+    gkTaphyMax[0][kc2] = 14+1
+    gkTaphyMin[1][kc2] = 14
+    gkTaphyMax[1][kc2] = 28+1
+    kc2 += 1
+od
 
 schedule("Taphy", 0, p3, 0)
 schedule("Taphy", 0, p3, 1)
 
-gkFmAmp = setrow(fillarray(0.07,0.05,0.05,0.05,0.05,0.05,0.05,0.05), 0)
-gkFmAmp = setrow(fillarray(0.12,0.05,0.05,0.05,0.35,0.05,0.05,0.05), 1)
-if kTrig2 == 1 then ;np need to do this faster than the fastest trigger
-    ktmp = 0
-    while ktmp < $COL do
-        gkFmCps[0][ktmp] = gkTaphyP[0][gkTaphyAS[0]]
-        gkFmCps[1][ktmp] = gkTaphyP[1][gkTaphyAS[1]]
-        ktmp += 1
+;FM
+gkFmAmp = setrow(fillarray(0.37,0.05,0.25,0.05,0.35,0.05,0.05,0.05), 0)
+gkFmAmp = setrow(fillarray(0.62,0.15,0.25,0.35,0.22,0.05,0.05,0.05), 1)
+;gkFmAmp = setrow(fillarray(0.37,0.05,0.25,0.15,0.15,0.05,0.05,0.05), 2)
+;no need to do this faster than the fastest trigger (or maybe I can do a glissando)
+if kTrig2 == 1 then
+    kc1 = 0
+    while kc1 < $COL do
+        gkFmCps[0][kc1] = gkTaphyP[0][gkTaphyAS[0]]/2
+        gkFmCps[1][kc1] = gkTaphyP[1][gkTaphyAS[1]]
+        ;gkFmCps[2][kc1] = gkTaphyP[0][gkTaphyAS[0]]/2
+        kc1 += 1
     od
 endif
 ;gkFmCps = setrow(getrow(gkTaphyP, 0), 0)
@@ -134,6 +149,7 @@ endif
 
 schedule("Fm", 0, p3, 0)
 schedule("Fm", 0, p3, 1)
+schedule("Fm", 0, p3, 2)
 
 ;drums
 if kAS1 > 3 then
@@ -146,7 +162,7 @@ endif
 
 ;verb
 schedule("Verb",0,-1)
-gaVerbIn = gaKickOut*0.1 + gaFmOut[0]*0.3 + gaFmOut[1]
+gaVerbIn = gaKickOut*0.1 + gaFmOut[0]*0.3 + gaFmOut[1]*0.2
 
 ;mix
 aOutL = gaVerbOutL
@@ -158,8 +174,8 @@ aOutR += gaKickOut
 aOutL += gaDrumOut
 aOutR += gaDrumOut
 
-aOutL += gaFmOut[0]+gaFmOut[1]
-aOutR += gaFmOut[0]+gaFmOut[1]
+aOutL += gaFmOut[0]+gaFmOut[1]*0.1+gaFmOut[2]
+aOutR += gaFmOut[0]+gaFmOut[1]*0.1+gaFmOut[2]
 
 outs aOutL, aOutR
 endin
