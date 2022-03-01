@@ -4,7 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-//haha! let's do this!
+//hbout jagged arrays?
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
@@ -36,6 +36,7 @@ gkTaphyMax[][]  init $ROW, $COL
 ;FM
 gkFmAmp[][]     init $ROW, $COL
 gkFmCps[][]     init $ROW, $COL
+gkFmRat[][]     init $ROW, $COL
 gaFmOut[]       init $ROW
 
 instr Taphy
@@ -54,14 +55,15 @@ endin
 instr Fm
 kAmp[] getrow gkFmAmp, p4
 kCps[] getrow gkFmCps, p4
-aOp1    Pmoscili kAmp[0], kCps[0]
-aOp2    Pmoscili kAmp[1], kCps[1],  aOp1
-aOp3    Pmoscili kAmp[2], kCps[2],  aOp1
-aOp4    Pmoscili kAmp[3], kCps[3],  aOp1
-aOp5    Pmoscili kAmp[4], kCps[4],  aOp2+aOp3+aOp4
-aOp6    Pmoscili kAmp[5], kCps[5],  aOp5
-aOp7    Pmoscili kAmp[6], kCps[6],  aOp5
-aOp8    Pmoscili kAmp[7], kCps[7],  aOp5
+kRat[] getrow gkFmRat, p4
+aOp1    Pmoscili kAmp[0], kCps[0]*kRat[0]
+aOp2    Pmoscili kAmp[1], kCps[1]*kRat[1],  aOp1
+aOp3    Pmoscili kAmp[2], kCps[2]*kRat[2],  aOp1
+aOp4    Pmoscili kAmp[3], kCps[3]*kRat[3],  aOp1
+aOp5    Pmoscili kAmp[4], kCps[4]*kRat[4],  aOp2+aOp3+aOp4
+aOp6    Pmoscili kAmp[5], kCps[5]*kRat[5],  aOp5
+aOp7    Pmoscili kAmp[6], kCps[6]*kRat[6],  aOp5
+aOp8    Pmoscili kAmp[7], kCps[7]*kRat[7],  aOp5
 gaFmOut[p4] = (aOp6 + aOp7 + aOp8)
 endin
 
@@ -133,17 +135,14 @@ schedule("Taphy", 0, p3, 1)
 ;FM
 gkFmAmp = setrow(fillarray(0.37,0.05,0.25,0.05,0.35,0.05,0.05,0.05), 0)
 gkFmAmp = setrow(fillarray(0.62,0.15,0.25,0.35,0.22,0.05,0.05,0.05), 1)
-;gkFmAmp = setrow(fillarray(0.37,0.05,0.25,0.15,0.15,0.05,0.05,0.05), 2)
-;no need to do this faster than the fastest trigger (or maybe I can do a glissando)
-if kTrig2 == 1 then
-    kc1 = 0
-    while kc1 < $COL do
-        gkFmCps[0][kc1] = gkTaphyP[0][gkTaphyAS[0]]/2
-        gkFmCps[1][kc1] = gkTaphyP[1][gkTaphyAS[1]]
-        ;gkFmCps[2][kc1] = gkTaphyP[0][gkTaphyAS[0]]/2
-        kc1 += 1
-    od
-endif
+gkFmRat = setrow(fillarray(0.25,0.50,1.00,1.00,1.00,1.00,0.50,1.00), 0)
+gkFmRat = setrow(fillarray(0.25,0.50,1.00,1.00,1.00,0.25,0.50,1.00), 1)
+kc1 = 0
+while kc1 < $COL do
+    gkFmCps[0][kc1] = gkTaphyP[0][gkTaphyAS[0]]
+    gkFmCps[1][kc1] = gkTaphyP[1][gkTaphyAS[1]]
+    kc1 += 1
+od
 ;gkFmCps = setrow(getrow(gkTaphyP, 0), 0)
 ;gkFmCps = setrow(getrow(gkTaphyP, 1), 1)
 
@@ -159,6 +158,9 @@ if kAS1 > 3 then
 else
     schedkwhen(kT2[0]+kT2[5], 0,0, "Kick", 0, 0.0001)
 endif
+
+;envelope
+;gaFmOut[1] = gaFmOut[1]*trigexpseg(gkTaphyTrig[1], 1, 1.2, 0.0001)
 
 ;verb
 schedule("Verb",0,-1)
