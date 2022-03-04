@@ -33,10 +33,10 @@ gkTaphyAS, gkTaphyP[], kT[] Taphath gkTaphyTrig, gkTaphyNote, gkTaphyGain,
         gkTaphyQ, gkTaphyMin, gkTaphyMax, iScale, p4, 0, p5
 
 ;so it would be something like: (assuming p4 is channel selection)
-kAS, kP[], kT[] Taphath gkTaphyTrig[p4], getrow(gkTaphyNote,p4), ;and so on
+;kAS, kP[], kT[] Taphath gkTaphyTrig[p4], getrow(gkTaphyNote,p4), ;and so on
 ;(or maybe store that getrow in a local first)
-gkTaphyAS[p4] = kAS
-gkTaphyP setrow kP, p4
+;gkTaphyAS[p4] = kAS
+;gkTaphyP setrow kP, p4
 ;dont need the trigger array
 endin
 
@@ -142,7 +142,7 @@ aOutR += gaFmOut
 
 outs aOutL, aOutR
 endin
-schedule("Main", 0, 120*($TEMPO/60) ;120 beats. yeet cps factor for time in seconds
+schedule("Main", 0, 120*($TEMPO/60)) ;120 beats. yeet cps factor for time in seconds
 </CsInstruments>
 ;I miss the score!
 </CsoundSynthesizer>

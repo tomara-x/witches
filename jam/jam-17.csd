@@ -4,7 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-//hbout jagged arrays?
+//hbout jagged arrays? <- wtf! no!
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
@@ -164,7 +164,7 @@ endif
 
 ;verb
 schedule("Verb",0,-1)
-gaVerbIn = gaKickOut*0.1 + gaFmOut[0]*0.3 + gaFmOut[1]*0.2
+gaVerbIn = gaKickOut*0.1 + gaFmOut[0]*0.2 + gaFmOut[1]*0.3
 
 ;mix
 aOutL = gaVerbOutL
