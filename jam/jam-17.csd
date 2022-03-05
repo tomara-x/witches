@@ -4,7 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-//hbout jagged arrays? <- wtf! no!
+//jazz!
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
@@ -15,7 +15,7 @@ ksmps   =   42
 nchnls  =   2
 0dbfs   =   1
 
-#define TEMPO #69#
+#define TEMPO #69# ;pulses. per. minute.
 #include "../opcodes.orc"
 
 #define ROW #4# ;global array rows (number of simultanious instances)
@@ -38,6 +38,9 @@ gkFmAmp[][]     init $ROW, $COL
 gkFmCps[][]     init $ROW, $COL
 gkFmRat[][]     init $ROW, $COL
 gaFmOut[]       init $ROW
+
+;inits
+gaPluckOut init 0
 
 instr Taphy
 iScale ftgenonce 0,0,-7*10,-51, 7,2,cpspch(6),0,
@@ -95,6 +98,27 @@ instr Granny ;use partikkel
 
 endin
 
+instr Pluck
+iplk    =           p5 ;(0 to 1)
+kamp    init        0.1
+icps    =           p4
+kpick   init        0.8 ;pickup point
+krefl   init        p6 ;rate of decay ]0,1[
+asig    wgpluck2    iplk,kamp,icps,kpick,krefl
+;asig    rbjeq       asig, 200, 2, 0, 8, 10
+aenv    linsegr     0,0.005,1,p3,1,p7,0 ;declick
+gaPluckOut = asig*aenv
+endin
+
+instr Dist ;distortion
+gaDistIn init 0
+iTanh ftgenonce 0,0,1024,"tanh", -5, 5, 0
+kDist = 0.4
+iHP = 10
+iStor = 0
+gaDistOut distort gaDistIn, kDist, iTanh, iHP, iStor
+endin
+
 instr Verb ;stolen from the floss manual 05E01_freeverb.csd
 gaVerbIn    init 0
 kRoomSize   init      0.85     ; room size (range 0 to 1)
@@ -134,7 +158,7 @@ schedule("Taphy", 0, p3, 1)
 
 ;FM
 gkFmAmp = setrow(fillarray(0.37,0.05,0.25,0.05,0.35,0.05,0.05,0.05), 0)
-gkFmAmp = setrow(fillarray(0.62,0.15,0.25,0.35,0.22,0.05,0.05,0.05), 1)
+gkFmAmp = setrow(fillarray(0.22,0.15,0.35,0.35,0.12,0.05,0.05,0.05), 1)
 gkFmRat = setrow(fillarray(0.25,0.50,1.00,1.00,1.00,1.00,0.50,1.00), 0)
 gkFmRat = setrow(fillarray(0.25,0.50,1.00,1.00,1.00,0.25,0.50,1.00), 1)
 kc1 = 0
@@ -150,6 +174,9 @@ schedule("Fm", 0, p3, 0)
 schedule("Fm", 0, p3, 1)
 schedule("Fm", 0, p3, 2)
 
+;pluck
+schedkwhen(kT3[kAS3], 0,0, "Pluck", 0, 4, gkTaphyP[1][gkTaphyAS[1]], 0.3, 0.2, 0.3)
+
 ;drums
 if kAS1 > 3 then
     schedkwhen(kT2[0]+kT2[4], 0,0, "Kick", 0, 0.0001)
@@ -164,20 +191,27 @@ endif
 
 ;verb
 schedule("Verb",0,-1)
-gaVerbIn = gaKickOut*0.1 + gaFmOut[0]*0.2 + gaFmOut[1]*0.3
+gaVerbIn = gaKickOut*0.1 + gaFmOut[0]*0.2 + gaFmOut[1]*0.1 + gaPluckOut*0.2
+
+;distort
+schedule("Dist",0,-1)
+gaDistIn = gaPluckOut
 
 ;mix
 aOutL = gaVerbOutL
 aOutR = gaVerbOutR
 
-aOutL += gaKickOut
-aOutR += gaKickOut
+aOutL += gaKickOut*0.8
+aOutR += gaKickOut*0.8
 
 aOutL += gaDrumOut
 aOutR += gaDrumOut
 
-aOutL += gaFmOut[0]+gaFmOut[1]*0.1+gaFmOut[2]
-aOutR += gaFmOut[0]+gaFmOut[1]*0.1+gaFmOut[2]
+aOutL += gaFmOut[0]*0.5+gaFmOut[1]*0.1;+gaFmOut[2]
+aOutR += gaFmOut[0]*0.5+gaFmOut[1]*0.1;+gaFmOut[2]
+
+aOutL += gaPluckOut*0.5+gaDistOut*0.5+limit(gaDistOut, -0.01, 0.01)
+aOutR += gaPluckOut*0.5+gaDistOut*0.5+limit(gaDistOut, -0.01, 0.01)
 
 outs aOutL, aOutR
 endin
