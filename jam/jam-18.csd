@@ -91,7 +91,7 @@ aEnv3 expsegr 1, p6, 0.0001
 aOp1  Pmoscili aEnv1, p7
 aOp2  Pmoscili aEnv1, p8
 aOp3  Pmoscili aEnv1, p9, aOp1+aOp2
-gaDrumOut = aOp3*0.1
+gaDrumOut = aOp3*0.05
 endin
 
 instr Granny ;use partikkel
@@ -128,13 +128,16 @@ endin
 
 instr Main
 kTrig0      metro $TEMPO/60 ;could div tempo by 4 (or whatever) and work in bars?
-kC0[]       fillarray 8, 4, 2, 8, 2, 4, 1, 2, 1, 8, 4, 2, 2, 6, 2, 8
+kC0[]       fillarray 8, 4, 2, 8, 8, 4, 1, 2, 1, 2, 4, 2, 2, 6, 2, 8
 kG0[]       fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kMin[]      fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kMax[]      fillarray 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9
 kQ[]        fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kAS0, kT0[] tBasemath kTrig0, kC0, kG0, kMin, kMax, kQ
-;imma Q the living fuck out of this one!
+kQ[kAS0] = 0 ;remove current step from the queue
+if kT0[4] == 1 then ;on step 4
+    kQ[1] = 1 ;enqueue step 1
+endif
 
 kTrig1      metro $TEMPO/60
 kC1[]       fillarray 08, 04, 01, 01, 01, 01, 02, 02
@@ -188,12 +191,16 @@ schedkwhen(kTrig3,0,0, "Pluck",0,0.2, 0, gkTaphyP[0][gkTaphyAS[0]], 0.1, 0.9, 0.
 if kAS0 = 1 then
     schedkwhen(gkTaphyTrig[1],0,0, "Pluck",0,0.8, 1, gkTaphyP[1][gkTaphyAS[1]], 0.1, 0.2, 0.1)
 endif
+if kAS0 = 4 then
+    schedkwhen(kT3[0]+kT3[4],0,0, "Pluck",0,2.0, 1, gkTaphyP[1][gkTaphyAS[1]], 0.3, 0.2, 0.1)
+endif
+
 
 ;drums
 if kAS0 = 3 then
     schedkwhen(kT2[0]+kT2[4], 0,0, "Kick", 0, 0.0001)
     kDrmTrg = kT2[kAS2]-(kT2[2]+kT2[4]+kT2[7])
-    schedkwhen(kDrmTrg,0,0,"Drum",0,0.0001,.3,.1,2,440,55,220)
+    schedkwhen(kDrmTrg,0,0,"Drum",0,0.0001,.1,.1,1,450,59,220)
 elseif kAS0 = 2 then
     schedkwhen(kT2[0]+kT2[5], 0,0, "Kick", 0, 0.0001)
 endif
