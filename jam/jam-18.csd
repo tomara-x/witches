@@ -222,7 +222,7 @@ gaVerbIn += gaDistOut*0.02
 schedule("Dist",0,-1)
 gaDistIn = gaPluckOut[0] + gaPluckOut[1]
 
-;mix <- seriously, you need to get into the db scale stuff! ;p
+;mix <- seriously, you need to get into the db scale stuff! 😭
 aOutL = gaVerbOutL
 aOutR = gaVerbOutR
 
