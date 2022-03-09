@@ -216,13 +216,13 @@ gaVerbIn += gaPluckOut[0]*0.1
 gaVerbIn += gaPluckOut[1]*0.1
 gaVerbIn += gaDistOut*0.02
 ;what if..
-;gaVerbIn += (gaVerbOutL+gaVerbOutR)*0.5 ;yep! ❗
+;gaVerbIn += (gaVerbOutL+gaVerbOutR)*0.5 ;yep! 🔄❗
 
 ;distortion
 schedule("Dist",0,-1)
 gaDistIn = gaPluckOut[0] + gaPluckOut[1]
 
-;mix <- seriously, you need to get into the db scale stuff! 😭
+;mix 🎚️🎚️🎚️🎚️🎛️ (db scale, amy)
 aOutL = gaVerbOutL
 aOutR = gaVerbOutR
 
