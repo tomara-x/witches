@@ -3,6 +3,10 @@
 //This work is free. You can redistribute it and/or modify it under the
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
+
+;we learn from this that you shpuldn't include the fm.orc, rather copy the
+;instrument(s) you'd like to use into your csd file and init its global arrays
+;I might split them into seperate files
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
