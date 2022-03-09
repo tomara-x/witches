@@ -1,4 +1,4 @@
-//trans rights
+//trans rights 🏳️‍⚧️
 //Copyright © 2022 Amy Universe <nopenullnilvoid00@gmail.com>
 //This work is free. You can redistribute it and/or modify it under the
 //terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -216,7 +216,7 @@ gaVerbIn += gaPluckOut[0]*0.1
 gaVerbIn += gaPluckOut[1]*0.1
 gaVerbIn += gaDistOut*0.02
 ;what if..
-;gaVerbIn += (gaVerbOutL+gaVerbOutR)*0.5 ;yep!
+;gaVerbIn += (gaVerbOutL+gaVerbOutR)*0.5 ;yep! ❗
 
 ;distortion
 schedule("Dist",0,-1)
