@@ -34,9 +34,9 @@ gkTaphyMin[][]  init $ROW, $COL
 gkTaphyMax[][]  init $ROW, $COL
 
 ;FM
-gkFmAmp[][]     init $ROW, $COL
-gkFmCps[][]     init $ROW, $COL
-gkFmRat[][]     init $ROW, $COL
+gkFmAmp[][]     init $ROW, 8
+gkFmCps[][]     init $ROW, 8
+gkFmRat[][]     init $ROW, 8
 gaFmOut[]       init $ROW
 
 ;pluck

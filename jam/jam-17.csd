@@ -175,7 +175,7 @@ schedule("Fm", 0, p3, 1)
 schedule("Fm", 0, p3, 2)
 
 ;pluck
-schedkwhen(kT3[kAS3], 0,0, "Pluck", 0, 4, gkTaphyP[1][gkTaphyAS[1]], 0.3, 0.2, 0.3)
+;schedkwhen(kT3[kAS3], 0,0, "Pluck", 0, 4, gkTaphyP[1][gkTaphyAS[1]], 0.3, 0.2, 0.3)
 
 ;drums
 if kAS1 > 3 then
@@ -194,8 +194,8 @@ schedule("Verb",0,-1)
 gaVerbIn = gaKickOut*0.1 + gaFmOut[0]*0.2 + gaFmOut[1]*0.1 + gaPluckOut*0.2
 
 ;distort
-schedule("Dist",0,-1)
-gaDistIn = gaPluckOut
+;schedule("Dist",0,-1)
+;gaDistIn = gaPluckOut
 
 ;mix
 aOutL = gaVerbOutL
@@ -210,8 +210,8 @@ aOutR += gaDrumOut
 aOutL += gaFmOut[0]*0.5+gaFmOut[1]*0.1;+gaFmOut[2]
 aOutR += gaFmOut[0]*0.5+gaFmOut[1]*0.1;+gaFmOut[2]
 
-aOutL += gaPluckOut*0.5+gaDistOut*0.5+limit(gaDistOut, -0.01, 0.01)
-aOutR += gaPluckOut*0.5+gaDistOut*0.5+limit(gaDistOut, -0.01, 0.01)
+;aOutL += gaPluckOut*0.5+gaDistOut*0.5+limit(gaDistOut, -0.01, 0.01)
+;aOutR += gaPluckOut*0.5+gaDistOut*0.5+limit(gaDistOut, -0.01, 0.01)
 
 outs aOutL, aOutR
 endin
