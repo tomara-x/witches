@@ -4,7 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-// 1/3
+// 2/3 fm
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
@@ -179,17 +179,17 @@ schedule("Taphy", 0, p3, 1)
 
 ;FM
 gkFM10Amp[0][00] = ampdb(randomi(-24, -1,  2))
-gkFM10Amp[0][01] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][03] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][04] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][05] = ampdb(randomi(-64, -3,  5))
+gkFM10Amp[0][01] = ampdb(randomi(-64, -3,  1))
+gkFM10Amp[0][03] = ampdb(randomi(-12, -3,  3))
+gkFM10Amp[0][04] = ampdb(randomi(-64, -3, .8))
+gkFM10Amp[0][05] = ampdb(randomi(-64,  0,  3))
 gkFM10Amp[0][08] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][09] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][10] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][11] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][12] = ampdb(randomi(-24, -1,  2))
+gkFM10Amp[0][09] = ampdb(randomi(-48, -3,  8))
+gkFM10Amp[0][10] = ampdb(randomi(-64,  0,  5))
+gkFM10Amp[0][11] = ampdb(randomi(-96, -3,  5))
+gkFM10Amp[0][12] = ampdb(randomi(-24,  0, .2))
 gkFM10Amp[0][13] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][14] = ampdb(randomi(-64, -3,  5))
+gkFM10Amp[0][14] = ampdb(randomi(-64, -3,  4))
 gkFM10Amp[0][15] = ampdb(randomi(-24, -1,  2))
 gkFM10Amp[0][2], gkFM10Amp[0][6], gkFM10Amp[0][7] = 0.01
 ktmp1[] = fillarray(1/4,1/2,1,1,1,1,1/2,1,1/4,1/2,1,2,1,1/8,1/2,1)

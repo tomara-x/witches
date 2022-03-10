@@ -4,7 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-// 1/3
+// 3/3 bass
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
@@ -43,9 +43,9 @@ gaFM10Out[]     init $ROW
 gaPluckOut[]    init $ROW
 
 instr Taphy
-;spanish mode
 iScale ftgenonce 0,0,-7*10,-51, 7,2,cpspch(6),0,
-2^(0/12),2^(1/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
+2^(0/12),2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
+;2^(0/12),2^(2/12),2^(3/12),2^(6/12),2^(7/12),2^(9/12),2^(10/12)
 
 kAS, kP[], kT[] Taphath gkTaphyTrig[p4],getrow(gkTaphyNote,p4),
                 getrow(gkTaphyGain, p4),getrow(gkTaphyQ, p4),
@@ -156,11 +156,12 @@ kAS2, kT2[] utBasemath kTrig2, kC2
 kTrig3      metro $TEMPO*4/60
 kC3[]       fillarray 03, 01, 03, 01, 02, 02, 02, 02
 kAS3, kT3[] utBasemath kTrig3, kC3
+kTrig4      metro $TEMPO/2/60
 
 ;Taphy
-gkTaphyTrig[0] = kTrig3
+gkTaphyTrig[0] = kTrig4
 gkTaphyNote = setrow(fillarray(3, 20, 4, 3, 6, 7, 8, 0), 0)
-gkTaphyGain = setrow(fillarray(0, 1, 0, 2, 0, 1, 0, 0), 0)
+gkTaphyGain = setrow(fillarray(5, 1, 0, 2, 0, 1, 0, 0), 0)
 gkTaphyTrig[1] = kT3[kAS3]-(kT3[2]+kT3[4]+kT3[7])
 gkTaphyNote = setrow(fillarray(4, 21, 5, 4, 7, 8, 9, 1), 1)
 gkTaphyGain = setrow(fillarray(4, 1, 2, 0, 1, -4, 0, 8), 1)
@@ -207,8 +208,8 @@ if kAS0 == 0 then ;bass comes in at step 0
 kbass = 1
 endif
 if kbass == 1 then
-;pluck                                                          ;pr   dr   rl
-schedkwhen(kTrig3,0,0, "Pluck",0,0.2, 0, gkTaphyP[0][gkTaphyAS[0]],.1,.9,.1)
+;pluck                                              ;pr   dr   rl
+schedkwhen(kTrig4,0,0,"Pluck",0,2, 0, gkTaphyP[0][gkTaphyAS[0]]/2,.1,.6,.1)
 endif
 
 if kAS0 == 1 then
