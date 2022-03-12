@@ -11,43 +11,37 @@ Different rituals, but can grant you powers similar to those of the
 Modulus Salomonis Regis sequencers by Aria Salvatrice. <3
 [https://aria.dog/modules/]
 
-[THIS WHOLE THING NEEDS A REWRITE] ⛔
 Syntax:
-kActiveStep, kPitchArr[], kTrigArr[], kIndex[] Taphath kTrig, kNoteIndx[],    \
-    kNdxGain[], kQArr[], [kMin[], kMax[],] i/kFn [, kStepMode]                \
+kActiveStep, kPitch[], kTrig[] [, kIndex[]] Taphath kInTrig, kNoteIndx[],     \
+    kNdxGain[], kQueue[], [kMin[], kMax[],] kFn [, kStepMode]                 \
     [, kReset] [, kLmtMode] [, kIntrp]
 
-Initialization:
-iFn: Function table containing pitch information (using gen51 for example)
-        (but doesn't have to be pitch, it can contain any values you want)
-
 Performance:
-kActiveStep: The index of the currently active step (from 0 to lenarray(kNoteIndex))
-kPitchArr[]: An array of the pitch outputs from each step.
+kActiveStep: The index of the currently active step [0, lenarray(kNoteIndex)[
+kPitch[]: An array of the pitch outputs from each step.
         (whatever values stored in iFn)
-kTrigArr[]: An array of trigger outputs from each step. A trigger is
+kTrig[]: An array of trigger outputs from each step. A trigger is
         1 k-cycle long, and equals 1 (in amplitude) when that corresponding
         step is activated (0 otherwise).
-Note: You can combine these outputs: current-pitch = kPitchArr[kActiveStep]
+kIndex[]: The transposed index of each step. can be left out
 
-kTrig: Trigger signal that runs the sequencer.(metro, metro2, seqtime, Basemath...)
+kInTrig: Trigger signal that runs the sequencer.(metro, metro2, seqtime, Basemath..)
         The sequencer advances one step every k-cycle where kTrig != 0
         (direction determined by kStepMode)
 kNoteIndx[]: 1D array the length of which is the length of the sequence.
-        It contains index values of the iFn for every sequence
+        It contains index values of the kFn for every sequence
         step before the sequencer starts to self-modulate.
         Those are not note values, they're the indexes to the values
-        stored in the iFn (the sequencer will output values in
-        the function table, not these indexes)
+        stored in the kFn
 kNdxGain[]: Each time the corresponding step is active, add the this value
         to the note index. (first sequence cycle is no exception)
-        2 for exmple means that every time the step is active, it will be 2
-        scale degrees higher. (from c to d ... if iFn contains a chromatic c scale)
+        2 for exmple means that every time the step is active, it'll be transposed 2
+        scale degrees higher. (from c to d ... if kFn contains a chromatic c scale)
         Increments can be negative or fractional values. But since those are
         indexes we're dealing with, the jump will only happen when the increments
         add up to an integer.
         (this should be same length as kNoteIndex, to avoid out-of-range indexing)
-kQArr[]: The queue inputs for each step. Queued steps take priority over
+kQueue[]: The queue inputs for each step. Queued steps take priority over
         other steps. This won't be modified by the sequencer but can be
         from within the calling instrument after invoking the sequencer. Example:
         kQueueArr[kActiveStep] = kQueueArr[kActiveStep]*kToggle
@@ -55,8 +49,10 @@ kQArr[]: The queue inputs for each step. Queued steps take priority over
         Positive values add corresponding steps to queue, non-positive remove them.
 kMin[], kMax[]: Minimum and maximum indexes along the function table for each step
         (for selecting the range of each step) (can be ommited for full ft)
-kFn: A k-rate variable holding the number to the function table, unlike using
-        an iFn, this can be changed in performance time.
+kFn: Function table containing pitch information (using gen51 for example)
+        Can be i-time function table. but in the case of k-time the input tables
+        should all have the same length. (unless managing the range manually with
+        arrays)
 kStepMode: How the sequencer will behave upon receiving a trigger.
         0 = forward, 1 = backward, 2 = random. (halt otherwise) (defaults to 0)
 kReset: Reset the sequencer to its original (kNoteIndex) state when non zero.
@@ -205,7 +201,7 @@ endif
 xout kAS, kPitchArr, kTrigArr, knewindex
 endop
 ;overloads
-opcode Taphath, kk[]k[]k[], kk[]k[]k[]kOOOO ;no range arrays
+opcode Taphath, kk[]k[]k[], kk[]k[]k[]kOOOO ;no range arrays [0, ftlen(i(kFn))[
 kTrig, kNoteIndx[], kNdxGain[], kQArr[], kFn, kStepMode, kReset, kLmtMode, kIntrp xin
 ilen = lenarray(kNoteIndx)
 kMin[] init ilen
@@ -220,6 +216,12 @@ kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], kFn, kStepMode, kReset,
 kAS, kP[], kT[], kN[] Taphath kTrig, kNoteIndx, kNdxGain, kQArr, kMin, kMax, kFn, kStepMode, kReset, kLmtMode, kIntrp
 xout kAS, kP, kT
 endop
+opcode Taphath, kk[]k[], kk[]k[]k[]kOOOO ;no range arrays or index out
+kTrig, kNoteIndx[], kNdxGain[], kQArr[], kFn, kStepMode, kReset, kLmtMode, kIntrp xin
+kAS, kP[], kT[], kN[] Taphath kTrig, kNoteIndx, kNdxGain, kQArr, kFn, kStepMode, kReset, kLmtMode, kIntrp
+xout kAS, kP, kT
+endop
+/*
 opcode Taphath, kk[], kk[]k[]k[]k[]k[]kOOOO ;no index or trigger outs
 kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], kFn, kStepMode, kReset, kLmtMode, kIntrp xin
 kAS, kP[], kT[] Taphath kTrig, kNoteIndx, kNdxGain, kQArr, kMin, kMax, kFn, kStepMode, kReset, kLmtMode, kIntrp
@@ -231,7 +233,7 @@ kfn init iFn
 kAS, kP[], kT[], kN[] Taphath kTrig, kNoteIndx, kNdxGain, kQArr, kMin, kMax, kfn, kStepMode, kReset, kLmtMode, kIntrp
 xout kAS, kP, kT, kN
 endop
-
+*/
 
 
 opcode uTaphath, kk[]k[], kk[]iOo
