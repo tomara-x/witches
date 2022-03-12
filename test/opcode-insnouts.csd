@@ -1,3 +1,4 @@
+//trans rights
 <CsoundSynthesizer>
 <CsOptions>
 -n -L stdin
@@ -9,19 +10,27 @@ ksmps = 441
 nchnls = 1
 0dbfs  = 1
 
-opcode Test, o, k[]
-karr[] xin
-printarray karr
-xout 0
+;haha! optional array arguments, bitches!
+opcode Test, 0, 0
+kArr1[] fillarray 1,2,3,4
+printarray kArr1
+endop
+opcode Test, 0, k[]
+kArr1[] xin
+printarray kArr1
+endop
+opcode Test, 0, k[]k[]
+kArr1[], kArr2[] xin
+printarray kArr2
+Test kArr1
 endop
 
-instr 1
-k1[] init 4
-it Test k1
+instr Main
+k1[] fillarray 1,1,1,1
+k2[] fillarray 2,2,2,2
+Test
 endin
 
+schedule("Main", 0, .1)
 </CsInstruments>
-<CsScore>
-i1 0 .1
-</CsScore>
 </CsoundSynthesizer>

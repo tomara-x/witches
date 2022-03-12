@@ -9,13 +9,13 @@ nchnls = 1
 0dbfs  = 1
 
 instr 1
-print(ampdb(0))
-print(ampdbfs(0))
+print(ampdb(-48))
+print(ampdbfs(-48))
 endin
 
 instr 2
-print(dbamp(1))
-print(dbfsamp(1))
+print(dbamp(.005))
+print(dbfsamp(.005))
 endin
 
 </CsInstruments>
