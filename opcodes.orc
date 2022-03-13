@@ -221,21 +221,6 @@ kTrig, kNoteIndx[], kNdxGain[], kQArr[], kFn, kStepMode, kReset, kLmtMode, kIntr
 kAS, kP[], kT[], kN[] Taphath kTrig, kNoteIndx, kNdxGain, kQArr, kFn, kStepMode, kReset, kLmtMode, kIntrp
 xout kAS, kP, kT
 endop
-/*
-opcode Taphath, kk[], kk[]k[]k[]k[]k[]kOOOO ;no index or trigger outs
-kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], kFn, kStepMode, kReset, kLmtMode, kIntrp xin
-kAS, kP[], kT[] Taphath kTrig, kNoteIndx, kNdxGain, kQArr, kMin, kMax, kFn, kStepMode, kReset, kLmtMode, kIntrp
-xout kAS, kP
-endop
-*/
-/*
-opcode Taphath, kk[]k[]k[], kk[]k[]k[]k[]k[]iOOOO ;ifn (not really needed)
-kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], iFn, kStepMode, kReset, kLmtMode, kIntrp xin
-kfn init iFn
-kAS, kP[], kT[], kN[] Taphath kTrig, kNoteIndx, kNdxGain, kQArr, kMin, kMax, kfn, kStepMode, kReset, kLmtMode, kIntrp
-xout kAS, kP, kT, kN
-endop
-*/
 
 
 opcode uTaphath, kk[]k[], kk[]iOo
@@ -826,5 +811,52 @@ endif
 xout kout
 endop
 
-;you ever do this? add an empty line at the end so your code doesn't fall off?!
+
+;array operations
+;set row to constant
+opcode SetRow, k[], k[]kk
+kArr[], knum, kndx xin
+irowlen = lenarray(getrow(kArr,0))
+kcnt = 0
+while kcnt < irowlen do
+    kArr[kndx][kcnt] = knum
+    kcnt += 1
+od
+xout kArr
+endop
+;set row to 1d array
+opcode SetRow, k[], k[]k[]k
+kArr[], kv[], kndx xin
+irowlen = lenarray(getrow(kArr,0))
+kcnt = 0
+while kcnt < irowlen do
+    kArr[kndx][kcnt] = kv[kcnt]
+    kcnt += 1
+od
+xout kArr
+endop
+;set column to constant
+opcode SetCol, k[], k[]kk
+kArr[], knum, kndx xin
+icollen = lenarray(getcol(kArr,0))
+kcnt = 0
+while kcnt < icollen do
+    kArr[kcnt][kndx] = knum
+    kcnt += 1
+od
+xout kArr
+endop
+;set column to 1d array
+opcode SetCol, k[], k[]k[]k
+kArr[], kv[], kndx xin
+irowlen = lenarray(getcol(kArr,0))
+kcnt = 0
+while kcnt < irowlen do
+    kArr[kcnt][kndx] = kv[kcnt]
+    kcnt += 1
+od
+xout kArr
+endop
+
+
 
