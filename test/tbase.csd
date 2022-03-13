@@ -13,7 +13,7 @@ nchnls  =   1
 #include "opcodes.orc"
 
 instr 1
-ktrig1  metro 30*15/60
+ktrig1  metro 120*15/60
 kcnt[]  fillarray 1, 1/3, 1/3, 1/3, 1, 1/5, 1/5, 1/5, 1/5, 1/5
 kn init 0
 if kn == 0 then
@@ -24,15 +24,15 @@ kgain[] fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kmin[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kmax[]  fillarray 19, 19, 19, 19, 19, 19, 19, 19, 19, 19
 kQ[]    fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-kAS, kt[] tBasemath ktrig1, kcnt, kgain, kmin, kmax, kQ
+kAS, kt[] tBasemath ktrig1, kcnt, kgain, 0,19, kQ
 
 ;schedkwhen ktrig1, 0,0, "beep", 0, 0.05, 440*2^2
-schedkwhen kt[kAS], 0,0, "beep", 0, 0.05, 440*2^4
+schedkwhen kt[kAS], 0,0, "beep", 0, 0.05, 440*2^3
 
 kcnt2[]  fillarray 4*15
-kmax2[]  fillarray 64
-kAS2, kt2[] tBasemath ktrig1, kcnt2, kgain, kmin, kmax2, kQ
-schedkwhen kt2[kAS2], 0,0, "beep", 0, 0.05, 440*2^3
+kmax2[]  fillarray 64 ;no need for this now
+kAS2, kt2[] tBasemath ktrig1, kcnt2, kgain, 0, kmax2, kQ
+schedkwhen kt2[kAS2], 0,0, "beep", 0, 0.05, 440*2^2
 endin
 
 instr 2
@@ -49,7 +49,7 @@ endin
 </CsInstruments>
 <CsScore>
 t       0       120
-i2      0       240
+i1      0       240
 e
 </CsScore>
 </CsoundSynthesizer>

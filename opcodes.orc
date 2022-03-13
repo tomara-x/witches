@@ -227,7 +227,9 @@ kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], kFn, kStepMode, kReset,
 kAS, kP[], kT[] Taphath kTrig, kNoteIndx, kNdxGain, kQArr, kMin, kMax, kFn, kStepMode, kReset, kLmtMode, kIntrp
 xout kAS, kP
 endop
-opcode Taphath, kk[]k[]k[], kk[]k[]k[]k[]k[]iOOOO ;ifn
+*/
+/*
+opcode Taphath, kk[]k[]k[], kk[]k[]k[]k[]k[]iOOOO ;ifn (not really needed)
 kTrig, kNoteIndx[], kNdxGain[], kQArr[], kMin[], kMax[], iFn, kStepMode, kReset, kLmtMode, kIntrp xin
 kfn init iFn
 kAS, kP[], kT[], kN[] Taphath kTrig, kNoteIndx, kNdxGain, kQArr, kMin, kMax, kfn, kStepMode, kReset, kLmtMode, kIntrp
@@ -555,8 +557,11 @@ Instead of the length there's a count input for how many triggers are in a step.
 (Think sequential clock divider) Also there are no divisions.
 
 Syntax:
-kActiveStep, kTrigArr[] tBasemath kTrig, kCount[], kGain[], kMin[], kMax[], \
-    kQArr[] [, kStepMode] [, kReset] [, kLmtMode]
+kActiveStep, kTrigArr[] tBasemath kTrig, kCount[], kGain[], kMin[], kMax[], kQArr[]
+    [, kStepMode] [, kReset] [, kLmtMode]
+
+kActiveStep, kTrigArr[] tBasemath kTrig, kCount[], kGain[], kMin, kMax, kQArr[]
+    [, kStepMode] [, kReset] [, kLmtMode]
 
 Performance:
 kActiveStep: Index of the currently active step (from 0 to lenarray(kCount))
@@ -571,6 +576,8 @@ kGain[]: Increment to be added to the counth of each step each time
     that step is activated. (can be negative or fractional)
     (should be the same length as kCount to avoid out-of-range idexing)
 kMin[], kMax[]: Minimum and maximum count for each step (kMin <= count < kMax)
+kMin, kMax: Minimum and maximum count for all steps (kMin <= count < kMax)
+    (you can have min be a variable and max be an array or vice versa)
 kQArr[]: The queue inputs for each step. Queued steps take priority over other
     steps. This won't be modified by the sequencer but can be from within the
     calling instrument after invoking the sequencer. Example:
@@ -664,6 +671,33 @@ if kReset != 0 then
 endif
 
 xout kAS, kTrigArr
+endop
+;overloads
+opcode tBasemath, kk[], kk[]k[]kkk[]OOO ;pass min and max as scalars
+kTrig, kCount[], kGain[], kMin, kMax, kQArr[], kStepMode, kReset, kLmtMode xin
+ilen = lenarray(kCount)
+kMinArr[] init ilen
+kMaxArr[] init ilen
+kMinArr = kMin
+kMaxArr = kMax
+kAS,kT[] tBasemath kTrig,kCount,kGain,kMinArr,kMaxArr,kQArr,kStepMode,kReset,kLmtMode
+xout kAS, kT
+endop
+opcode tBasemath, kk[], kk[]k[]kk[]k[]OOO ;only scaler min
+kTrig, kCount[], kGain[], kMin, kMax[], kQArr[], kStepMode, kReset, kLmtMode xin
+ilen = lenarray(kCount)
+kMinArr[] init ilen
+kMinArr = kMin
+kAS,kT[] tBasemath kTrig,kCount,kGain,kMinArr,kMax,kQArr,kStepMode,kReset,kLmtMode
+xout kAS, kT
+endop
+opcode tBasemath, kk[], kk[]k[]k[]kk[]OOO ;scaler max
+kTrig, kCount[], kGain[], kMin[], kMax, kQArr[], kStepMode, kReset, kLmtMode xin
+ilen = lenarray(kCount)
+kMaxArr[] init ilen
+kMaxArr = kMax
+kAS,kT[] tBasemath kTrig,kCount,kGain,kMin,kMaxArr,kQArr,kStepMode,kReset,kLmtMode
+xout kAS, kT
 endop
 
 
