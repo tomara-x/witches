@@ -141,10 +141,8 @@ instr Main
 kTrig0      metro $TEMPO/60
 kC0[]       fillarray 2, 4, 2, 8, 8, 4, 1, 2, 1, 2, 4, 2, 2, 6, 8, 8
 kG0[]       fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-kMin[]      fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-kMax[]      fillarray 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9
 kQ[]        fillarray 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
-kAS0, kT0[] tBasemath kTrig0, kC0, kG0, kMin, kMax, kQ
+kAS0, kT0[] tBasemath kTrig0, kC0, kG0, 0, 9, kQ
 kQ[kAS0] = 0 ;remove current step from the queue
 ;if kT0[4] == 1 then ;on step 4
 ;    kQ[1] = 1 ;enqueue step 1
