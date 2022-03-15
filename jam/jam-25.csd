@@ -4,8 +4,8 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-//taphy in main better?
-//also mixer test
+//you can't just put limiters on everything and call it music!
+; ^ haha! bitch, watch me!
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
@@ -18,6 +18,19 @@ nchnls  =   2
 
 #define TEMPO #96#
 #include "../opcodes.orc"
+#include "../mixer.orc"
+;taphy
+#define ROW #4# ;global array rows (number of simultanious instances)
+#define COL #8# ;global array columns (length)
+gkTaphyAS[]     init $ROW
+gkTaphyP[][]    init $ROW, $COL
+gkTaphyT[][]    init $ROW, $COL
+gkTaphyTrig[]   init $ROW
+gkTaphyNote[][] init $ROW, $COL
+gkTaphyGain[][] init $ROW, $COL
+gkTaphyQ[][]    init $ROW, $COL
+gkTaphyMin[][]  init $ROW, $COL
+gkTaphyMax[][]  init $ROW, $COL
 ;FM
 gkFM10Amp[][]   init $ROW, 16
 gkFM10Cps[][]   init $ROW, 16
@@ -134,6 +147,7 @@ kAS2, kT2[] utBasemath kTrig2, kC2
 kTrig3      metro $TEMPO*4/60
 kC3[]       fillarray 03, 01, 03, 01, 02, 02, 02, 02
 kAS3, kT3[] utBasemath kTrig3, kC3
+;kTrig4      metro $TEMPO/2/60
 
 ;Taphy
 gkTaphyTrig[0] = kTrig3
@@ -219,42 +233,23 @@ gaVerbIn += gaDistOut*0.02
 schedule("Dist",0,-1)
 gaDistIn = gaPluckOut[0] + gaPluckOut[1] + 8*limit(gaPluckOut[2], -0.01, 0.01)
 
-;mix 🎚️🎚️🎚️🎚️🎛️ (db scale, amy)
-ichns = 8
-aM[][] init ichns, 2
+;mix
+sbus_write 0, gaVerbOutL, gaVerbOutR
+;sbus_write 1, gaKickOut
+;sbus_mult  1, ampdb(-6), ampdb(-6)
+;sbus_write 2, gaDrumOut
+sbus_write 3, gaFM10Out[0]
+sbus_mult  3, ampdb(-0)
+;sbus_write 4, gaDistOut*ampdb(-6)
+;sbus_write 5, gaPluckOut[0]*db(-6)+gaPluckOut[1]*db(-6)+gaPluckOut[2]*db(-6)
 
-;aM[0][0], aM[0][1] [+]= al [,ar]
-aOutL = gaVerbOutL
-aOutR = gaVerbOutR
-
-aOutL += gaKickOut*0.3
-aOutR += gaKickOut*0.3
-
-aOutL += gaDrumOut
-aOutR += gaDrumOut
-
-aOutL += gaFM10Out[0]*0.5+gaFM10Out[1]*0.1;+gaFM10Out[2]
-aOutR += gaFM10Out[0]*0.5+gaFM10Out[1]*0.1;+gaFM10Out[2]
-
-;maybe init all globals outside?
-aOutL += gaDistOut*0.03;+limit(gaDistOut, -0.01, 0.01)
-aOutR += gaDistOut*0.03;+limit(gaDistOut, -0.01, 0.01)
-
-aOutL += gaPluckOut[0]*0.5 + gaPluckOut[1]*0.5+gaPluckOut[2]*0.5
-aOutR += gaPluckOut[0]*0.5 + gaPluckOut[1]*0.5+gaPluckOut[2]*0.7
-
-kc0 = 0
-while kc0 < ichns do
-    clear aL, aR
-    aL += aM[kc0][0]
-    aR += aM[kc0][1]
-    clear aM[kc0][0], aM[kc0][1]
-    kc0 += 1
-od
-aL limit aL, -1, 1
-aR limit aR, -1, 1
+;out
+aL, aR sbus_out
+;aL limit aL, -.01, .01
+;aR limit aR, -.01, .01
+aL limit aL, -.1, .1
+aR limit aR, -.1, .1
 outs aL, aR
-
 endin
 schedule("Main", 0, 120*($TEMPO/60)) ;120 beats
 </CsInstruments>
