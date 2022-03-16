@@ -52,16 +52,17 @@ opcode sbus_mix, 0,ia
 endop
 
 ;multiply channel (for setting amplitude)
-opcode sbus_mult, 0,ik
-  ibus, kml, kmr xin
-  ga_sbus[ibus][0] = ga_sbus[ibus][0] * kml
-  ga_sbus[ibus][1] = ga_sbus[ibus][1] * kmr
-endop
-;normalled (DO THIS WITH OPTIONAL ARGS?)
-opcode sbus_mult, 0,ik
+opcode sbus_mult, 0, ik
   ibus, km xin
   ga_sbus[ibus][0] = ga_sbus[ibus][0] * km
   ga_sbus[ibus][1] = ga_sbus[ibus][1] * km
+endop
+opcode sbus_mult, 0, ikk ;each stereo channel separately
+;must make sure second arg is k, otherwise it's an ambiguous call
+;(because of previous definition and optional iksmps) (or use pan2)
+  ibus, kml, kmr xin
+  ga_sbus[ibus][0] = ga_sbus[ibus][0] * kml
+  ga_sbus[ibus][1] = ga_sbus[ibus][1] * kmr
 endop
 
 ;output a mix of all 16 channels

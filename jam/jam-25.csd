@@ -40,9 +40,9 @@ gaFM10Out[]     init $ROW
 gaPluckOut[]    init $ROW
 
 instr Taphy
-;spanish mode
-iScale ftgenonce 0,0,-7*10,-51, 7,2,cpspch(6),0,
-2^(0/12),2^(1/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
+iScale ftgenonce 0,0,-11,-51, 7,8,cpspch(6),0,
+2^(0/12),2^(2/12),2^(2/12),2^(7/12),2^(10/12),2^(12/12),2^(17/12),
+2^(20/12),2^(24/12),2^(29/12),2^(32/12);,2^(7/12),2^(8/12),2^(10/12)
 kAS, kP[], kT[] Taphath gkTaphyTrig[p4],getrow(gkTaphyNote,p4),
                 getrow(gkTaphyGain, p4),getrow(gkTaphyQ, p4),
                 getrow(gkTaphyMin, p4), getrow(gkTaphyMax, p4), iScale
@@ -170,19 +170,19 @@ schedule("Taphy", 0, p3, 0)
 schedule("Taphy", 0, p3, 1)
 
 ;FM
-gkFM10Amp[0][00] = ampdb(randomi(-24, -1,  2))
-gkFM10Amp[0][01] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][03] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][04] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][05] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][08] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][09] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][10] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][11] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][12] = ampdb(randomi(-24, -1,  2))
-gkFM10Amp[0][13] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][14] = ampdb(randomi(-64, -3,  5))
-gkFM10Amp[0][15] = ampdb(randomi(-24, -1,  2))
+gkFM10Amp[0][00] = lfo(0.5, 0.01)
+gkFM10Amp[0][01] = lfo(0.5, 0.02)
+gkFM10Amp[0][03] = lfo(0.5, 0.001)
+gkFM10Amp[0][04] = lfo(0.5, 0.004)
+gkFM10Amp[0][05] = lfo(0.5, 0.005)
+gkFM10Amp[0][08] = lfo(0.5, 0.011)
+gkFM10Amp[0][09] = lfo(0.5, 0.002)
+gkFM10Amp[0][10] = lfo(0.5, 0.007)
+gkFM10Amp[0][11] = lfo(0.5, 0.104)
+gkFM10Amp[0][12] = lfo(0.5, 0.09)
+gkFM10Amp[0][13] = lfo(0.5, 0.009)
+gkFM10Amp[0][14] = lfo(0.5, 0.08)
+gkFM10Amp[0][15] = lfo(0.5, 0.019)
 gkFM10Amp[0][2], gkFM10Amp[0][6], gkFM10Amp[0][7] = 0.01
 ktmp1[] = fillarray(1/4,1/2,1,1,1,1,1/2,1,1/4,1/2,1,2,1,1/8,1/2,1)
 gkFM10Rat = setrow(ktmp1, 0)
@@ -207,7 +207,7 @@ if kAS0 == 1 then
 schedkwhen(gkTaphyTrig[1],0,0,"Pluck",0,0.8, 1, gkTaphyP[1][gkTaphyAS[1]],.1,.2,.1)
 endif
 if kAS0 == 4 then
-schedkwhen(kT3[0]+kT3[4],0,0,"Pluck",0,8, 2, gkTaphyP[1][gkTaphyAS[1]],.3,.2,.1)
+schedkwhen(kT3[0]+kT3[4],0,0,"Pluck",0,8, 2, gkTaphyP[1][gkTaphyAS[1]],.3,.2,1)
 endif
 
 ;drums
@@ -222,7 +222,7 @@ endif
 ;effects
 ;verb
 schedule("Verb",0,-1)
-gaVerbIn = gaKickOut*0.1 + gaFM10Out[0]*0.2 + gaFM10Out[1]*0.1
+gaVerbIn = gaKickOut*0.1 + gaFM10Out[0]*0.2
 gaVerbIn += gaPluckOut[0]*0.1
 gaVerbIn += gaPluckOut[1]*0.1
 gaVerbIn += gaDistOut*0.02
@@ -235,20 +235,19 @@ gaDistIn = gaPluckOut[0] + gaPluckOut[1] + 8*limit(gaPluckOut[2], -0.01, 0.01)
 
 ;mix
 sbus_write 0, gaVerbOutL, gaVerbOutR
-;sbus_write 1, gaKickOut
-;sbus_mult  1, ampdb(-6), ampdb(-6)
-;sbus_write 2, gaDrumOut
-sbus_write 3, gaFM10Out[0]
-sbus_mult  3, ampdb(-0)
-;sbus_write 4, gaDistOut*ampdb(-6)
-;sbus_write 5, gaPluckOut[0]*db(-6)+gaPluckOut[1]*db(-6)+gaPluckOut[2]*db(-6)
+sbus_write 1, gaKickOut
+sbus_mult  1, ampdb(-6)
+sbus_write 2, gaDrumOut
+sbus_write 3, mirror(gaFM10Out[0], -.01, .01)
+sbus_mult  3, ampdb(-6)
+sbus_write 4, gaDistOut*ampdb(-24)
+sbus_write 5, gaPluckOut[0]*db(-6)+gaPluckOut[1]*db(-6)+gaPluckOut[2]*db(-6)
 
 ;out
 aL, aR sbus_out
-;aL limit aL, -.01, .01
-;aR limit aR, -.01, .01
-aL limit aL, -.1, .1
-aR limit aR, -.1, .1
+iSM = .01
+aL limit aL, -iSM, iSM
+aR limit aR, -iSM, iSM
 outs aL, aR
 endin
 schedule("Main", 0, 120*($TEMPO/60)) ;120 beats
