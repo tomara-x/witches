@@ -4,8 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-//you can't just put limiters on everything and call it music!
-; ^ haha! bitch, watch me!
+//taphy better inside main (for custom scales and stuff)
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
@@ -19,38 +18,12 @@ nchnls  =   2
 #define TEMPO #96#
 #include "../opcodes.orc"
 #include "../mixer.orc"
-;taphy
-#define ROW #4# ;global array rows (number of simultanious instances)
-#define COL #8# ;global array columns (length)
-gkTaphyAS[]     init $ROW
-gkTaphyP[][]    init $ROW, $COL
-gkTaphyT[][]    init $ROW, $COL
-gkTaphyTrig[]   init $ROW
-gkTaphyNote[][] init $ROW, $COL
-gkTaphyGain[][] init $ROW, $COL
-gkTaphyQ[][]    init $ROW, $COL
-gkTaphyMin[][]  init $ROW, $COL
-gkTaphyMax[][]  init $ROW, $COL
+
 ;FM
-gkFM10Amp[][]   init $ROW, 16
-gkFM10Cps[][]   init $ROW, 16
-gkFM10Rat[][]   init $ROW, 16
-gaFM10Out[]     init $ROW
-;pluck
-gaPluckOut[]    init $ROW
-
-instr Taphy
-iScale ftgenonce 0,0,-11,-51, 7,8,cpspch(6),0,
-2^(0/12),2^(2/12),2^(2/12),2^(7/12),2^(10/12),2^(12/12),2^(17/12),
-2^(20/12),2^(24/12),2^(29/12),2^(32/12);,2^(7/12),2^(8/12),2^(10/12)
-kAS, kP[], kT[] Taphath gkTaphyTrig[p4],getrow(gkTaphyNote,p4),
-                getrow(gkTaphyGain, p4),getrow(gkTaphyQ, p4),
-                getrow(gkTaphyMin, p4), getrow(gkTaphyMax, p4), iScale
-gkTaphyAS[p4] = kAS
-gkTaphyP setrow kP, p4
-gkTaphyT setrow kT, p4
-endin
-
+gkFM10Amp[][]   init 4, 16
+gkFM10Cps[][]   init 4, 16
+gkFM10Rat[][]   init 4, 16
+gaFM10Out[]     init 4
 instr FM10
 kAmp[]  getrow gkFM10Amp, p4
 kCps[]  getrow gkFM10Cps, p4
@@ -100,6 +73,7 @@ aOp3  Pmoscili aEnv1, p9, aOp1+aOp2
 gaDrumOut = aOp3*0.05
 endin
 
+gaPluckOut[]    init 4
 instr Pluck
 iplk    =           p6 ;(0 to 1)
 kamp    init        0.1
@@ -130,92 +104,82 @@ endin
 
 instr Main
 kTrig0      metro $TEMPO/60
-kC0[]       fillarray 2, 4, 2, 8, 8, 4, 1, 2, 1, 2, 4, 2, 2, 6, 8, 8
-kG0[]       fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-kQ[]        fillarray 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0
-kAS0, kT0[] tBasemath kTrig0, kC0, kG0, 0, 9, kQ
-kQ[kAS0] = 0 ;queueueue biz
+kBC0[]      fillarray 2, 4, 2, 8, 8, 4, 1, 2, 1, 2, 4, 2, 2, 6, 8, 8
+kBG0[]      fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+kBQ[]       fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+kBAS0, kBT0[] tBasemath kTrig0, kBC0, kBG0, 0, 9, kBQ
 
 kTrig2      metro $TEMPO*8/60
-kC2[]       fillarray 03, 01, 03, 01, 02, 02, 02, 02
-kAS2, kT2[] utBasemath kTrig2, kC2
+kBC2[]      fillarray 03, 01, 03, 01, 02, 02, 02, 02
+kBAS2, kBT2[] utBasemath kTrig2, kBC2
 kTrig3      metro $TEMPO*4/60
-kC3[]       fillarray 03, 01, 03, 01, 02, 02, 02, 02
-kAS3, kT3[] utBasemath kTrig3, kC3
-;kTrig4      metro $TEMPO/2/60
+kBC3[]      fillarray 03, 01, 03, 01, 02, 02, 02, 02
+kBAS3, kBT3[] utBasemath kTrig3, kBC3
+kTrig4      metro $TEMPO/2/60
+kTrig5      = kBT3[kBAS3]-(kBT3[2]+kBT3[4]+kBT3[7])
 
 ;Taphy
-gkTaphyTrig[0] = kTrig3
-gkTaphyNote = setrow(fillarray(3, 20, 4, 3, 6, 7, 8, 0), 0)
-gkTaphyGain = setrow(fillarray(0, 1, 0, 2, 0, 1, 0, 0), 0)
-gkTaphyTrig[1] = kT3[kAS3]-(kT3[2]+kT3[4]+kT3[7])
-gkTaphyNote = setrow(fillarray(4, 21, 5, 4, 7, 8, 9, 1), 1)
-gkTaphyGain = setrow(fillarray(4, 1, 2, 0, 1, -4, 0, 8), 1)
-kc2 init 0
-while kc2 < $COL do
-    gkTaphyMin[0][kc2] = 0
-    gkTaphyMax[0][kc2] = 14+1
-    gkTaphyMin[1][kc2] = 14
-    gkTaphyMax[1][kc2] = 28+1
-    kc2 += 1
-od
-schedule("Taphy", 0, p3, 0)
-schedule("Taphy", 0, p3, 1)
+iTS0 ftgenonce 0,0,-11,-51, 7,8,cpspch(6),0,
+2^(0/12),2^(2/12),2^(2/12),2^(7/12),2^(10/12),2^(12/12),
+2^(17/12),2^(20/12),2^(24/12),2^(29/12),2^(32/12)
+
+kTN0[] fillarray 3, 20, 4, 3, 6, 7, 8, 0
+kTG0[] fillarray 0, 1, 0, 2, 0, 1, 0, 0
+kTQ0[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
+kTAS0, kTP0[], kTT0[] Taphath kTrig3,kTN0,kTG0,kTQ0, iTS0
+
+kTN1[] fillarray 4, 21, 5, 4, 7, 8, 9, 1
+kTG1[] fillarray 4, 1, 2, 0, 1, -4, 0, 8
+kTQ1[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
+kTAS1, kTP1[], kTT1[] Taphath kTrig5,kTN1,kTG1,kTQ1, iTS0
 
 ;FM
-gkFM10Amp[0][00] = lfo(0.5, 0.01)
-gkFM10Amp[0][01] = lfo(0.5, 0.02)
-gkFM10Amp[0][03] = lfo(0.5, 0.001)
-gkFM10Amp[0][04] = lfo(0.5, 0.004)
-gkFM10Amp[0][05] = lfo(0.5, 0.005)
-gkFM10Amp[0][08] = lfo(0.5, 0.011)
-gkFM10Amp[0][09] = lfo(0.5, 0.002)
-gkFM10Amp[0][10] = lfo(0.5, 0.007)
-gkFM10Amp[0][11] = lfo(0.5, 0.104)
-gkFM10Amp[0][12] = lfo(0.5, 0.09)
-gkFM10Amp[0][13] = lfo(0.5, 0.009)
-gkFM10Amp[0][14] = lfo(0.5, 0.08)
-gkFM10Amp[0][15] = lfo(0.5, 0.019)
+gkFM10Amp[0][00] lfo 0.5, 0.01
+gkFM10Amp[0][01] lfo 0.5, 0.02
+gkFM10Amp[0][03] lfo 0.5, 0.001
+gkFM10Amp[0][04] lfo 0.5, 0.004
+gkFM10Amp[0][05] lfo 0.5, 0.005
+gkFM10Amp[0][08] lfo 0.5, 0.011
+gkFM10Amp[0][09] lfo 0.5, 0.002
+gkFM10Amp[0][10] lfo 0.5, 0.007
+gkFM10Amp[0][11] lfo 0.5, 0.104
+gkFM10Amp[0][12] lfo 0.5, 0.09
+gkFM10Amp[0][13] lfo 0.5, 0.009
+gkFM10Amp[0][14] lfo 0.5, 0.08
+gkFM10Amp[0][15] lfo 0.5, 0.019
 gkFM10Amp[0][2], gkFM10Amp[0][6], gkFM10Amp[0][7] = 0.01
 ktmp1[] = fillarray(1/4,1/2,1,1,1,1,1/2,1,1/4,1/2,1,2,1,1/8,1/2,1)
 gkFM10Rat = setrow(ktmp1, 0)
 kc1 = 0
-while kc1 < $COL do
-    gkFM10Cps[0][kc1] = gkTaphyP[1][gkTaphyAS[1]]*4
-    gkFM10Cps[0][kc1+8] = gkTaphyP[1][gkTaphyAS[1]]*4
+while kc1 < 16 do
+    gkFM10Cps[0][kc1] = kTP1[kTAS1]*4
     kc1 += 1
 od
 schedule("FM10", 0, p3, 0)
 
-kbass init 0
-if kAS0 == 0 then ;bass comes in at step 0
-kbass = 1
+;pluck                                             ;pr   dr   rl
+schedkwhen(kTrig4,0,0, "Pluck",0,1.2, 0, kTP0[kTAS0],.4,.3,.1)
+if kBAS0 == 1 then
+schedkwhen(kTrig5,0,0,"Pluck",0,0.8, 1, kTP1[kTAS1],.1,.2,.1)
 endif
-if kbass == 1 then
-;pluck                                                          ;pr   dr   rl
-schedkwhen(kTrig3,0,0, "Pluck",0,0.2, 0, gkTaphyP[0][gkTaphyAS[0]],.1,.9,.1)
-endif
-
-if kAS0 == 1 then
-schedkwhen(gkTaphyTrig[1],0,0,"Pluck",0,0.8, 1, gkTaphyP[1][gkTaphyAS[1]],.1,.2,.1)
-endif
-if kAS0 == 4 then
-schedkwhen(kT3[0]+kT3[4],0,0,"Pluck",0,8, 2, gkTaphyP[1][gkTaphyAS[1]],.3,.2,3)
+if kBAS0 == 4 then
+schedkwhen(kBT3[0]+kBT3[4],0,0,"Pluck",0,8, 2, kTP1[kTAS1],.3,.2,3)
 endif
 
 ;drums
-if kAS0 == 3 then
-    schedkwhen(kT2[0]+kT2[4], 0,0, "Kick", 0, 0.0001)
-    kDrmTrg = kT2[kAS2]-(kT2[2]+kT2[4]+kT2[7])
-    schedkwhen(kDrmTrg,0,0,"Drum",0,0.0001,.1,.1,1,450,59,220)
-elseif kAS0 == 2 || kAS0 == 5 then
-    schedkwhen(kT2[0]+kT2[5], 0,0, "Kick", 0, 0.0001)
+if kBAS0 > 4 then
+    schedkwhen(kBT2[0]+kBT2[4], 0,0, "Kick", 0, 0.0001)
+endif
+if kBAS0 > 3 && kBAS0%2==1 then
+    kDrmTrg = kBT2[kBAS2]-(kBT2[2]+kBT2[4])
+    schedkwhen(kDrmTrg,0,0,"Drum",0,0.0001,.5,.1,2,450,59,220)
 endif
 
 ;effects
 ;verb
 schedule("Verb",0,-1)
-gaVerbIn = gaKickOut*0.1 + gaFM10Out[0]*0.2
+gaVerbIn = gaKickOut*0.1 
+gaVerbIn += gaFM10Out[0]*0.2
 gaVerbIn += gaPluckOut[0]*0.1
 gaVerbIn += gaPluckOut[1]*0.1
 gaVerbIn += gaDistOut*0.02
@@ -227,21 +191,25 @@ gaDistIn = gaPluckOut[0] + gaPluckOut[1] + 8*limit(gaPluckOut[2], -0.01, 0.01)
 ;mix
 sbus_write 0, gaVerbOutL, gaVerbOutR
 sbus_write 1, gaKickOut
-sbus_mult  1, ampdb(-6)
+sbus_mult  1, ampdb(-18)
 sbus_write 2, gaDrumOut
-sbus_write 3, mirror(gaFM10Out[0], -.01, .01)
+sbus_write 3, gaFM10Out[0]
 sbus_mult  3, ampdb(-6)
-sbus_write 4, gaDistOut*ampdb(-24)
-sbus_write 5, gaPluckOut[0]*db(-6)+gaPluckOut[1]*db(-6)+gaPluckOut[2]*db(-6)
+sbus_write 4, gaDistOut
+sbus_mult  4, ampdb(-24)
+sbus_write 5, gaPluckOut[0]+gaPluckOut[1]+gaPluckOut[2]
+sbus_mult  5, ampdb(-6)
 
 ;out
 aL, aR sbus_out
 iSM = .05
 aL limit aL, -iSM, iSM
 aR limit aR, -iSM, iSM
-outs aL, aR
+
+kOutEnv linsegr 1, p3, 1, 10, 0
+outs aL*kOutEnv, aR*kOutEnv
 endin
-schedule("Main", 0, 192*($TEMPO/60))
+schedule("Main", 0, (2*64)*($TEMPO/60)) ;2 loops of tBasemath in seconds
 </CsInstruments>
 </CsoundSynthesizer>
 
