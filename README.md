@@ -2,41 +2,50 @@
 
 King Solomon was punk rock awesome! He made the ultimate sequencer, it used magic to make music. (trust me)
 
-At the end of 2019 I met [his successor](https://github.com/AriaSalvatrice) in awesomeness. She programmed (among many other cool things) the [Modulus Salomonis Regis](https://aria.dog/modules/). Its powers were infinite, its possibilities endless, but the platform on which it ran.. Ah, that's a long story...
+At the end of 2019 I met [his successor](https://github.com/AriaSalvatrice) in awesomeness. She programmed (among many other 🆒 things) the [Modulus Salomonis Regis](https://aria.dog/modules/). Its powers were infinite, its possibilities endless, but the platform on which it ran.. Ah, that's a long story...
 
-Months after I lost my favorite instrument, I missed the magic, I wanted it in my csound setup, so I made these:
+Months after i lost my favorite instrument, i missed the magic, so i did this:
 
-(check the opcodes.orc file for full documentation)
-- `Taphath` tries to mimick Aria's MSR as much as possible. (with just a few quirks) It's an arbitrary-length, self-modulating, pitch-quantized[^1] sequencer.
+### sequencers.orc
+(full documentation in file)
 
-- `Basemath` is an arbitrary-length, self-modulating rhythm sequencer.
+- `Taphath` tries to mimick Aria's MSR as much as possible. (with just a few quirks) It's an arbitrary-length, self-modulating, pitch-quantized[^1] sequencer. (this is how it all started)
 
-- `tBasemath` is an external-trigger driven Basemath
+- `Basemath` is the same idea applied to rhythm,  an arbitrary-length, self-modulating rhythm sequencer. (use `tBasemath` to avoid issue #15)
 
-- `uTaphath`, `uBasemath`, and `utBasemath`  are minimal versions.
+- `tBasemath` is an external-trigger-driven `Basemath`.
 
-### opcodes.orc
-That's where you'll find the opcode definitions and the documentation of `Taphath`, `Basemath`, and `tBasemath` (and the u versions). You can place this in your project directory, `#include` it in your csd file, and that's it, you have the opcodes ready to use.
+- `uTaphath`, `uBasemath`, and `utBasemath` are minimal versions.
 
-There are also some other opcodes that I keep there. (I find that `ClkDiv` comes in very handy with MSR-style patching)
+### mixer.orc
+Sterio audio bus/mixer from the [csound-live-code](https://github.com/kunstmusik/csound-live-code) library by Steven Yi with a few additions for my uses.
 
-### function-tables.orc
-Those are function tables used in my playing files. They're mostly just gen51 musical scales used with `Taphath` You can edit them, define your own, or something else.
+### utils.orc
+Utilities for working with the ladies.
 
-I think in the future I'll be using `ftgenonce` more and keeping function tables within instruments that use them.
+### oscillators.orc
+A pretty nice phase modulation oscillator opcode. (for now)
 
-### all other files
-Those files are just me playing around. Who knows what'll be there!
+### jam/
+Music/sounds check them out for examples.
 
-I try to keep music/fun sounds in `jam/` and testing files in `test/`. Check them out for examples/seeing the sequencers in action.
+### fm/
+FM algorithms fun
+
+### demon/
+running csound in daemon mode for live coding
+
+### other files
+old stuff i don't use anymore (to keep dependant files working) or just me playing around, experimenting and stuff
 
 Here's my [soundcloud](https://soundcloud.com/nope-null) where you can find some renders of some of the files here.
 
 If you make something with these, I'd love love love to have a listen/look! Also if you find anything confusing please feel free to message me 💜
 
-###### Made using [Vim](https://www.vim.org/) and [Csound](https://csound.com/) installed on a [Fedora](https://fedoraproject.org/) ([Void](https://voidlinux.org/) now) proot on [Termux](https://termux.com/) on an android (version 8.1) phone, void of any analog warmth! [[setup recipe]](https://github.com/tomara-x/csound-proot-distro-recipe)
+###### Made using [Vim](https://www.vim.org/) and [Csound](https://csound.com/) installed on a [Fedora](https://fedoraproject.org/) ([Void](https://voidlinux.org/) now) proot on [Termux](https://termux.com/) on an android (version 8.1) phone, void of any analog warmth! (except for that fm diagram, i drafted that on paper!) [[setup recipe]](https://github.com/tomara-x/csound-proot-distro-recipe)
 
 
 💜
 
 [^1]: When used with a [GEN51](https://csound.com/docs/manual/GEN51.html) function table.
+[^2]: whatever that means!

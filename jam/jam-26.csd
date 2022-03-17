@@ -16,7 +16,9 @@ nchnls  =   2
 0dbfs   =   1
 
 #define TEMPO #96#
-#include "../opcodes.orc"
+#include "../sequencers.orc"
+#include "../oscillators.orc"
+;#include "../utils.orc"
 #include "../mixer.orc"
 
 ;FM
@@ -210,6 +212,7 @@ kOutEnv linsegr 1, p3, 1, 10, 0
 outs aL*kOutEnv, aR*kOutEnv
 endin
 schedule("Main", 0, (2*64)*($TEMPO/60)) ;2 loops of tBasemath in seconds
+;exitnow? scoreline? main in the actual score? 
 </CsInstruments>
 </CsoundSynthesizer>
 

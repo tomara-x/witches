@@ -31,7 +31,6 @@ endop
 /** Read audio signals from bus channel */
 opcode sbus_read, aa, i
   ibus xin
-  aclear init 0 ;this aint used, is it needed?
   al = ga_sbus[ibus][0] 
   ar = ga_sbus[ibus][1] 
   xout al, ar
