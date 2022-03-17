@@ -210,9 +210,13 @@ aR limit aR, -iSM, iSM
 
 kOutEnv linsegr 1, p3, 1, 10, 0
 outs aL*kOutEnv, aR*kOutEnv
+
+;exit after main is done
+if timeinsts() == p3+10 then
+scoreline "e", 1
+endif
 endin
 schedule("Main", 0, (2*64)*($TEMPO/60)) ;2 loops of tBasemath in seconds
-;exitnow? scoreline? main in the actual score? 
 </CsInstruments>
 </CsoundSynthesizer>
 
