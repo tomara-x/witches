@@ -38,6 +38,8 @@ Running csound in server mode for live coding
 ### other files
 old stuff I don't use anymore (to keep dependant files working) or just me playing around, experimenting and stuff
 
+---
+
 Here's my [soundcloud](https://soundcloud.com/nope-null) where you can find some renders of some of the files here.
 
 If you make something with these, I'd love love love to have a listen/look! Also if you find anything confusing please feel free to message me 💜
