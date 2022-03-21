@@ -20,7 +20,8 @@ gicharles OSCinit 9000
 
 instr Main
 kmessage, kdata[] OSClisten gicharles, "/accelerometer", "fff"
-printks "x=%f, y=%f, z=%f\n", 0.1, kdata[0], kdata[1], kdata[2]
+printks "x=%f, y=%f, z=%f\n", 0.2, kdata[0], kdata[1], kdata[2]
+out oscili(0.1, 110*kdata[0])
 endin
 schedule("Main", 0, 60)
 
