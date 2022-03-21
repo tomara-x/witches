@@ -25,10 +25,10 @@ kTrig   metro 4
 iScale  ftgenonce 0,0,-7*3,-51, 7,2,cpspch(6),0,
 2^(0/12),2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
 kNote[] fillarray 0,1,2,3,14,15,16,17
-kFrq    table kNote[kStep], iScale
+kFrq    table wrap(kNote[kStep], 0, 7*3), iScale ;global wrap
 kStep   wrap kStep+kTrig, 0, iLen
 if kTrig == 1 && kStep == 2 then
-    kNote[4] = wrap(kNote[4]+2, 0, 14)
+    kNote[4] = wrap(kNote[4]+2, 0, 14) ;note wrap (range)
     printarray kNote
 endif
 
