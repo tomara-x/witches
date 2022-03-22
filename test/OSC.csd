@@ -12,7 +12,7 @@
 </CsOptions>
 <CsInstruments>
 sr      =   44100
-ksmps   =   441
+ksmps   =   42
 nchnls  =   1
 0dbfs   =   1
 
@@ -20,8 +20,13 @@ gicharles OSCinit 9000
 
 instr Main
 kmessage, kdata[] OSClisten gicharles, "/accelerometer", "fff"
-printks "x=%f, y=%f, z=%f\n", 0.2, kdata[0], kdata[1], kdata[2]
-out oscili(0.1, 110*kdata[0])
+;kmessage, kdata[] OSClisten gicharles, "/magneticfield", "fff"
+;kmessage, kdata[] OSClisten gicharles, "/orientation", "fff"
+aSig1 = oscili(0.01*tonek(kdata[0], 10), 105)
+aSig2 = oscili(0.01*tonek(kdata[1], 10), 138)
+aSig3 = oscili(0.01*tonek(kdata[2], 10), 420)
+;printks "x=%f, y=%f, z=%f\n", 0.2, kdata[0], kdata[1], kdata[2]
+out aSig1+aSig2+aSig3
 endin
 schedule("Main", 0, 60)
 
