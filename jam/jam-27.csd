@@ -55,16 +55,13 @@ endin
 */
 
 instr Kick
-;p4-p9: amp decay, freq decay, freq[i], freq[f], distortion decay, dist[i]
+;p4-p7: amp decay, freq decay, freq[i], freq[f]
 iIFrq   = p6
 iEFrq   = p7
 aAEnv   expseg 1,p4,0.0001
 aFEnv   expseg iIFrq,p5,iEFrq
 aSig    oscili aAEnv, aFEnv
-iTanh   ftgenonce 0,0,2^10,"tanh", -5, 5, 0
-kDEnv   linseg p9,p8,0
-aSig    += distort(aSig, kDEnv, iTanh)
-aSig    += moogladder(aSig, iIFrq*2^3, .1)
+;aSig    += moogladder(aSig, aFEnv*2^3, .5)
 gaKickOut = aSig
 endin
 
@@ -127,6 +124,7 @@ kTG0[] fillarray 0, 1, 0, 2, 0, 1, 0, 0
 kTQ0[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 kTAS0, kTP0[], kTT0[] Taphath kTrig0,kTN0,kTG0,kTQ0, iTS0
 ;schedkwhen(kBT0[kBAS0],0,0, "Bass",0,0.1, 0, 0.1, kTP0[kTAS0])
+;sbus_write 3, gaBassOut[0]+gaBassOut[1]
 ;---
 ;additive
 kTrig1  metro $TEMPO*4/60
@@ -142,6 +140,8 @@ aAdSig  adsynt 0.5, kTP1[kTAS1], -1, iAdFrq, iAdAmp, 8 ;200?
 if ClkDiv(kTrig1, 4) == 1 then
     vadd iAdFrq, 0.01, 5, 1
 endif
+;sbus_write 2, aAdSig
+;sbus_mult  2, ampdb(-6)
 ;---
 */
 ;hsboscil
@@ -153,28 +153,26 @@ kTN2[]  fillarray 3, 3, 4, 2, 6, 6, 8, 0
 kTG2[]  fillarray 0, 0, 2, -1, 0, 1, 1, 1
 kTQ2[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0
 kTAS2, kTP2[], kTT2[] Taphath kTrig2,kTN2,kTG2,kTQ2, iTS2, 0, 0, 2
-schedkwhen(kTrig2,0,0, "Hsboscil",0, 1/kFrq, kTP2[kTAS2], 0) ;<- cool switch
+;schedkwhen(kTrig2,0,0, "Hsboscil",0, 1/kFrq, kTP2[kTAS2], 0) ;<- cool switch
 gaHsboscilOut moogladder gaHsboscilOut, kTP2[kTAS2]*16, .8
 gaHsboscilOut pdhalf gaHsboscilOut, -0.99
-sbus_write 0, limit(gaHsboscilOut,-0.1,0.1)
-sbus_mult  0, ampdb(-6)
+;sbus_write 0, limit(gaHsboscilOut,-0.1,0.1)
+;sbus_mult  0, ampdb(-6)
 
 
-;drums
-;kTrig1      metro $TEMPO/2/60
-;schedkwhen(kTrig1, 0,0, "Kick", 0, 4, 0.8, 0.08, 830, 40, 0.4, 0.2)
+;kick
+kTrig1  metro $TEMPO/2/60
+;schedkwhen(kTrig1, 0,0, "Kick", 0, 4, 0.8, 0.08, 830, 40)
+schedkwhen(kTrig1, 0,0, "Kick", 0, 4, 0.5, 0.13, 230, 40)
+gaKickOut pdhalf gaKickOut, -0.8
+gaKickOut moogladder gaKickOut, 8000, 0.2
+sbus_write 1, gaKickOut
+sbus_mult  1, ampdb(-18)
 
 ;verb
-;schedule("Verb",0,-1)
-;gaVerbIn = gaKickOut*0.1 
-
-;mix
-;sbus_write 0, gaVerbOutL, gaVerbOutR
-;sbus_write 1, gaKickOut
-;sbus_mult  1, ampdb(-6)
-;sbus_write 2, aAdSig
-;sbus_mult  2, ampdb(-6)
-;sbus_write 3, gaBassOut[0]+gaBassOut[1]
+schedule("Verb",0,-1)
+gaVerbIn = gaKickOut*0.04
+sbus_write 0, gaVerbOutL, gaVerbOutR
 
 
 ;out
