@@ -4,7 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-//
+//jam
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m97
@@ -138,9 +138,21 @@ endif
 ;sbus_write 2, aAdSig
 ;sbus_mult  2, ampdb(-6)
 ;hsboscil------------------------------
-kFrq = $TEMPO/2*4/60
-kWav = 0
-kDist = -0.99
+if kV == 0 then
+    kFrq = $TEMPO/8/60
+    kWav = 1
+    kDist = -1
+else
+    kFrq = $TEMPO*2/60
+    kWav = 0
+    kDist = -0.69
+endif
+if kV == 7 then
+    kFrq = $TEMPO*4/60
+endif
+if kV > 7 then
+    kDist = -0.99
+endif
 kTrig2  metro kFrq
 iTS2    ftgenonce 0,0,-5,-51, 5,2,cpspch(6),0,
 2^(0/12),2^(3/12),2^(17/12),2^(7/12),2^(34/12)
@@ -153,18 +165,27 @@ gaHsboscilOut moogladder gaHsboscilOut, kTP2[kTAS2]*16, .8
 gaHsboscilOut pdhalf gaHsboscilOut, kDist
 sbus_write 0, limit(gaHsboscilOut,-0.1,0.1)
 sbus_mult  0, ampdb(-6)
+if kV == 9 then
+    sbus_mult 0, 0
+endif
 ;kick------------------------------
 kTrig3  metro $TEMPO/60
 if kV == 3 then
-schedkwhen(kTrig3, 0,0, "Kick", 0, 4, 0.8, 0.08, 830, 40)
+    schedkwhen(kTrig3, 0,0, "Kick", 0, 4, 0.8, 0.08, 830, 40)
 elseif kV >= 4 && kV < 7 then
-schedkwhen(kTrig3, 0,0, "Kick", 0, 4, 0.5, 0.08, 230, 40)
+    schedkwhen(kTrig3, 0,0, "Kick", 0, 4, 0.5, 0.08, 230, 40)
+elseif kV > 7 then
+    schedkwhen(kTrig3, 0,0, "Kick", 0, 4, 0.7, 0.09, 230, 40)
+    gaKickOut pdhalf gaKickOut, -0.8
 endif
 ;gaKickOut limit gaKickOut, -0.7, 0.7
 ;gaKickOut pdhalf gaKickOut, -0.8
 ;gaKickOut moogladder gaKickOut, 8000, 0.2
 sbus_write 1, gaKickOut
 sbus_mult  1, ampdb(-18)
+if kV == 9 then
+    sbus_mult 1, 0
+endif
 ;verb------------------------------
 schedule("Verb",0,-1)
 gaVerbIn = gaKickOut*ampdb(-32)
@@ -176,11 +197,11 @@ aL limit aL, -iSM, iSM
 aR limit aR, -iSM, iSM
 outs aL, aR
 ;exit------------------------------
-if timeinsts() == p3 then
-scoreline "e", 1
+if timeinsts() == p3-10 then
+    scoreline "e", 1
 endif
 endin
-schedule("Main", 0, (2*64)*($TEMPO/60))
+schedule("Main", 0, 228/($TEMPO/60)) ;228 beats
 </CsInstruments>
 </CsoundSynthesizer>
 

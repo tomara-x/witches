@@ -1,6 +1,6 @@
 <CsoundSynthesizer>
 <CsOptions>
--o dac -m0
+-o dac -m231 -Lstdin
 </CsOptions>
 <CsInstruments>
 sr = 44100
