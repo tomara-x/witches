@@ -70,17 +70,20 @@ iWindow ftgenonce 0, 0, 2^10, -19, 1, 0.5, 270, 0.5
 iWav    ftgenonce 0, 0, 2^18, 9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
         816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
 kAmp = 0.5
-kTone rspline -1,1,4,7 ;try using pitch info instead
+kTone rspline -1,1,4,7
 kBrite rspline -3,3,4,8
-iBasFreq = p4
+iBasFreq = 220
 ;switch between sin and wav based on p5
 if p5 == 0 then
-    aSig1 hsboscil kAmp, kTone, kBrite, iBasFreq, iSin, iWindow
-else
-    aSig1 hsboscil kAmp, kTone, kBrite, iBasFreq/100, iWav, iWindow
+    aSig hsboscil kAmp, p4, kBrite, iBasFreq, iSin, iWindow
+elseif p5 == 1 then
+    aSig hsboscil kAmp, p4, kBrite, iBasFreq/100, iWav, iWindow
+elseif p5 == 2 then
+    aSig = sum(hsboscil(kAmp, p4, kBrite, iBasFreq, iSin, iWindow),
+               hsboscil(kAmp, p4, kBrite, 228, iSin, iWindow))
 endif
 aEnv linseg 1, p3, 0
-gaHsboscilOut = (aSig1)*aEnv
+gaHsboscilOut = aSig*aEnv
 endin
 
 /*
@@ -150,10 +153,9 @@ sbus_write 2, aAdSig
 sbus_mult  2, ampdb(-28)
 */
 ;hsboscil------------------------------
-/*
 if kV == 0 then
     kFrq = $TEMPO/8/60
-    kWav = 1
+    kWav = 2
     kDist = -1
 elseif kV == 7 then
     kFrq = $TEMPO*4/60
@@ -189,7 +191,6 @@ if kV == 9 then
     clear gaHsboscilOut
     sbus_mult 0, 0
 endif
-*/
 ;kick------------------------------
 kTrig3  metro $TEMPO/60
 if kV == 3 || kV == 9 then
