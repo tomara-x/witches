@@ -4,7 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-//i don't understand any of this stuff
+//i understand some of this stuff
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
@@ -21,14 +21,21 @@ nchnls  =   2
 ;#include "../utils.orc"
 #include "../mixer.orc"
 
+gaFileOut init 0
+instr File
+aSig soundin "../28.11.21.wav", 53
+gaFileOut = aSig
+endin
+
 gaGrannyOut init 0
 instr Granny
-iSine       ftgenonce   0, 0, 65537, 10, 1
-iCosine     ftgenonce   0, 0, 8193, 9, 1, 1, 90
+iSine       ftgenonce   0, 0, 2^16+1, 10, 1
+iRamp       ftgenonce   0, 0, 2^13+1, 7, -1, 2^13, 1
+iCosine     ftgenonce   0, 0, 2^13+1, 9, 1, 1, 90
 
-kgrainfreq  = 2       ; 4 grains per second
-kdistribution   = 0     ; periodic grain distribution
-idisttab    = -1        ; (default) flat distribution used for grain distribution
+kgrainfreq      = 8000
+kdistribution   = .1
+idisttab        ftgenonce   0,0,2^13+1, 7, 0, 2^13, 1
 async       = 0         ; no sync input
 kenv2amt    = 0         ; no secondary enveloping
 ienv2tab    = -1        ; default secondary envelope (flat)
@@ -36,7 +43,7 @@ ienv_attack = -1        ; default attack envelope (flat)
 ienv_decay  = -1        ; default decay envelope (flat)
 ksustain_amount = 0.5   ; time (in fraction of grain dur) at sustain level for each grain
 ka_d_ratio  = 0.1       ; balance between attack and decay time
-kduration   = (0.5/kgrainfreq)*1000 ; set grain duration relative to grain rate
+kduration   = (0.9/kgrainfreq)*1000 ; set grain duration relative to grain rate
 kamp        = 0.1
 igainmasks  = -1        ; (default) no gain masking
 kwavfreq    = 440       ; fundamental frequency of source waveform
@@ -52,15 +59,15 @@ knumpartials= 3     ; number of partials in trainlet
 kchroma     = 1         ; balance of partials in trainlet
 ichannelmasks   = -1    ; (default) no channel masking, all grains to output 1
 krandommask = 0         ; no random grain masking
-kwaveform1  = iSine     ; source waveforms
-kwaveform2  = iSine
-kwaveform3  = iSine
-kwaveform4  = iSine
+kwaveform1  = iRamp     ; source waveforms
+kwaveform2  = iRamp
+kwaveform3  = iRamp
+kwaveform4  = iRamp
 iwaveamptab = -1        ; (default) equal mix of all 4 sourcve waveforms and no amp for trainlets
-asamplepos1 = 0         ; phase offset for reading source waveform
-asamplepos2 = 0
-asamplepos3 = 0
-asamplepos4 = 0
+asamplepos1 = (gaFileOut+1)/2 ; phase offset for reading source waveform
+asamplepos2 = (gaFileOut+1)/2 
+asamplepos3 = (gaFileOut+1)/2 
+asamplepos4 = (gaFileOut+1)/2 
 kwavekey1   = 1         ; original key for source waveform
 kwavekey2   = 1
 kwavekey3   = 1
@@ -85,7 +92,8 @@ gaVerbOutL,gaVerbOutR freeverb gaVerbIn,gaVerbIn,kRoomSize,kHFDamp
 endin
 
 instr Main
-schedule("Granny", 0, 20)
+schedule("File", 0, p3)
+schedule("Granny", 0, p3)
 
 ;verb
 ;schedule("Verb",0,-1)
@@ -101,7 +109,10 @@ aL limit aL, -iSM, iSM
 aR limit aR, -iSM, iSM
 outs aL, aR
 endin
-schedule("Main", 0, 120)
 </CsInstruments>
+<CsScore>
+i"Main" 0 120
+e
+</CsScore>
 </CsoundSynthesizer>
 
