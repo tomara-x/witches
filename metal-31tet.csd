@@ -15,6 +15,30 @@ ksmps   =   42 ;kr=1050
 nchnls  =   2
 0dbfs   =   1
 
+;lmao this file is a mess!
+instr Hsboscil ;originally stolen from floss example 04A13_hsboscil.csd
+;km, kdata[] OSClisten gicharles, "/orientation", "fff" ;that was nuts
+iSin    ftgenonce 0, 0, 2^10, 10, 1
+iWindow ftgenonce 0, 0, 2^10, -19, 1, 0.5, 270, 0.5
+iWav    ftgenonce 0, 0, 2^18, 9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
+        816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
+kAmp = 0.5
+kTone rspline -1,1,4,7
+kBrite rspline -3,3,0,2
+iBasFreq = 220
+;switch between sin and wav based on p5
+if p5 == 0 then
+    aSig hsboscil kAmp, p4, kBrite, iBasFreq, iSin, iWindow
+elseif p5 == 1 then
+    aSig hsboscil kAmp, p4, kBrite, iBasFreq/100, iWav, iWindow
+elseif p5 == 2 then
+    aSig = sum(hsboscil(kAmp, p4, kBrite, iBasFreq, iSin, iWindow),
+               hsboscil(kAmp, p4, kBrite, 228, iSin, iWindow))
+endif
+aEnv linseg 1, p3, 0
+gaHsboscilOut = aSig*aEnv
+endin
+
 #define TEMPO #256#
 #include "function-tables.orc"
 #include "opcodes.orc"
