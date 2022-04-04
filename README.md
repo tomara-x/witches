@@ -18,7 +18,7 @@ Months after I lost my favorite instrument, I missed the magic, so I did this:
 - `uTaphath`, `uBasemath`, and `utBasemath` are minimal versions.
 
 ### mixer.orc
-Sterio audio bus/mixer from the [csound-live-code](https://github.com/kunstmusik/csound-live-code) library by Steven Yi with a few additions for my uses.
+Stereo audio bus/mixer from the [csound-live-code](https://github.com/kunstmusik/csound-live-code) library by Steven Yi with a few additions for my uses.
 
 ### utils.orc
 Opcodes for working with the ladies. (clock divider, 2D array ops)

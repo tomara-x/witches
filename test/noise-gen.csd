@@ -6,13 +6,14 @@
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
-;-n -Lstdin -m231
 </CsOptions>
 <CsInstruments>
 sr      =   44100
 ksmps   =   42
 nchnls  =   2
 0dbfs   =   1
+
+#include "../mixer.orc"
 
 instr Nois
 aSig noise 0.1, 0
@@ -33,13 +34,17 @@ endin
 instr Main
 schedule("Nois",0,p3)
 schedule("Verb2",0,p3)
-gaVerb2In = gaNoisSig
-outs(gaVerb2OutL,gaVerb2OutR)
+gaVerb2In = gaNoisSig*ampdb(-12)
+sbus_write 0, gaNoisSig
+sbus_write 1, gaVerb2OutL, gaVerb2OutR
+aL, aR sbus_out
+outs aL,aR
 endin
-
-schedule("Main", 0, 60*10)
-
 </CsInstruments>
+<CsScore>
+i"Main" 0 [60*10]
+e
+</CsScore>
 </CsoundSynthesizer>
 
 
