@@ -96,6 +96,16 @@ instr Env
 gaEnvOut[p4] = adsr(p5,p6,p7,p8)
 endin
 
+;wave guide instrument (supposed to be more complex than this)
+gaWGIn  init 0
+gaWGOut init 0
+gkWGFrq init 0
+gkWGCo  init 0
+gkWGFb  init 0
+instr WG
+gaWGOut wguide1 gaWGIn, gkWGFrq, gkWGCo, gkWGFb
+endin
+
 gaPluckOut[]    init 4
 instr Pluck
 iplk    =           p6 ;(0 to 1)
@@ -107,15 +117,6 @@ asig    wgpluck2    iplk,kamp,icps,kpick,krefl
 ;asig    rbjeq       asig, 200, 2, 0, 8, 10
 aenv    linsegr     0,0.005,1,p3,1,p8,0 ;declick
 gaPluckOut[p4] = asig*aenv
-endin
-
-gaBassOut[] init 4
-instr Bass
-alin linseg p5, p3, 0
-aexp expseg p5, p3, 0.01
-aenv = alin*aexp
-asig oscili aenv, p6
-gaBassOut[p4] = asig
 endin
 
 instr Verb ;stolen from the floss manual 05E01_freeverb.csd
@@ -135,21 +136,30 @@ kGain[]     fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kQueue[]    fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kV, kTL[]   tBasemath kBar, kCount, kGain, 1, 17, kQueue
 kQueue[kV] = 0
-;bass------------------------------
-/*
-kTrig0      metro $TEMPO*8/60
+;WG------------------------------ (sorry! this turned into a study)
+kFrq = $TEMPO/60
+kTrig0      metro kFrq
 kBC0[]      fillarray 3, 1, 3, 1, 2, 2, 2, 2
 kBAS0, kBT0[] utBasemath kTrig0, kBC0
-iTS0 ftgenonce 0,0,-11,-51, 11,8,cpspch(6),0,
-2^(0/12),2^(2/12),2^(2/12),2^(7/12),2^(10/12),2^(12/12),
-2^(17/12),2^(20/12),2^(24/12),2^(29/12),2^(32/12)
-kTN0[] fillarray 3, 20, 4, 3, 6, 7, 8, 0
-kTG0[] fillarray 0, 1, 0, 2, 0, 1, 0, 0
+iTS0 ftgenonce 0,0,-5*3,-51, 5,2,cpspch(6),0,
+2^(0/12),2^(2/12),2^(5/12),2^(8/12),2^(10/12)
+kTN0[] fillarray 2, 1, 1, 0, 2, 1, 1, 0
+kTG0[] fillarray 0, 1, 0, 0, 0, 0, 1, 0
 kTQ0[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 kTAS0, kTP0[], kTT0[] Taphath kTrig0,kTN0,kTG0,kTQ0, iTS0
-;schedkwhen(kBT0[kBAS0],0,0, "Bass",0,0.1, 0, 0.1, kTP0[kTAS0])
-;sbus_write 3, gaBassOut[0]+gaBassOut[1]
+kcps = kTP0[kTAS0]
+gkWGFrq, gkWGCo, gkWGFb = kcps, 1000, 0.99
+schedule("WG", 0, -1)
+if kBT0[kBAS0] == 1 then
+/*  you can do this and pass them as p-fields
+    schedulek(-nstrnum("WG"), 0, 1)
+    schedulek("WG", 0, -1)
 */
+    kEnvDur = 0.1
+    schedulek("Env", 0, kEnvDur, 0, kEnvDur/20, kEnvDur/2, 0, 0)
+endif
+gaWGIn = noise(0.1,0)*gaEnvOut[0]
+sbus_write 3, gaWGOut
 ;additive------------------------------
 /*
 kTrig1  metro $TEMPO*4/60
@@ -177,6 +187,7 @@ sbus_write 2, aAdSig
 sbus_mult  2, ampdb(-12)
 */
 ;hsboscil------------------------------
+/*
 kFrq = $TEMPO*2/60
 kWav = 0
 kDist = -0.8
@@ -198,6 +209,7 @@ if kV == 9 then
     clear gaHsboscilOut
     sbus_mult 0, 0
 endif
+*/
 ;kick------------------------------
 kTrig3  metro $TEMPO/60
 if kV == 3 || kV == 9 then
