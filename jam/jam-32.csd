@@ -90,6 +90,12 @@ instr Graint
 ;grain3
 endin
 
+;lemme try an envelpe instrument
+gaEnvOut[] init 8
+instr Env
+gaEnvOut[p4] = adsr(p5,p6,p7,p8)
+endin
+
 gaPluckOut[]    init 4
 instr Pluck
 iplk    =           p6 ;(0 to 1)
@@ -171,7 +177,6 @@ sbus_write 2, aAdSig
 sbus_mult  2, ampdb(-12)
 */
 ;hsboscil------------------------------
-/*
 kFrq = $TEMPO*2/60
 kWav = 0
 kDist = -0.8
@@ -182,17 +187,17 @@ kTN2[]  fillarray 3, 3, 0, 0, 0, 0, 0, 0
 kTG2[]  fillarray 0, 0, 2, -1, 0, 1, 1, 1
 kTQ2[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0
 kTAS2, kTP2[], kTT2[] Taphath kTrig2,kTN2,kTG2,kTQ2, iTS2, 0, 0, 2
-schedkwhen(kTrig2,0,0, "Hsboscil",0, 2/kFrq, kTP2[kTAS2], kWav, .001, .6, .001,.1)
+schedkwhen(kTrig2,0,0, "Hsboscil",0, .5/kFrq, kTP2[kTAS2], kWav, 0.01, 0.6, 0.001, 0.1)
+;schedkwhen(kTrig2,0,0, "Env",0, 2/kFrq, 0, 0.01, 0.6, 0.001, 0.1)
 ;gaHsboscilOut pdhalf gaHsboscilOut, kDist
 ;gaHsboscilOut moogladder gaHsboscilOut, kTP2[kTAS2]*8, .8
 ;gaHsboscilOut limit gaHsboscilOut, -0.1, 0.1
-sbus_write 0, gaHsboscilOut
+sbus_write 0, gaHsboscilOut;*gaEnvOut[0]*0.5
 sbus_mult  0, ampdb(-6)
 if kV == 9 then
     clear gaHsboscilOut
     sbus_mult 0, 0
 endif
-*/
 ;kick------------------------------
 kTrig3  metro $TEMPO/60
 if kV == 3 || kV == 9 then
