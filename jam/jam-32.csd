@@ -96,14 +96,18 @@ instr Env
 gaEnvOut[p4] = adsr(p5,p6,p7,p8)
 endin
 
-;wave guide instrument (supposed to be more complex than this)
+;wave guide instrument (having a big aha moment right now! so thatt's how those work)
 gaWGIn  init 0
 gaWGOut init 0
 gkWGFrq init 0
 gkWGCo  init 0
 gkWGFb  init 0
 instr WG
-gaWGOut wguide1 gaWGIn, gkWGFrq, gkWGCo, gkWGFb
+;play with wguide2
+asig1 wguide1 gaWGIn, gkWGFrq, gkWGCo+1000, gkWGFb+0.1
+asig2 wguide1 gaWGIn, gkWGFrq*2, gkWGCo-1000, gkWGFb
+asig3 wguide1 gaWGIn, gkWGFrq*4, gkWGCo, gkWGFb
+gaWGOut = (asig1+asig2+asig3)/3
 endin
 
 gaPluckOut[]    init 4
@@ -137,10 +141,10 @@ kQueue[]    fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kV, kTL[]   tBasemath kBar, kCount, kGain, 1, 17, kQueue
 kQueue[kV] = 0
 ;WG------------------------------ (sorry! this turned into a study)
-kFrq = $TEMPO/60
+kFrq = $TEMPO*4/60
 kTrig0      metro kFrq
-kBC0[]      fillarray 3, 1, 3, 1, 2, 2, 2, 2
-kBAS0, kBT0[] utBasemath kTrig0, kBC0
+;kBC0[]      fillarray 3, 1, 3, 1, 2, 2, 2, 2
+;kBAS0, kBT0[] utBasemath kTrig0, kBC0
 iTS0 ftgenonce 0,0,-5*3,-51, 5,2,cpspch(6),0,
 2^(0/12),2^(2/12),2^(5/12),2^(8/12),2^(10/12)
 kTN0[] fillarray 2, 1, 1, 0, 2, 1, 1, 0
@@ -148,18 +152,22 @@ kTG0[] fillarray 0, 1, 0, 0, 0, 0, 1, 0
 kTQ0[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 kTAS0, kTP0[], kTT0[] Taphath kTrig0,kTN0,kTG0,kTQ0, iTS0
 kcps = kTP0[kTAS0]
-gkWGFrq, gkWGCo, gkWGFb = kcps, 1000, 0.99
+gkWGFrq, gkWGCo, gkWGFb = kcps, 3000, 0.9
 schedule("WG", 0, -1)
-if kBT0[kBAS0] == 1 then
+if kTrig0 == 1 then
 /*  you can do this and pass them as p-fields
     schedulek(-nstrnum("WG"), 0, 1)
     schedulek("WG", 0, -1)
 */
-    kEnvDur = 0.1
-    schedulek("Env", 0, kEnvDur, 0, kEnvDur/20, kEnvDur/2, 0, 0)
+    kEnvDur = 0.04
+    schedulek("Env", 0, kEnvDur, 0, kEnvDur/20, kEnvDur/2, 0, 0) ;das cool! clicky no more!
 endif
-gaWGIn = noise(0.1,0)*gaEnvOut[0]
+gaWGIn = noise(0.3,0.9)*gaEnvOut[0] ;<diane> mic input as source
+;gaWGOut pdhalf gaWGOut, -1
+;gaWGOut moogladder gaWGOut, kTP0[kTAS0]*8, .4
+;gaWGOut limit gaWGOut, -0.01, 0.01
 sbus_write 3, gaWGOut
+sbus_mult  3, ampdb(-6)
 ;additive------------------------------
 /*
 kTrig1  metro $TEMPO*4/60
