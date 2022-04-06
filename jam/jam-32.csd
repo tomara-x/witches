@@ -137,6 +137,24 @@ kGain[]     fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kQueue[]    fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kV, kTL[]   tBasemath kBar, kCount, kGain, 1, 17, kQueue
 kQueue[kV] = 0
+;kick------------------------------
+kTrig  metro $TEMPO/60
+if kV == 3 || kV == 9 then
+    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.4, 0.03, 290, 40)
+elseif kV >= 4 && kV < 7 then
+    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.5, 0.08, 230, 40)
+;elseif kV > 7 then
+;    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.7, 0.09, 230, 40)
+;    gaKickOut pdhalf gaKickOut, -0.8
+endif
+;gaKickOut limit gaKickOut, -0.7, 0.7
+;gaKickOut pdhalf gaKickOut, -0.8
+;gaKickOut moogladder gaKickOut, 8000, 0.2
+sbus_write 1, gaKickOut
+sbus_mult  1, ampdb(-18)
+if kV == 9 then
+    sbus_mult 1, 0
+endif
 ;BASS------------------------------
 ;do the green thing, reuse variable
 kFrq = $TEMPO*2/60
@@ -148,7 +166,7 @@ if kTrig == 1 then
     schedulek("Env", 0, kEnvDur, 0, kEnvDur*0.005, kEnvDur*0.8, 1, kEnvDur*0.1)
     schedulek("Pluck", 0, kEnvDur, 0.1, cpspch(6.02), 0.2, 0.8, 0.8)
 endif 
-sbus_write 0, gaPluckOut*gaEnvOut[0]*0.5
+sbus_write 2, gaPluckOut*gaEnvOut[0]*0.5
 ;WG------------------------------ (sorry! this turned into a study)
 kFrq = $TEMPO*4/60
 kTrig   metro kFrq
@@ -171,51 +189,33 @@ if kTrig == 1 then
 endif
 gaWGIn = noise(0.3,0.9)*gaEnvOut[1] ;<diane> mic input as source
 ;gaWGOut pdhalf gaWGOut, -1
-;gaWGOut moogladder gaWGOut, kTP0[kTAS0]*8, .4
+;gaWGOut moogladder gaWGOut, kTP[kTAS]*8, .4
 ;gaWGOut limit gaWGOut, -0.01, 0.01
 sbus_write 3, gaWGOut
 sbus_mult  3, ampdb(-30)
 ;hsboscil------------------------------
-/*
 kFrq = $TEMPO*2/60
 kWav = 0
 kDist = -0.8
-kTrig2  metro kFrq
-iTS2    ftgenonce 0,0,-5,-51, 5,8,cpspch(6.05),0,
+kTrig   metro kFrq
+iTS    ftgenonce 0,0,-5,-51, 5,8,cpspch(6.05),0,
 2^(0/12),2^(3/12),2^(17/12),2^(7/12),2^(34/12)
-kTN2[]  fillarray 3, 3, 0, 0, 0, 0, 0, 0
-kTG2[]  fillarray 0, 0, 2, -1, 0, 1, 1, 1
-kTQ2[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0
-kTAS2, kTP2[], kTT2[] Taphath kTrig2,kTN2,kTG2,kTQ2, iTS2, 0, 0, 2
-schedkwhen(kTrig2,0,0, "Hsboscil",0, .5/kFrq, kTP2[kTAS2], kWav, 0.01, 0.6, 0.001, 0.1)
-;schedkwhen(kTrig2,0,0, "Env",0, 2/kFrq, 0, 0.01, 0.6, 0.001, 0.1)
+kTN[]  fillarray 3, 3, 0, 0, 0, 0, 0, 0
+kTG[]  fillarray 0, 0, 2, -1, 0, 1, 1, 1
+kTQ[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0
+kTAS, kTP[], kTT[] Taphath kTrig,kTN,kTG,kTQ, iTS, 0, 0, 2
+if kTrig == 1 then
+    schedulek("Hsboscil",0, .5/kFrq, kTP[kTAS], kWav, 0.01, 0.6, 0.001, 0.1)
+    schedulek("Env",0, 2/kFrq, 2, 0.01, 0.6, 0.001, 0.1)
+endif
 ;gaHsboscilOut pdhalf gaHsboscilOut, kDist
-;gaHsboscilOut moogladder gaHsboscilOut, kTP2[kTAS2]*8, .8
+;gaHsboscilOut moogladder gaHsboscilOut, kTP[kTAS]*8, .8
 ;gaHsboscilOut limit gaHsboscilOut, -0.1, 0.1
-sbus_write 0, gaHsboscilOut;*gaEnvOut[0]*0.5
-sbus_mult  0, ampdb(-6)
+sbus_write 4, gaHsboscilOut;*gaEnvOut[2]*0.5
+sbus_mult  4, ampdb(-6)
 if kV == 9 then
     clear gaHsboscilOut
-    sbus_mult 0, 0
-endif
-*/
-;kick------------------------------
-kTrig3  metro $TEMPO/60
-if kV == 3 || kV == 9 then
-    schedkwhen(kTrig3, 0,0, "Kick", 0, 4, 0.4, 0.03, 290, 40)
-elseif kV >= 4 && kV < 7 then
-    schedkwhen(kTrig3, 0,0, "Kick", 0, 4, 0.5, 0.08, 230, 40)
-;elseif kV > 7 then
-;    schedkwhen(kTrig3, 0,0, "Kick", 0, 4, 0.7, 0.09, 230, 40)
-;    gaKickOut pdhalf gaKickOut, -0.8
-endif
-;gaKickOut limit gaKickOut, -0.7, 0.7
-;gaKickOut pdhalf gaKickOut, -0.8
-;gaKickOut moogladder gaKickOut, 8000, 0.2
-sbus_write 1, gaKickOut
-sbus_mult  1, ampdb(-18)
-if kV == 9 then
-    sbus_mult 1, 0
+    sbus_mult 4, 0
 endif
 ;verb------------------------------
 schedule("Verb",0,-1)
