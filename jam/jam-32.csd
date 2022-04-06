@@ -47,7 +47,7 @@ aOp12   Pmoscili kAmp[12], kCps[12]*kRat[12], aOp10+aOp11+aOp14
 aOp13   Pmoscili kAmp[13], kCps[13]*kRat[13], aOp12
 aOp14   Pmoscili kAmp[14], kCps[14]*kRat[14], aOp15
 aOp15   Pmoscili kAmp[15], kCps[15]*kRat[15]
-gaFM10Out = aOp02+aOp06+aOp07
+gaFM10Out += (aOp02+aOp06+aOp07)
 endin
 
 gaKickOut init 0
@@ -58,7 +58,6 @@ iEFrq   = p7
 aAEnv   expseg 1,p4,0.0001
 aFEnv   expseg iIFrq,p5,iEFrq
 aSig    oscili aAEnv, aFEnv
-;aSig    += moogladder(aSig, aFEnv*2^3, .5)
 gaKickOut = aSig
 endin
 
@@ -96,7 +95,7 @@ instr Env
 gaEnvOut[p4] = adsr(p5,p6,p7,p8)
 endin
 
-;wave guide instrument (having a big aha moment right now! so thatt's how those work)
+;wave guide instrument
 gaWGIn  init 0
 gaWGOut init 0
 gkWGFrq init 0
@@ -110,17 +109,15 @@ asig3 wguide1 gaWGIn, gkWGFrq*4, gkWGCo, gkWGFb
 gaWGOut = (asig1+asig2+asig3)/3
 endin
 
-gaPluckOut[]    init 4
-instr Pluck
+gaPluckOut init 0
+instr Pluck ;BASS
 iplk    =           p6 ;(0 to 1)
-kamp    init        0.1
+kamp    =           p4
 icps    =           p5
-kpick   init        0.8 ;pickup point
-krefl   init        p7 ;rate of decay ]0,1[
+kpick   =           p7 ;pickup point
+krefl   =           p8 ;rate of decay ]0,1[
 asig    wgpluck2    iplk,kamp,icps,kpick,krefl
-;asig    rbjeq       asig, 200, 2, 0, 8, 10
-aenv    linsegr     0,0.005,1,p3,1,p8,0 ;declick
-gaPluckOut[p4] = asig*aenv
+gaPluckOut += asig
 endin
 
 instr Verb ;stolen from the floss manual 05E01_freeverb.csd
@@ -140,60 +137,44 @@ kGain[]     fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kQueue[]    fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kV, kTL[]   tBasemath kBar, kCount, kGain, 1, 17, kQueue
 kQueue[kV] = 0
+;BASS------------------------------
+;do the green thing, reuse variable
+kFrq = $TEMPO*2/60
+kTrig  metro kFrq
+kBC[]  fillarray 3, 1, 3, 1, 2, 2, 2, 2
+kBAS, kBT[] utBasemath kTrig, kBC
+if kTrig == 1 then
+    kEnvDur = 1/kFrq
+    schedulek("Env", 0, kEnvDur, 0, kEnvDur*0.005, kEnvDur*0.8, 1, kEnvDur*0.1)
+    schedulek("Pluck", 0, kEnvDur, 0.1, cpspch(6.02), 0.2, 0.8, 0.8)
+endif 
+sbus_write 0, gaPluckOut*gaEnvOut[0]*0.5
 ;WG------------------------------ (sorry! this turned into a study)
 kFrq = $TEMPO*4/60
-kTrig0      metro kFrq
-;kBC0[]      fillarray 3, 1, 3, 1, 2, 2, 2, 2
-;kBAS0, kBT0[] utBasemath kTrig0, kBC0
-iTS0 ftgenonce 0,0,-5*3,-51, 5,2,cpspch(6),0,
+kTrig   metro kFrq
+iTS     ftgenonce 0,0,-5*3,-51, 5,2,cpspch(6),0,
 2^(0/12),2^(2/12),2^(5/12),2^(8/12),2^(10/12)
-kTN0[] fillarray 2, 1, 1, 0, 2, 1, 1, 0
-kTG0[] fillarray 0, 1, 0, 0, 0, 0, 1, 0
-kTQ0[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
-kTAS0, kTP0[], kTT0[] Taphath kTrig0,kTN0,kTG0,kTQ0, iTS0
-kcps = kTP0[kTAS0]
+kTN[]   fillarray 2, 1, 1, 0, 2, 1, 1, 0
+kTG[]   fillarray 0, 1, 0, 0, 0, 0, 1, 0
+kTQ[]   fillarray 0, 0, 0, 0, 0, 0, 0, 0
+kTAS, kTP[], kTT[] Taphath kTrig,kTN,kTG,kTQ, iTS
+kcps = kTP[kTAS]
 gkWGFrq, gkWGCo, gkWGFb = kcps, 3000, 0.9
 schedule("WG", 0, -1)
-if kTrig0 == 1 then
+if kTrig == 1 then
 /*  you can do this and pass them as p-fields
     schedulek(-nstrnum("WG"), 0, 1)
     schedulek("WG", 0, -1)
 */
     kEnvDur = 0.04
-    schedulek("Env", 0, kEnvDur, 0, kEnvDur/20, kEnvDur/2, 0, 0) ;das cool! clicky no more!
+    schedulek("Env", 0, kEnvDur, 1, kEnvDur/20, kEnvDur/2, 0, 0) ;das cool! clicky no more!
 endif
-gaWGIn = noise(0.3,0.9)*gaEnvOut[0] ;<diane> mic input as source
+gaWGIn = noise(0.3,0.9)*gaEnvOut[1] ;<diane> mic input as source
 ;gaWGOut pdhalf gaWGOut, -1
 ;gaWGOut moogladder gaWGOut, kTP0[kTAS0]*8, .4
 ;gaWGOut limit gaWGOut, -0.01, 0.01
 sbus_write 3, gaWGOut
-sbus_mult  3, ampdb(-6)
-;additive------------------------------
-/*
-kTrig1  metro $TEMPO*4/60
-kBC1[]      fillarray 7, 1, 3, 1, 2, 2, 2, 2
-kBAS1, kBT1[] utBasemath kTrig1, kBC1
-iTS1    ftgenonce 0,0,-3*5,-51, 3,2,cpspch(5),0,
-2^(2/12),2^(7/12),2^(8/12)
-kTN1[]  init 128                               ;FTS! I'M TIRED!
-kTG1[]  init 128
-kTQ1[]  init 128
-itmp ftgenonce 0,0,128,-21,1,34
-copyf2array kTN1, itmp
-kTAS1, kTP1[], kTT1[] Taphath kBT1[kBAS1],kTN1,kTG1,kTQ1, iTS1
-kcps = kTP1[kTAS1]
-iAdAmp  ftgenonce 0,0,32,-21,1,0.1
-iAdFrq  ftgenonce 0,0,32,-7, 1, 32, 65
-;iAdFrq  ftgenonce 0,0,32,-5, 1, 16, 2^16, 16, 18
-;ftprint iAdFrq
-aAdSig  adsynt2 0.5, kcps, -1, iAdFrq, iAdAmp, 8
-;if ClkDiv(kTrig1, 4) == 1 then
-;    vadd iAdFrq, 0.01, 5, 1
-;endif
-
-sbus_write 2, aAdSig
-sbus_mult  2, ampdb(-12)
-*/
+sbus_mult  3, ampdb(-30)
 ;hsboscil------------------------------
 /*
 kFrq = $TEMPO*2/60
@@ -249,7 +230,7 @@ aR limit aR, -iSM, iSM
 kFade linseg 1, p3-10, 1, 10, 0
 outs aL*kFade, aR*kFade
 ;clear-globals------------------------------
-clear gaFM10Out, gaKickOut, gaHsboscilOut
+clear gaFM10Out, gaKickOut, gaHsboscilOut, gaPluckOut
 endin
 </CsInstruments>
 <CsScore>
