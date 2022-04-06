@@ -15,7 +15,7 @@ ksmps   =   42
 nchnls  =   2
 0dbfs   =   1
 
-#define TEMPO #110#
+;how do other systems deal with those ../ paths?
 #include "../sequencers.orc"
 #include "../oscillators.orc"
 #include "../utils.orc"
@@ -50,6 +50,7 @@ aOp15   Pmoscili kAmp[15], kCps[15]*kRat[15]
 gaFM10Out += (aOp02+aOp06+aOp07)
 endin
 
+;get some xadsr in here
 gaKickOut init 0
 instr Kick
 ;p4-p7: amp decay, freq decay, freq[i], freq[f]
@@ -58,13 +59,14 @@ iEFrq   = p7
 aAEnv   expseg 1,p4,0.0001
 aFEnv   expseg iIFrq,p5,iEFrq
 aSig    oscili aAEnv, aFEnv
+;increment and clear?
 gaKickOut = aSig
 endin
 
 gaHsboscilOut init 0
 instr Hsboscil ;originally stolen from floss example 04A13_hsboscil.csd
-iSin    ftgenonce 0, 0, 2^10, 10, 1
 iWindow ftgenonce 0, 0, 2^10, -19, 1, 0.5, 270, 0.5
+iSin    ftgenonce 0, 0, 2^10, 10, 1
 iWav    ftgenonce 0, 0, 2^18, 9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
         816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
 kAmp = .5
@@ -102,7 +104,7 @@ gkWGFrq init 0
 gkWGCo  init 0
 gkWGFb  init 0
 instr WG
-;play with wguide2
+;play with wguide2 and rspline
 asig1 wguide1 gaWGIn, gkWGFrq, gkWGCo+1000, gkWGFb+0.1
 asig2 wguide1 gaWGIn, gkWGFrq*2, gkWGCo-1000, gkWGFb
 asig3 wguide1 gaWGIn, gkWGFrq*4, gkWGCo, gkWGFb
@@ -128,9 +130,10 @@ gaVerbOutL,gaVerbOutR freeverb gaVerbIn,gaVerbIn,kRoomSize,kHFDamp
 endin
 
 instr Main
+kTempo = 110
 ;the sacred timeline
 kBarN       init 0
-kBar        metro $TEMPO/4/60 ;click every 4th beat
+kBar        metro kTempo/4/60 ;click every 4th beat
 kBarN += kBar
 kCount[]    fillarray 2, 2, 2, 2, 8, 4, 2, 2, 8, 1, 8, 8, 1, 4, 2, 1
 kGain[]     fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -138,18 +141,17 @@ kQueue[]    fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kV, kTL[]   tBasemath kBar, kCount, kGain, 1, 17, kQueue
 kQueue[kV] = 0
 ;kick------------------------------
-kTrig  metro $TEMPO/60
-if kV == 3 || kV == 9 then
+kTrig  metro kTempo/60
+if kV == 0 || kV == 9 then
     schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.4, 0.03, 290, 40)
 elseif kV >= 4 && kV < 7 then
     schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.5, 0.08, 230, 40)
-;elseif kV > 7 then
-;    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.7, 0.09, 230, 40)
-;    gaKickOut pdhalf gaKickOut, -0.8
+elseif kV > 7 then
+    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.7, 0.09, 230, 40)
+    gaKickOut pdhalf gaKickOut, -0.8
 endif
 ;gaKickOut limit gaKickOut, -0.7, 0.7
-;gaKickOut pdhalf gaKickOut, -0.8
-;gaKickOut moogladder gaKickOut, 8000, 0.2
+;gaKickOut moogladder gaKickOut, 4000, 0.1
 sbus_write 1, gaKickOut
 sbus_mult  1, ampdb(-18)
 if kV == 9 then
@@ -157,18 +159,20 @@ if kV == 9 then
 endif
 ;BASS------------------------------
 ;do the green thing, reuse variable
-kFrq = $TEMPO*2/60
+kFrq = kTempo*2/60
 kTrig  metro kFrq
 kBC[]  fillarray 3, 1, 3, 1, 2, 2, 2, 2
 kBAS, kBT[] utBasemath kTrig, kBC
 if kTrig == 1 then
     kEnvDur = 1/kFrq
-    schedulek("Env", 0, kEnvDur, 0, kEnvDur*0.005, kEnvDur*0.8, 1, kEnvDur*0.1)
+    schedulek("Env", 0, kEnvDur, 0, kEnvDur*0.01, kEnvDur*0.8, 1, kEnvDur*0.1)
     schedulek("Pluck", 0, kEnvDur, 0.1, cpspch(6.02), 0.2, 0.8, 0.8)
-endif 
-sbus_write 2, gaPluckOut*gaEnvOut[0]*0.5
+endif
+gaPluckOut *= gaEnvOut[0]*0.5
+;gaPluckOut moogladder gaPluckOut, cpspch(10.02), 0.2
+sbus_write 2, gaPluckOut
 ;WG------------------------------ (sorry! this turned into a study)
-kFrq = $TEMPO*4/60
+kFrq = kTempo*4/60
 kTrig   metro kFrq
 iTS     ftgenonce 0,0,-5*3,-51, 5,2,cpspch(6),0,
 2^(0/12),2^(2/12),2^(5/12),2^(8/12),2^(10/12)
@@ -192,9 +196,9 @@ gaWGIn = noise(0.3,0.9)*gaEnvOut[1] ;<diane> mic input as source
 ;gaWGOut moogladder gaWGOut, kTP[kTAS]*8, .4
 ;gaWGOut limit gaWGOut, -0.01, 0.01
 sbus_write 3, gaWGOut
-sbus_mult  3, ampdb(-30)
+sbus_mult  3, ampdb(-60)
 ;hsboscil------------------------------
-kFrq = $TEMPO*2/60
+kFrq = kTempo*2/60
 kWav = 0
 kDist = -0.8
 kTrig   metro kFrq
@@ -212,7 +216,7 @@ endif
 ;gaHsboscilOut moogladder gaHsboscilOut, kTP[kTAS]*8, .8
 ;gaHsboscilOut limit gaHsboscilOut, -0.1, 0.1
 sbus_write 4, gaHsboscilOut;*gaEnvOut[2]*0.5
-sbus_mult  4, ampdb(-6)
+sbus_mult  4, ampdb(-60)
 if kV == 9 then
     clear gaHsboscilOut
     sbus_mult 4, 0
@@ -234,7 +238,7 @@ clear gaFM10Out, gaKickOut, gaHsboscilOut, gaPluckOut
 endin
 </CsInstruments>
 <CsScore>
-i"Main" 0 [228*(60/110)]
+i"Main" 0 [228*(60/110)] ;228 beats at 110 bpm
 e
 </CsScore>
 </CsoundSynthesizer>
