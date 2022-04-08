@@ -59,8 +59,10 @@ iEFrq   = p7
 aAEnv   expseg 1,p4,0.0001
 aFEnv   expseg iIFrq,p5,iEFrq
 aSig    oscili aAEnv, aFEnv
-;increment and clear?
-gaKickOut = aSig
+;aSig *= linseg:a(0, 0.001, 1, p3 - 0.02, 1, 0.01, 0, 0.01, 0)
+aSig    moogladder aSig, aFEnv*8, 0.2
+aSig    += moogladder(aSig, aFEnv*8, 0.8)
+gaKickOut += aSig
 endin
 
 gaHsboscilOut init 0
@@ -141,17 +143,19 @@ kQueue[]    fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kV, kTL[]   tBasemath kBar, kCount, kGain, 1, 17, kQueue
 kQueue[kV] = 0
 ;kick------------------------------
-kTrig  metro kTempo/60
-if kV == 0 || kV == 9 then
-    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.4, 0.03, 290, 40)
-elseif kV >= 4 && kV < 7 then
-    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.5, 0.08, 230, 40)
-elseif kV > 7 then
-    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.7, 0.09, 230, 40)
-    gaKickOut pdhalf gaKickOut, -0.8
-endif
+kFrq = kTempo/60
+kTrig  metro kFrq
+;if kV == 0 || kV == 9 then
+;    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.4, 0.03, 290, 40)
+;elseif kV >= 4 && kV < 7 then
+;    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.5, 0.08, 230, 40)
+;elseif kV > 7 then
+;    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.7, 0.09, 230, 40)
+;    gaKickOut pdhalf gaKickOut, -0.8
+;endif
+schedkwhen(kTrig, 0,0, "Kick", 0, 1/kFrq, 0.3, 0.03, 230, 80)
 ;gaKickOut limit gaKickOut, -0.7, 0.7
-;gaKickOut moogladder gaKickOut, 4000, 0.1
+;gaKickOut moogladder gaKickOut, 4000, 0.0
 sbus_write 1, gaKickOut
 sbus_mult  1, ampdb(-18)
 if kV == 9 then
@@ -159,19 +163,20 @@ if kV == 9 then
 endif
 ;BASS------------------------------
 ;do the green thing, reuse variable
-kFrq = kTempo*2/60
+kFrq = kTempo*4/60
 kTrig  metro kFrq
-kBC[]  fillarray 3, 1, 3, 1, 2, 2, 2, 2
+kBC[]  fillarray 3, 4, 3, 2, 4
 kBAS, kBT[] utBasemath kTrig, kBC
-if kTrig == 1 then
-    kEnvDur = 1/kFrq
+if kBT[kBAS] == 1 then
+    kEnvDur = kBC[kBAS]/kFrq ;duration of the current step
     schedulek("Env", 0, kEnvDur, 0, kEnvDur*0.01, kEnvDur*0.8, 1, kEnvDur*0.1)
-    schedulek("Pluck", 0, kEnvDur, 0.1, cpspch(6.02), 0.2, 0.8, 0.8)
+    schedulek("Pluck", 0, kEnvDur, 0.1, cpspch(6.02), 0.1, 0.7, 0.9)
 endif
 gaPluckOut *= gaEnvOut[0]*0.5
-;gaPluckOut moogladder gaPluckOut, cpspch(10.02), 0.2
+gaPluckOut moogladder gaPluckOut, cpspch(10.02), 0.0 ;one way to deal with aliasing
 sbus_write 2, gaPluckOut
 ;WG------------------------------ (sorry! this turned into a study)
+/*
 kFrq = kTempo*4/60
 kTrig   metro kFrq
 iTS     ftgenonce 0,0,-5*3,-51, 5,2,cpspch(6),0,
@@ -184,10 +189,9 @@ kcps = kTP[kTAS]
 gkWGFrq, gkWGCo, gkWGFb = kcps, 3000, 0.9
 schedule("WG", 0, -1)
 if kTrig == 1 then
-/*  you can do this and pass them as p-fields
-    schedulek(-nstrnum("WG"), 0, 1)
-    schedulek("WG", 0, -1)
-*/
+;   you can do this and pass them as p-fields
+;   schedulek(-nstrnum("WG"), 0, 1)
+;   schedulek("WG", 0, -1)
     kEnvDur = 0.04
     schedulek("Env", 0, kEnvDur, 1, kEnvDur/20, kEnvDur/2, 0, 0) ;das cool! clicky no more!
 endif
@@ -221,6 +225,7 @@ if kV == 9 then
     clear gaHsboscilOut
     sbus_mult 4, 0
 endif
+*/
 ;verb------------------------------
 schedule("Verb",0,-1)
 gaVerbIn = gaKickOut*ampdb(-32) +
