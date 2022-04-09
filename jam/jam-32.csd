@@ -50,18 +50,33 @@ aOp15   Pmoscili kAmp[15], kCps[15]*kRat[15]
 gaFM10Out += (aOp02+aOp06+aOp07)
 endin
 
-;get some xadsr in here
+/*
+;puny kick
 gaKickOut init 0
 instr Kick
-;p4-p7: amp decay, freq decay, freq[i], freq[f]
-iIFrq   = p6
-iEFrq   = p7
-aAEnv   expseg 1,p4,0.0001
-aFEnv   expseg iIFrq,p5,iEFrq
+;p4-p6: freq decay, freq[i], freq[f]
+iIFrq   = p5
+iEFrq   = p6
+aAEnv   expseg 1,p3,ampdb(-280)
+aFEnv   expseg iIFrq,p4,iEFrq
 aSig    oscili aAEnv, aFEnv
-;aSig *= linseg:a(0, 0.001, 1, p3 - 0.02, 1, 0.01, 0, 0.01, 0)
-aSig    moogladder aSig, aFEnv*8, 0.2
-aSig    += moogladder(aSig, aFEnv*8, 0.8)
+aSig    += moogladder(aSig, aFEnv*16, 0.8)
+gaKickOut += aSig
+endin
+*/
+
+;hulk kick
+gaKickOut init 0
+instr Kick
+iIFrq   = p5
+iEFrq   = p6
+iTanh   ftgenonce 0,0,1024,"tanh", -5, 5, 0
+aAEnv   expseg 1,p3,ampdb(-250)
+aFEnv   expseg iIFrq,p4,iEFrq
+aSig    oscili aAEnv*.6, aFEnv
+aSig    distort aSig*2, 0.2, iTanh
+aSig    limit aSig, -0.5,0.5
+aSig    += moogladder(aSig, iIFrq*2, .3)
 gaKickOut += aSig
 endin
 
@@ -153,15 +168,14 @@ kTrig  metro kFrq
 ;    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.7, 0.09, 230, 40)
 ;    gaKickOut pdhalf gaKickOut, -0.8
 ;endif
-schedkwhen(kTrig, 0,0, "Kick", 0, 1/kFrq, 0.3, 0.03, 230, 80)
-;gaKickOut limit gaKickOut, -0.7, 0.7
+schedkwhen(kTrig, 0,0, "Kick", 0, 1/kFrq, 0.10, 200, 40)
+;gaKickOut += limit(gaKickOut, -0.7, 0.7)
+;gaKickOut *= pdhalf(gaKickOut, -1)*ampdb(-3)
 ;gaKickOut moogladder gaKickOut, 4000, 0.0
 sbus_write 1, gaKickOut
-sbus_mult  1, ampdb(-18)
-if kV == 9 then
-    sbus_mult 1, 0
-endif
+sbus_mult  1, ampdb(-6)
 ;BASS------------------------------
+/*
 ;do the green thing, reuse variable
 kFrq = kTempo*4/60
 kTrig  metro kFrq
@@ -173,10 +187,9 @@ if kBT[kBAS] == 1 then
     schedulek("Pluck", 0, kEnvDur, 0.1, cpspch(6.02), 0.1, 0.7, 0.9)
 endif
 gaPluckOut *= gaEnvOut[0]*0.5
-gaPluckOut moogladder gaPluckOut, cpspch(10.02), 0.0 ;one way to deal with aliasing
+gaPluckOut moogladder gaPluckOut, cpspch(10.02), 0.0 ;it's not aliasing, is it?
 sbus_write 2, gaPluckOut
 ;WG------------------------------ (sorry! this turned into a study)
-/*
 kFrq = kTempo*4/60
 kTrig   metro kFrq
 iTS     ftgenonce 0,0,-5*3,-51, 5,2,cpspch(6),0,
