@@ -20,12 +20,11 @@ ksmps = 42
 nchnls = 2
 0dbfs = 1
 
-#include "../sequencers.orc"
 instr Main
 endin
 
 instr 1
-ktrig metro 1/5 ;every 5 seconds
+ktrig metro 1/2
 if ktrig == 1 then
     reinit compile
     turnoff2(nstrnum("Main"), 0, 0)
@@ -34,7 +33,10 @@ endif
 compile:
 ires compilecsd "tbase.csd"
 endin
-schedule(1, 0, 120)
 
 </CsInstruments>
+<CsScore>
+i 1 0 120
+e
+</CsScore>
 </CsoundSynthesizer>

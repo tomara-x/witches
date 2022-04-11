@@ -6,7 +6,16 @@
 
 //test file
 <CsoundSynthesizer>
+<CsOptions>
+-odac -Lstdin
+</CsOptions>
 <CsInstruments>
+sr = 44100
+ksmps = 42
+nchnls = 2
+0dbfs = 1
+
+#include "../sequencers.orc"
 
 instr Main
 kTrig   metro 120*15/60
@@ -23,7 +32,13 @@ aSig = oscil(0.4, p4)
 outs aSig, aSig
 endin
 
+;schedule(-nstrnum("Main"), 0, 1)
+;schedule("Main", 0, -1)
+;turnoff2(nstrnum("Main"), 0, 0)
+;schedulek("Main", 0, -1)
 
 </CsInstruments>
+<CsScore>
+</CsScore>
 </CsoundSynthesizer>
 
