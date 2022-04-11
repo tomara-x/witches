@@ -168,28 +168,28 @@ kTrig  metro kFrq
 ;    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.7, 0.09, 230, 40)
 ;    gaKickOut pdhalf gaKickOut, -0.8
 ;endif
-schedkwhen(kTrig, 0,0, "Kick", 0, 1/kFrq, 0.10, 200, 40)
+;schedkwhen(kTrig, 0,0, "Kick", 0, 1/kFrq, 0.10, 200, 40)
 ;gaKickOut += limit(gaKickOut, -0.7, 0.7)
 ;gaKickOut *= pdhalf(gaKickOut, -1)*ampdb(-3)
 ;gaKickOut moogladder gaKickOut, 4000, 0.0
-sbus_write 1, gaKickOut
+;sbus_write 1, gaKickOut
 sbus_mult  1, ampdb(-6)
 ;BASS------------------------------
-/*
 ;do the green thing, reuse variable
 kFrq = kTempo*4/60
 kTrig  metro kFrq
-kBC[]  fillarray 3, 4, 3, 2, 4
+kBC[]  fillarray 8, 8, 4, 4, 1, 1, 1, 2, 3, 8, 5, 1, 1, 1
 kBAS, kBT[] utBasemath kTrig, kBC
 if kBT[kBAS] == 1 then
     kEnvDur = kBC[kBAS]/kFrq ;duration of the current step
     schedulek("Env", 0, kEnvDur, 0, kEnvDur*0.01, kEnvDur*0.8, 1, kEnvDur*0.1)
-    schedulek("Pluck", 0, kEnvDur, 0.1, cpspch(6.02), 0.1, 0.7, 0.9)
+    schedulek("Pluck", 0, kEnvDur, 1.0, cpspch(6.02), 0.9, 0.7, 0.9)
 endif
 gaPluckOut *= gaEnvOut[0]*0.5
-gaPluckOut moogladder gaPluckOut, cpspch(10.02), 0.0 ;it's not aliasing, is it?
+gaPluckOut moogladder gaPluckOut, cpspch(11.02), 0.0 ;it's not aliasing, is it?
 sbus_write 2, gaPluckOut
 ;WG------------------------------ (sorry! this turned into a study)
+/*
 kFrq = kTempo*4/60
 kTrig   metro kFrq
 iTS     ftgenonce 0,0,-5*3,-51, 5,2,cpspch(6),0,
