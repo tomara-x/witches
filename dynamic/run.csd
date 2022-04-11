@@ -7,8 +7,9 @@
 //recompile a csd file and rerun its main instr every n seconds.
 //allowing me to edit files and hear the reaults as the file is saved
 
-//very messy, it's like hitting a reset (so that's kinda bad) but can be useful
-//especially with the Q of basma
+//very messy, it's like hitting a reset (so that's kinda bad for testing sequences)
+//but can be useful with the Q of basma, or slower recompile rate
+//also it'd be great for testing out drone things with faster rate
 //or might figure out a way to trigger it manually so it'd be like a refresh button
 <CsoundSynthesizer>
 <CsOptions>
@@ -28,7 +29,7 @@ ktrig metro 1/2
 if ktrig == 1 then
     reinit compile
     turnoff2(nstrnum("Main"), 0, 0)
-    schedulek("Main", 0, -1)
+    ;schedulek("Main", 0, -1)
 endif
 compile:
 ires compilecsd "tbase.csd"

@@ -18,7 +18,7 @@ nchnls = 2
 #include "../sequencers.orc"
 
 instr Main
-kTrig   metro 120*15/60
+kTrig   metro 60*15/60
 iCnt[]  fillarray 1, 1/3, 1/3, 1/3, 1, 1/5, 1/5, 1/5, 1/5, 1/5
 kCnt[] = iCnt * 15
 kAS, kT[] utBasemath kTrig, kCnt
@@ -33,12 +33,13 @@ outs aSig, aSig
 endin
 
 ;schedule(-nstrnum("Main"), 0, 1)
-;schedule("Main", 0, -1)
+schedule("Main", 0, -1)
 ;turnoff2(nstrnum("Main"), 0, 0)
 ;schedulek("Main", 0, -1)
 
 </CsInstruments>
 <CsScore>
+;i"Main" 0 -1 ;works
 </CsScore>
 </CsoundSynthesizer>
 
