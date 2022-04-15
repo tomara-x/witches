@@ -3,6 +3,8 @@
 //This work is free. You can redistribute it and/or modify it under the
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
+
+//for everyone stuck, living where they don't want <3 (hang in there)
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m97
