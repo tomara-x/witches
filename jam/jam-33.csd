@@ -236,20 +236,3 @@ e
 </CsScore>
 </CsoundSynthesizer>
 
-<bsbPanel>
- <label>Widgets</label>
- <objectName/>
- <x>0</x>
- <y>0</y>
- <width>0</width>
- <height>0</height>
- <visible>true</visible>
- <uuid/>
- <bgcolor mode="nobackground">
-  <r>255</r>
-  <g>255</g>
-  <b>255</b>
- </bgcolor>
-</bsbPanel>
-<bsbPresets>
-</bsbPresets>
