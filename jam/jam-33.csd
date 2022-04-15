@@ -59,7 +59,7 @@ aAEnv   expseg 1,p3,ampdb(-280)
 aFEnv   expseg iIFrq,p4,iEFrq
 aSig    oscili aAEnv, aFEnv
 ;aSig    += moogladder(aSig, aFEnv*16, 0.8)
-aSig    += diode_ladder(aSig, iIFrq, 15, 1, 99)
+aSig    += diode_ladder(aSig, iIFrq, 16, 1, 99)
 gaKickOut += aSig
 endin
 
@@ -140,22 +140,14 @@ kQueue[]    fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kV, kTL[]   tBasemath kBar, kCount, kGain, 1, 17, kQueue
 kQueue[kV] = 0
 ;kick------------------------------
-kFrq = kTempo/4/60
+kFrq = kTempo/2/60
 kTrig  metro kFrq
-;if kV == 0 || kV == 9 then
-;    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.4, 0.03, 290, 40)
-;elseif kV >= 4 && kV < 7 then
-;    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.5, 0.08, 230, 40)
-;elseif kV > 7 then
-;    schedkwhen(kTrig, 0,0, "Kick", 0, 4, 0.7, 0.09, 230, 40)
-;    gaKickOut pdhalf gaKickOut, -0.8
-;endif
 schedkwhen(kTrig, 0,0, "Kick", 0, 1/kFrq, 0.10, cpspch(7), 40)
-;gaKickOut += limit(gaKickOut, -0.7, 0.7)
-;gaKickOut *= pdhalf(gaKickOut, -1)*ampdb(-3)
-;gaKickOut diode_ladder gaKickOut, 4000, 0.0
+gaKickOut diode_ladder gaKickOut, 4000, 0.0
+gaKickOut += pdhalf(gaKickOut, -.9)*ampdb(-3)
+;gaKickOut += limit(gaKickOut, -0.1, 0.1)
 sbus_write 1, gaKickOut
-sbus_mult  1, ampdb(0)
+sbus_mult  1, ampdb(-6)
 ;BASS------------------------------
 ;do the green thing, reuse variable
 kFrq = kTempo*4/60
@@ -169,7 +161,8 @@ if kBT[kBAS] == 1 then
 endif
 gaPluckOut *= gaEnvOut[0]*0.5
 gaPluckOut moogladder gaPluckOut, cpspch(11.02), 0.0 ;it's not aliasing, is it? <- lol no, it aint
-sbus_write 2, gaPluckOut
+;sbus_write 2, gaPluckOut
+sbus_mult  2, ampdb(-3)
 ;WG------------------------------ (sorry! this turned into a study)
 /*
 kFrq = kTempo/60
