@@ -83,8 +83,7 @@ elseif p5 == 2 then
     aSig = sum(hsboscil(kAmp, p4, kBrite, iBasFreq, iSin, iWindow, 3),
                hsboscil(kAmp, p4, kBrite, 228, iSin, iWindow, 3))
 endif
-aEnv adsr p6, p7, p8, p9
-gaHsboscilOut += aSig * (aEnv*.5)
+gaHsboscilOut += aSig
 endin
 
 instr Graint
@@ -140,32 +139,32 @@ kQueue[]    fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 kV, kTL[]   tBasemath kBar, kCount, kGain, 1, 17, kQueue
 kQueue[kV] = 0
 ;kick------------------------------
-kFrq = kTempo/2/60
+kFrq = kTempo*4/60
 kTrig  metro kFrq
 schedkwhen(kTrig, 0,0, "Kick", 0, 1/kFrq, 0.10, cpspch(6), 20)
-gaKickOut diode_ladder gaKickOut, 4000, 0.0
 gaKickOut += pdhalf(gaKickOut, -.9)*ampdb(-3)
-;gaKickOut += limit(gaKickOut, -0.1, 0.1)
-;sbus_write 1, gaKickOut
-sbus_mult  1, ampdb(-12)
+gaKickOut diode_ladder gaKickOut, 2000, 0
+;gaKickOut moogladder gaKickOut, 2000, 0
+gaKickOut = limit(gaKickOut, -0.5, 0.5)
+sbus_write 1, gaKickOut
+sbus_mult  1, ampdb(-6)
 ;BASS------------------------------
-;do the green thing, reuse variable
+;do the green thing, reuse variable <- umm.. not always
 kFrq = kTempo*4/60
 kTrig  metro kFrq
 kBC[]  fillarray 8, 8, 4, 4, 1, 1, 1, 2, 3, 8, 5, 1, 1, 1
 kBAS, kBT[] utBasemath kTrig, kBC
 if kBT[kBAS] == 1 then
     kEnvDur = kBC[kBAS]/kFrq ;duration of the current step
-    schedulek("Env", 0, kEnvDur, 0, kEnvDur*0.01, kEnvDur*0.8, 1, kEnvDur*0.1)
-    schedulek("Pluck", 0, kEnvDur, 1.0, cpspch(6.02), 0.9, 0.7, 0.9)
+    schedulek("Env", 0, kEnvDur, 0, kEnvDur*0.01, kEnvDur*0.99, 0, 0)
+    schedulek("Pluck", 0, kEnvDur, 1, cpspch(6), 0.9, 0.7, 0.9)
 endif
-gaPluckOut *= gaEnvOut[0]*0.5
-gaPluckOut moogladder gaPluckOut, cpspch(11.02), 0.0 ;it's not aliasing, is it? <- lol no, it aint
+gaPluckOut *= gaEnvOut[0]
+gaPluckOut moogladder gaPluckOut, cpspch(11), 0.0 ;it's not aliasing, is it? <- lol no, it aint
 ;compress
 sbus_write 2, gaPluckOut
 sbus_mult  2, ampdb(-3)
 ;WG------------------------------ (sorry! this turned into a study)
-/*
 kFrq = kTempo/60
 kTrig   metro kFrq
 iTS     ftgenonce 0,0,-5*3,-51, 5,2,cpspch(6),0,
@@ -188,37 +187,39 @@ gaWGIn = noise(0.3,0.9)*gaEnvOut[1] ;<diane> mic input as source
 ;gaWGOut pdhalf gaWGOut, -1
 ;gaWGOut moogladder gaWGOut, kTP[kTAS]*8, .4
 ;gaWGOut limit gaWGOut, -0.01, 0.01
-sbus_write 3, gaWGOut
+;sbus_write 3, gaWGOut
 sbus_mult  3, ampdb(-3)
-*/
 ;hsboscil------------------------------
 kFrq = kTempo*2/60
 kWav = 0
-kDist = -0.8
-kTrig   metro kFrq
-iTS    ftgenonce 0,0,-5,-51, 5,8,cpspch(6.05),0,
-2^(0/12),2^(3/12),2^(17/12),2^(7/12),2^(34/12)
-kTN[]  fillarray 3, 3, 0, 0, 0, 0, 0, 0
-kTG[]  fillarray 0, 0, 2, -1, 0, 1, 1, 1
-kTQ[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0
-kTAS, kTP[], kTT[] Taphath kTrig,kTN,kTG,kTQ, iTS, 0, 0, 2
-if kTrig == 1 then
-    schedulek("Hsboscil",0, .5/kFrq, kTP[kTAS], kWav, 0.01, 0.6, 0.001, 0.1)
-    schedulek("Env",0, 2/kFrq, 2, 0.01, 0.6, 0.001, 0.1)
+kDist = -.99
+kTrig  metro kFrq
+kBC1[]  fillarray 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 1
+kBAS, kBT[] utBasemath kTrig, kBC1
+iTS    ftgenonce 0,0,-3*11,-51, 11,2,cpspch(7),
+2^(0/12),2^(1/12),2^(2/12),2^(3/12),2^(4/12),2^(5/12),
+2^(6/12),2^(7/12),2^(8/12),2^(9/12),2^(10/12),2^(11/12)
+kTN[]  fillarray 2, 11,6, 2, 11,6, 2, 11,6, 4, 7, 6
+kTG[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+kTQ[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+kTAS, kTP[], kTT[] Taphath kBT[kBAS],kTN,kTG,kTQ, iTS, 0, 0, 2
+if kBT[kBAS] == 1 then
+    kEnvDur = kBC1[kBAS]/kFrq
+    kED = kEnvDur
+    schedulek("Hsboscil",0, kED, kTP[kTAS], kWav)
+    schedulek("Env",0, kED, 2, kED*.5, kED*.5, 0, 0)
 endif
-;gaHsboscilOut pdhalf gaHsboscilOut, kDist
-;gaHsboscilOut moogladder gaHsboscilOut, kTP[kTAS]*8, .8
-;gaHsboscilOut limit gaHsboscilOut, -0.1, 0.1
-sbus_write 4, gaHsboscilOut;*gaEnvOut[2]*0.5
-sbus_mult  4, ampdb(-60)
-if kV == 9 then
-    clear gaHsboscilOut
-    sbus_mult 4, 0
-endif
+gaHsboscilOut *= gaEnvOut[2]*0.5
+gaHsboscilOut pdhalf gaHsboscilOut, kDist
+gaHsboscilOut diode_ladder gaHsboscilOut, kTP[kTAS]*8, 1;6.9, 1, 99
+;sbus_write 4, gaHsboscilOut
+sbus_mult  4, ampdb(-24)
 ;verb------------------------------
 schedule("Verb",0,-1)
-gaVerbIn = gaKickOut*ampdb(-32) +
-           gaHsboscilOut*ampdb(-64)
+gaVerbIn =
+            gaKickOut*ampdb(-42) +
+            gaPluckOut*ampdb(-42) +
+            gaHsboscilOut*ampdb(-64)
 sbus_write 15, gaVerbOutL, gaVerbOutR
 ;out------------------------------
 aL, aR sbus_out
