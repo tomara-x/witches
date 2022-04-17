@@ -4,8 +4,8 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-//for everyone stuck, living where they don't want <3 (hang in there)
-//(attempts count)
+//i miss the score!
+//hold on! i'll see blue, then i'll come back to this
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m227 ;-m231
@@ -16,20 +16,14 @@ ksmps   =   42
 nchnls  =   2
 0dbfs   =   1
 
-;how do other systems deal with those ../ paths?
 #include "../sequencers.orc"
 #include "../oscillators.orc"
 #include "../utils.orc"
-#include "../mixer.orc"
 
-gkFM10Amp[] init 16
-gkFM10Cps[] init 16
-gkFM10Rat[] init 16
-gaFM10Out   init 0
 instr FM10
-kAmp[] = gkFM10Amp
-kCps[] = gkFM10Cps
-kRat[] = gkFM10Rat
+kAmp[] init 16
+kCps[] init 16
+kRat[] init 16
 aOp00, aOp01, aOp02, aOp03, aOp04, aOp05, aOp06, aOp07 init 0
 aOp08, aOp09, aOp10, aOp11, aOp12, aOp13, aOp14, aOp15 init 0
 aOp00   Pmoscili kAmp[00], kCps[00]*kRat[00], aOp08+aOp09+aOp13
@@ -51,7 +45,6 @@ aOp15   Pmoscili kAmp[15], kCps[15]*kRat[15]
 gaFM10Out += (aOp02+aOp06+aOp07)
 endin
 
-gaKickOut init 0
 instr Kick
 ;p4-p6: freq decay, freq[i], freq[f]
 iIFrq   = p5
@@ -64,7 +57,6 @@ aSig    += diode_ladder(aSig, iIFrq, 16, 1, 20)
 gaKickOut += aSig
 endin
 
-gaHsboscilOut init 0
 instr Hsboscil ;originally stolen from floss example 04A13_hsboscil.csd
 iWindow ftgenonce 0, 0, 2^10, -19, 1, 0.5, 270, 0.5
 iSin    ftgenonce 0, 0, 2^10, 10, 1
@@ -91,17 +83,11 @@ instr Graint
 ;grain3
 endin
 
-gaEnvOut[] init 8
 instr Env
 gaEnvOut[p4] = adsr(p5,p6,p7,p8)
 endin
 
 ;wave guide instrument
-gaWGIn  init 0
-gaWGOut init 0
-gkWGFrq init 0
-gkWGCo  init 0
-gkWGFb  init 0
 instr WG
 ;play with wguide2 and rspline
 asig1 wguide1 gaWGIn, gkWGFrq, gkWGCo+1000, gkWGFb+0.1
@@ -130,7 +116,6 @@ endin
 
 instr Main
 kTempo = 110
-;the sacred timeline
 kBarN       init 0
 kBar        metro kTempo/4/60 ;click every 4th beat
 kBarN += kBar
@@ -215,26 +200,9 @@ gaHsboscilOut pdhalf gaHsboscilOut, kDist
 gaHsboscilOut diode_ladder gaHsboscilOut, kTP[kTAS]*8, 1;6.9, 1, 99
 ;sbus_write 4, gaHsboscilOut
 sbus_mult  4, ampdb(-24)
-;verb------------------------------
-schedule("Verb",0,-1)
-gaVerbIn =
-            gaKickOut*ampdb(-42) +
-            gaPluckOut*ampdb(-42) +
-            gaHsboscilOut*ampdb(-64)
-sbus_write 15, gaVerbOutL, gaVerbOutR
-;out------------------------------
-aL, aR sbus_out
-iSM = 1
-aL limit aL, -iSM, iSM
-aR limit aR, -iSM, iSM
-kFade linseg 1, p3-10, 1, 10, 0
-outs aL*kFade, aR*kFade
-;clear-globals------------------------------
-clear gaFM10Out, gaKickOut, gaHsboscilOut, gaPluckOut, gaWGOut
 endin
 </CsInstruments>
 <CsScore>
-i"Main" 0 [228*(60/110)] ;228 beats at 110 bpm
 e
 </CsScore>
 </CsoundSynthesizer>
