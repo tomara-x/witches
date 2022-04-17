@@ -6,6 +6,7 @@
 
 //i miss the score!
 //hold on! i'll see blue, then i'll come back to this
+//↑ lol! did not know what i was getting into!
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m227 ;-m231
@@ -115,15 +116,6 @@ gaVerbOutL,gaVerbOutR freeverb gaVerbIn,gaVerbIn,kRoomSize,kHFDamp
 endin
 
 instr Main
-kTempo = 110
-kBarN       init 0
-kBar        metro kTempo/4/60 ;click every 4th beat
-kBarN += kBar
-kCount[]    fillarray 2, 2, 2, 2, 8, 4, 2, 2, 8, 1, 8, 8, 1, 4, 2, 1
-kGain[]     fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-kQueue[]    fillarray 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-kV, kTL[]   tBasemath kBar, kCount, kGain, 1, 17, kQueue
-kQueue[kV] = 0
 ;kick------------------------------
 kFrq = kTempo*4/60
 kTrig  metro kFrq
@@ -146,11 +138,10 @@ if kBT[kBAS] == 1 then
     schedulek("Pluck", 0, kEnvDur, 1, cpspch(6), 0.9, 0.7, 0.9)
 endif
 gaPluckOut *= gaEnvOut[0]
-gaPluckOut moogladder gaPluckOut, cpspch(11), 0.0 ;it's not aliasing, is it? <- lol no, it aint
-;compress
+gaPluckOut moogladder gaPluckOut, cpspch(11), 0.0
 sbus_write 2, gaPluckOut
 sbus_mult  2, ampdb(-3)
-;WG------------------------------ (sorry! this turned into a study)
+;WG------------------------------
 kFrq = kTempo/60
 kTrig   metro kFrq
 iTS     ftgenonce 0,0,-5*3,-51, 5,2,cpspch(6),0,
