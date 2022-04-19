@@ -16,7 +16,23 @@ nchnls  =   2
 0dbfs   =   1
 
 ;#include "../sequencers.orc"
-#include "../oscillators.orc"
+;#include "../oscillators.orc"
+
+instr Score
+Sp1 = "Bass"
+ip2, ip3 = 0, .5
+ic = 0
+while ic < 16 do
+    ;event_i "i", Sp1, ip2, ip3, -12, 7.02, 0.4, 0.7, .9
+    Sline sprintf "i\"%s\" %f %f -12 7.02 .4 .7 .9", Sp1,ip2,ip3
+    scoreline_i Sline
+    ip2 += ip3
+    ic += 1
+od
+;p3 = ip2 + ip3 ;extend duration of this instr
+event_i "e", 0, ip2+ip3
+endin
+schedule("Score", 0, -1)
 
 instr Bass
 iPlk    =           p6 ;(0 to 1)
@@ -55,32 +71,6 @@ outs aL, aR
 clear gaVerbSnd
 endin
 
-instr FM10
-kAmp[] init 16
-kCps[] init 16
-kRat[] init 16
-aOp00, aOp01, aOp02, aOp03, aOp04, aOp05, aOp06, aOp07 init 0
-aOp08, aOp09, aOp10, aOp11, aOp12, aOp13, aOp14, aOp15 init 0
-aOp00   Pmoscili kAmp[00], kCps[00]*kRat[00], aOp08+aOp09+aOp13
-aOp01   Pmoscili kAmp[01], kCps[01]*kRat[01], aOp00
-aOp02   Pmoscili kAmp[02], kCps[02]*kRat[02], aOp03
-aOp03   Pmoscili kAmp[03], kCps[03]*kRat[03], aOp01+aOp04+aOp05
-aOp04   Pmoscili kAmp[04], kCps[04]*kRat[04], aOp00
-aOp05   Pmoscili kAmp[05], kCps[05]*kRat[05], aOp00
-aOp06   Pmoscili kAmp[06], kCps[06]*kRat[06], aOp03
-aOp07   Pmoscili kAmp[07], kCps[07]*kRat[07], aOp03
-aOp08   Pmoscili kAmp[08], kCps[08]*kRat[08], aOp12
-aOp09   Pmoscili kAmp[09], kCps[09]*kRat[09], aOp12
-aOp10   Pmoscili kAmp[10], kCps[10]*kRat[10], aOp15
-aOp11   Pmoscili kAmp[11], kCps[11]*kRat[11], aOp15
-aOp12   Pmoscili kAmp[12], kCps[12]*kRat[12], aOp10+aOp11+aOp14
-aOp13   Pmoscili kAmp[13], kCps[13]*kRat[13], aOp12
-aOp14   Pmoscili kAmp[14], kCps[14]*kRat[14], aOp15
-aOp15   Pmoscili kAmp[15], kCps[15]*kRat[15]
-aSig    = (aOp02+aOp06+aOp07)
-outs aSig, aSig
-endin
-
 instr Hsboscil ;originally stolen from floss example 04A13_hsboscil.csd
 iWindow ftgenonce 0, 0, 2^10, -19, 1, 0.5, 270, 0.5
 iSin    ftgenonce 0, 0, 2^10, 10, 1
@@ -108,21 +98,5 @@ instr WG
 endin
 
 </CsInstruments>
-<CsScore>
-t 0 115
-i"Bass" 0 4 -12 7.02 0.4 0.7 .4
-s
-r 4
-t 0 115
-i"Bass" 0 0.5 -12 7.02 0.4 0.7 .9
-i"Bass" +
-i"Bass" + .   .   7.00
-i"Bass" + .   .   7.04
-s
-t 0 115
-i"Bass" 0 .5 -12 7.02 0.4 0.7 .4
-i"Bass" + 4 -12 7.02 0.4 0.7 .4
-e
-</CsScore>
 </CsoundSynthesizer>
 
