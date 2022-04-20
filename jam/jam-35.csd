@@ -19,17 +19,25 @@ nchnls  =   2
 ;#include "../oscillators.orc"
 
 instr Score
-Sp1 = "Bass"
-ip2, ip3 = 0, .5
-ic = 0
-while ic < 16 do
-    ;event_i "i", Sp1, ip2, ip3, -12, 7.02, 0.4, 0.7, .9
-    Sline sprintf "i\"%s\" %f %f -12 7.02 .4 .7 .9", Sp1,ip2,ip3
-    scoreline_i Sline
+;confusing af but i love it
+;tempo could be a mess, gotta do something about it
+ip2, ip3 = 0, .5*60/115
+ic1 = 0
+iarr[] = fillarray(7.02, 7.02, 7, 7.04)
+while ic1 < 4*8 do
+    event_i "i", "Bass", ip2, ip3, -12, iarr[ic1%4], 0.4, 0.7, .9
+    if ic1%3 == 0 then
+        iarr[2] = iarr[2] + 0.01
+    endif
     ip2 += ip3
-    ic += 1
+    ic1 += 1
 od
-;p3 = ip2 + ip3 ;extend duration of this instr
+ic2 = 0
+while ic2 < 4*2 do
+    event_i "i", "Kick", ic2*2*60/115, .8, .04, 230, 20
+    ic2 += 1
+od
+
 event_i "e", 0, ip2+ip3
 endin
 schedule("Score", 0, -1)
@@ -51,14 +59,17 @@ instr Kick
 ;p4-p6: freq decay, freq[i], freq[f]
 iIFrq   = p5
 iEFrq   = p6
-aAEnv   expseg 1,p3,ampdb(-280)
+aAEnv   expseg 1,p3,ampdb(-128)
 aFEnv   expseg iIFrq,p4,iEFrq
 aSig    oscili aAEnv, aFEnv
 ;aSig    += moogladder(aSig, aFEnv*16, 0.8)
-aSig    += diode_ladder(aSig, iIFrq, 16, 1, 20)
-aSig    += pdhalf(aSig, -.9)*ampdb(-3)
-;gSig    diode_ladder aSig, 2000, 0
-aSig    limit aSig, -0.5, 0.5
+aSig    += diode_ladder(aSig, k(aFEnv)*8, 16, 1, 20)
+;aSig    += pdhalf(aSig, -.99)*ampdb(-32)
+;aSig    diode_ladder aSig, 2000, 1
+;aSig    limit aSig, -0.5, 0.5
+aEnv    linseg      1, p3*.9, 1, p3*.1, 0
+aSig *= aEnv
+aSig *= ampdb(-3)
 outs aSig, aSig
 endin
 
