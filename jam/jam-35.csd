@@ -40,7 +40,23 @@ od
 
 event_i "e", 0, ip2+ip3
 endin
-schedule("Score", 0, -1)
+;schedule("Score", 0, -1)
+
+;droning instrument with changing parameters in time
+instr S2
+ic = 0
+iarr[] = fillarray(7.02, 9.02, 7, 7.04)
+while ic < 16 do
+    if ic == 0 then
+        event_i "i", "Hsboscil", ic, 1, cpspch(iarr[ic%4]), 0
+    else
+        event_i "i", "Hsboscil", ic, 1, cpspch(iarr[ic%4]), 0, 1
+    endif
+    ic += 1
+od
+endin
+schedule("S2", 0, -1)
+
 
 instr Bass
 iPlk    =           p6 ;(0 to 1)
@@ -87,21 +103,28 @@ iWindow ftgenonce 0, 0, 2^10, -19, 1, 0.5, 270, 0.5
 iSin    ftgenonce 0, 0, 2^10, 10, 1
 iWav    ftgenonce 0, 0, 2^18, 9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
         816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
+;skip init
+if p6 == 1 then
+    igoto end
+endif
 kAmp = .5
 kTone rspline -1,1,4,7
 ;kBrite rspline -3,3,4,8
 kBrite rspline -1,1,1,2
 iBasFreq = 220
 ;switch between sin and wav based on p5
+kcps = p4
+kcps tonek kcps, 10 ;¡muy interesante!
 if p5 == 0 then
-    aSig hsboscil kAmp, p4, kBrite, iBasFreq, iSin, iWindow, 6
+    aSig hsboscil kAmp, kcps, kBrite, iBasFreq, iSin, iWindow, 3
 elseif p5 == 1 then
-    aSig hsboscil kAmp, p4, kBrite, iBasFreq/100, iWav, iWindow, 3
+    aSig hsboscil kAmp, kcps, kBrite, iBasFreq/100, iWav, iWindow, 3
 elseif p5 == 2 then
-    aSig = hsboscil(kAmp, p4, kBrite, iBasFreq, iSin, iWindow, 3) +
-           hsboscil(kAmp, p4, kBrite, 228, iSin, iWindow, 3)
+    aSig = hsboscil(kAmp, kcps, kBrite, iBasFreq, iSin, iWindow, 3) +
+           hsboscil(kAmp, kcps, kBrite, 228, iSin, iWindow, 3)
 endif
 outs aSig, aSig
+end:
 endin
 
 instr WG
