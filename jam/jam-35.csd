@@ -17,30 +17,31 @@ nchnls  =   2
 
 ;#include "../sequencers.orc"
 ;#include "../oscillators.orc"
+#define TEMPO #115#
+#define S #(60/$TEMPO)*# ; $S 4 = duration of 4 beats in seconds
+;have a bad feeling about this
 
 instr Score
-;confusing af but i love it
-;tempo could be a mess, gotta do something about it
-ip2, ip3 = 0, .5*60/115
+ip2, ip3 = 0, .5
 ic1 = 0
 iarr[] = fillarray(7.02, 7.02, 7, 7.04)
 while ic1 < 4*8 do
-    schedule "Bass", ip2, ip3, -12, iarr[ic1%4], .4, .7, .9
+    schedule "Bass", $S ip2, $S ip3, -12, iarr[ic1%4], .4, .7, .9
     if ic1%3 == 0 then
-        iarr[2] = iarr[2] + 0.01
+        iarr[2] = iarr[2] + 0.01 ;the witch
     endif
     ip2 += ip3
     ic1 += 1
 od
 ic2 = 0
 while ic2 < 4*2 do
-    schedule "Kick", ic2*2*60/115, .8, .04, 230, 20
+    schedule "Kick", $S ic2*2, .8, .04, 230, 20
     ic2 += 1
 od
 
 event_i "e", 0, ip2+ip3
 endin
-;schedule("Score", 0, -1)
+schedule("Score", 0, -1)
 
 ;droning instrument with changing parameters in time
 instr S2
@@ -55,8 +56,7 @@ while ic < 16 do
     ic += 1
 od
 endin
-schedule("S2", 0, -1)
-
+;schedule("S2", 0, -1)
 
 instr Bass
 iPlk    =           p6 ;(0 to 1)
