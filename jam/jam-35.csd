@@ -25,7 +25,7 @@ ip2, ip3 = 0, .5*60/115
 ic1 = 0
 iarr[] = fillarray(7.02, 7.02, 7, 7.04)
 while ic1 < 4*8 do
-    event_i "i", "Bass", ip2, ip3, -12, iarr[ic1%4], 0.4, 0.7, .9
+    schedule "Bass", ip2, ip3, -12, iarr[ic1%4], .4, .7, .9
     if ic1%3 == 0 then
         iarr[2] = iarr[2] + 0.01
     endif
@@ -34,7 +34,7 @@ while ic1 < 4*8 do
 od
 ic2 = 0
 while ic2 < 4*2 do
-    event_i "i", "Kick", ic2*2*60/115, .8, .04, 230, 20
+    schedule "Kick", ic2*2*60/115, .8, .04, 230, 20
     ic2 += 1
 od
 
@@ -48,9 +48,9 @@ ic = 0
 iarr[] = fillarray(7.02, 9.02, 7, 7.04)
 while ic < 16 do
     if ic == 0 then
-        event_i "i", "Hsboscil", ic, 1, cpspch(iarr[ic%4]), 0
+        schedule "Hsboscil", ic, 1, cpspch(iarr[ic%4]), 0
     else
-        event_i "i", "Hsboscil", ic, 1, cpspch(iarr[ic%4]), 0, 1
+        schedule "Hsboscil", ic, 1, cpspch(iarr[ic%4]), 0, 1
     endif
     ic += 1
 od
