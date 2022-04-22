@@ -15,23 +15,33 @@ ksmps   =   42
 nchnls  =   2
 0dbfs   =   1
 
-#define TEMPO #115#
+#define TEMPO #210#
 #define B #(60/$TEMPO)# ;length of beat in seconds
 
 instr Score
-schedule "s1", $B*0, -1, 4 ;recursive
-schedule "s1", $B*4, -1, 4 ;nother go for tests
+schedule "s1", $B*0, -1, 16 ;each section here is 1 beat
+schedule "s2", $B*0, -1, 4 ;each kick section is 1 bar long
 endin
 schedule("Score", 0, -1)
 
 instr s1
-idur = $B*0.25
+idur = $B/4
 schedule "Bass", 0*idur, idur, -12, 6.02, .4, .7, .9
 schedule "Bass", 1*idur, idur, -12, 6.02, .4, .7, .9
 schedule "Bass", 2*idur, idur, -12, 6.00, .4, .7, .9
 schedule "Bass", 3*idur, idur, -12, 6.04, .4, .7, .9
 if p4 > 1 then
-    schedule "s1", 4*idur, -1, p4-1 ;starts after we're done here
+    schedule "s1", 4*idur, -1, p4-1 ;p2 = durations of all notes
+endif
+turnoff
+endin
+instr s2
+schedule "Kick", $B*0, .8, .04, 230, 20 ;the "one"
+schedule "Kick", $B*1, .8, .04, 230, 20 ;the "two"
+schedule "Kick", $B*2, .8, .04, 230, 20 ;the "three"
+schedule "Kick", $B*3, .8, .04, 230, 20 ;the "four" of the bar
+if p4 > 1 then
+    schedule "s2", $B*4, -1, p4-1 ;scheduled after 4 beats
 endif
 turnoff
 endin
