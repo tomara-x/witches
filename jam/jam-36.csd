@@ -19,30 +19,20 @@ nchnls  =   2
 #define B #(60/$TEMPO)# ;length of beat in seconds
 
 instr Score
-schedule "s1", $B*0, -1, 4 ;4 recursions
-;schedule "s1", $B*1, -1
-;schedule "s2", $B*2, -1
-;schedule "s1", $B*3, -1
+schedule "s1", $B*0, -1, 4 ;recursive
+schedule "s1", $B*4, -1, 4 ;nother go for tests
 endin
 schedule("Score", 0, -1)
 
 instr s1
 idur = $B*0.25
-schedule "Bass", p2+0*idur,idur, -12, 6.02, .4, .7, .9
-schedule "Bass", p2+1*idur,idur, -12, 6.02, .4, .7, .9
-schedule "Bass", p2+2*idur,idur, -12, 6.00, .4, .7, .9
-schedule "Bass", p2+3*idur,idur, -12, 6.04, .4, .7, .9
+schedule "Bass", 0*idur, idur, -12, 6.02, .4, .7, .9
+schedule "Bass", 1*idur, idur, -12, 6.02, .4, .7, .9
+schedule "Bass", 2*idur, idur, -12, 6.00, .4, .7, .9
+schedule "Bass", 3*idur, idur, -12, 6.04, .4, .7, .9
 if p4 > 1 then
-    schedule "s1", idur*2, -1, p4-1 ;WHY! aren't we taking 4?
+    schedule "s1", 4*idur, -1, p4-1 ;starts after we're done here
 endif
-turnoff
-endin
-instr s2
-idur = $B*0.5
-schedule "Bass", p2+0*idur,idur, -12, 7.00, .4, .7, .9
-schedule "Bass", p2+1*idur,idur, -12, 7.00, .4, .7, .9
-schedule "Bass", p2+2*idur,idur, -12, 7.04, .4, .7, .9
-schedule "Bass", p2+3*idur,idur, -12, 7.02, .4, .7, .9
 turnoff
 endin
 

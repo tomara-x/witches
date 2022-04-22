@@ -6,6 +6,12 @@
 
 //You're right, Mya, it is like seeing the face of god! ^_^
 
+//DO NOT #include THIS!
+
+//i wrote these with my weird scary convention in mind, and now
+//i'm giving that up, and there should be a better fm oscillator
+//i'll write sometime.. so those are a bit of a mess
+
 //16 algorithms for 16 operator fm (designed for funzies)
 //To be used with 3 global 2d arrays for each instrument gkFMx(Amp/Cps/Rat)
 //and one 1d global audio array for the outputs. for example instrument 0:
