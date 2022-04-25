@@ -29,24 +29,24 @@ schedule "s1", $B*06*4, -1, 7, 4
 schedule "s1", $B*07*4, -1, 8, 4
 schedule "s1", $B*08*4, -1, 9, 4
 
-schedule "s1", $B*09*4, -1, 8, 4
-schedule "s1", $B*10*4, -1, 7, 4
-schedule "s1", $B*11*4, -1, 6, 4
-schedule "s1", $B*12*4, -1, 5, 4
-schedule "s1", $B*13*4, -1, 4, 4
-schedule "s1", $B*14*4, -1, 3, 4
-schedule "s1", $B*15*4, -1, 2, 4
-schedule "s1", $B*16*4, -1, 1, 4
+schedule "s2", $B*09*4, -1, 8, 4
+schedule "s2", $B*10*4, -1, 7, 4
+schedule "s2", $B*11*4, -1, 6, 4
+schedule "s2", $B*12*4, -1, 5, 4
+schedule "s2", $B*13*4, -1, 4, 4
+schedule "s2", $B*14*4, -1, 3, 4
+schedule "s2", $B*15*4, -1, 2, 4
+schedule "s2", $B*16*4, -1, 1, 4
 endin
 schedule("Score", 0, -1)
 
 instr s1
 idur = $B/p4
-ipch[] = fillarray(6.02, 6.02, 6, 6.02, 6.02, 6, 6.04, 6.04, 6.07)
+ipch[] = fillarray(6.02, 6.02, 6, 6.06, 6.02, 6, 6.04, 6.04, 6.07)
 iplk[] = fillarray(.2, .3, .7, .2, .7, .3, .05, .9, .1)
 icnt = 0
 while icnt < p4 do
-    schedule "Bass", icnt*idur, idur, -12, ipch[icnt], iplk[icnt], .9, .9
+    schedule "Bass", icnt*idur, idur, -3, ipch[icnt], iplk[icnt], .9, .9
     icnt += 1
 od
 if p5 > 1 then
@@ -54,11 +54,17 @@ if p5 > 1 then
 endif
 turnoff
 endin
-
 instr s2
-schedule "Kick", $B*0, .8, -12, .04, 230, 20
-if p4 > 1 then
-    schedule "s2", $B*3, -1, p4-1
+idur = $B/p4
+ipch[] = fillarray(6.07, 6.04, 6.04, 6, 6.02, 6.06, 6, 6.02, 6.02)
+iplk[] = fillarray(.1, .9, .05, .3, .7, .2, .7, .3, .2)
+icnt = 0
+while icnt < p4 do
+    schedule "Bass", icnt*idur, idur, -3, ipch[icnt], iplk[icnt], .9, .9
+    icnt += 1
+od
+if p5 > 1 then
+    schedule "s2", $B, -1, p4, p5-1
 endif
 turnoff
 endin
@@ -72,47 +78,9 @@ kRefl   =           p8 ;rate of decay ]0,1[
 aSig    wgpluck2    iPlk,kAmp,iCps,kPick,kRefl
 aEnv    linseg      0, p3*.005, 1, p3*.895, 1, p3*.1, 0
 aSig *= aEnv
-;aSig    diode_ladder aSig, cpspch(p4+4), 14, 1, 50
-gaOut += aSig
-gaVerbSnd += aSig*ampdb(-6)
+aSig    diode_ladder aSig, cpspch(p4+2), 1, 1, 10
+outs aSig, aSig
 endin
-
-instr Kick
-;p4-p7: amp, freq decay, freq[i], freq[f]
-iIFrq   = p6
-iEFrq   = p7
-aAEnv   expseg 1,p3,ampdb(-128)
-aFEnv   expseg iIFrq,p5,iEFrq
-aSig    oscili aAEnv, aFEnv
-;aSig    += moogladder(aSig, aFEnv*16, 0.8)
-aSig    += diode_ladder(aSig, k(aFEnv)*8, 16, 1, 20)
-;aSig    += pdhalf(aSig, -.99)*ampdb(-32)
-;aSig    diode_ladder aSig, 2000, 1
-;aSig    limit aSig, -0.5, 0.5
-aEnv    linseg      1, p3*.9, 1, p3*.1, 0
-aSig *= aEnv
-aSig *= ampdb(p4)
-gaOut += aSig
-gaVerbSnd += aSig*ampdb(-6)
-endin
-
-gaVerbSnd   init 0
-instr Verb ;stolen from the floss manual 05E01_freeverb.csd
-kRoomSize   init      0.55     ; room size (range 0 to 1)
-kHFDamp     init      0.95     ; high freq. damping (range 0 to 1)
-aL,aR freeverb gaVerbSnd,gaVerbSnd,kRoomSize,kHFDamp
-outs aL, aR
-clear gaVerbSnd
-endin
-alwayson "Verb"
-
-gaOut init 0
-instr Out
-;gaOut moogladder gaOut, 8000, 0.2
-outs gaOut, gaOut
-clear gaOut
-endin
-alwayson "Out"
 </CsInstruments>
 </CsoundSynthesizer>
 
