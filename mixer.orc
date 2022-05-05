@@ -77,3 +77,11 @@ opcode sbus_out, aa, 0
   xout al, ar
 endop
 
+opcode sbus_clear_all, 0, 0
+  kbus = 0
+  while kbus < 16 do
+    sbus_clear kbus
+    kbus += 1
+  od
+endop
+
