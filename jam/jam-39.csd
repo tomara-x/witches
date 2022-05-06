@@ -50,11 +50,11 @@ endin
 instr Bass
 iPlk    =    p6 ;(0 to 1)
 kAmp    =    ampdb(p4)
-iCps    =    cpspch(p5)
+iCps    =    p5 ;cpspch(p5)
 kPick   =    p7 ;pickup point
 kRefl   =    p8 ;rate of decay ]0,1[
 aSig    wgpluck2 iPlk,kAmp,iCps,kPick,kRefl
-aSig    diode_ladder aSig, cpspch(p5+2), 1, 1, 10
+aSig    diode_ladder aSig, p5*4, 1, 1, 10
 aEnv    linseg 0, p3*0.05, 1, p3*0.9, 1, p3*0.05, 0
 aSig *= aEnv
 sbus_mix 2, aSig*ampdb(-3)
@@ -85,6 +85,7 @@ aOp13   Pmoscili gkAmp[13], kCps*gkRat[13], aOp12
 aOp14   Pmoscili gkAmp[14], kCps*gkRat[14], aOp15
 aOp15   Pmoscili gkAmp[15], kCps*gkRat[15]
 aSig = aOp02+aOp06+aOp07
+;p3-time declick (doesn't scale with p3)
 sbus_mix 3, aSig*ampdb(-3)
 gaVerbInL += aSig*ampdb(-12)
 gaVerbInR += aSig*ampdb(-12)
@@ -120,7 +121,7 @@ kQueue[kS] = 0
 
 ;kick------------------------------
 kKT metro $TEMPO/60 ;KickTrigger
-if kS == 2 then
+if kS == 0 then
     schedkwhen(kKT,0,0, "Kick",0,1, 0.08, 230, 40)
 elseif kS > 4 then
     schedkwhen(kKT,0,0, "Kick",0,1, 0.09, 230, 40, 1)
@@ -146,8 +147,9 @@ aL, aR sbus_out
 iSM = .5
 aL limit aL, -iSM, iSM
 aR limit aR, -iSM, iSM
-kFade linseg 1, p3-10, 1, 10, 0
-outs aL*kFade, aR*kFade
+outs aL, aR
+;kFade linseg 1, p3-10, 1, 10, 0
+;outs aL*kFade, aR*kFade
 sbus_clear_all
 endin
 </CsInstruments>

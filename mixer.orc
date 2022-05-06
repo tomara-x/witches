@@ -50,6 +50,7 @@ opcode sbus_mix, 0,ia
   ga_sbus[ibus][1] = ga_sbus[ibus][1] + ain
 endop
 
+//don't think i'll use these 2 much anymore
 ;multiply channel (for setting amplitude)
 opcode sbus_mult, 0, ik
   ibus, km xin
@@ -65,6 +66,7 @@ opcode sbus_mult, 0, ikk ;each stereo channel separately
 endop
 
 ;output a mix of all 16 channels
+/*
 opcode sbus_out, aa, 0
   al, ar init 0
   clear al, ar
@@ -76,12 +78,35 @@ opcode sbus_out, aa, 0
   od
   xout al, ar
 endop
+*/
+opcode sbus_out, aa, 0
+ al = ga_sbus[0][0]+ga_sbus[1][0]+ga_sbus[2][0]+ga_sbus[3][0]+
+      ga_sbus[4][0]+ga_sbus[5][0]+ga_sbus[6][0]+ga_sbus[7][0]+
+      ga_sbus[8][0]+ga_sbus[9][0]+ga_sbus[10][0]+ga_sbus[11][0]+
+      ga_sbus[12][0]+ga_sbus[13][0]+ga_sbus[14][0]+ga_sbus[15][0]
+ ar = ga_sbus[0][1]+ga_sbus[1][1]+ga_sbus[2][1]+ga_sbus[3][1]+
+      ga_sbus[4][1]+ga_sbus[5][1]+ga_sbus[6][1]+ga_sbus[7][1]+
+      ga_sbus[8][1]+ga_sbus[9][1]+ga_sbus[10][1]+ga_sbus[11][1]+
+      ga_sbus[12][1]+ga_sbus[13][1]+ga_sbus[14][1]+ga_sbus[15][1]
+  xout al, ar
+endop
 
 opcode sbus_clear_all, 0, 0
-  kbus = 0
-  while kbus < 16 do
-    sbus_clear kbus
-    kbus += 1
-  od
+  sbus_clear 0
+  sbus_clear 1
+  sbus_clear 2
+  sbus_clear 3
+  sbus_clear 4
+  sbus_clear 5
+  sbus_clear 6
+  sbus_clear 7
+  sbus_clear 8
+  sbus_clear 9
+  sbus_clear 10
+  sbus_clear 11
+  sbus_clear 12
+  sbus_clear 13
+  sbus_clear 14
+  sbus_clear 15
 endop
 
