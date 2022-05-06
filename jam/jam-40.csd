@@ -148,9 +148,9 @@ endin
 
 instr Out
 aL, aR sbus_out
-iSM = 1
-aL limit aL, -iSM, iSM
-aR limit aR, -iSM, iSM
+kSM = linseg(1, p3/2, .1)
+aL limit aL, -kSM, kSM
+aR limit aR, -kSM, kSM
 outs aL, aR
 ;kFade linseg 1, p3-10, 1, 10, 0
 ;outs aL*kFade, aR*kFade
