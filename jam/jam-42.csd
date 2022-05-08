@@ -77,7 +77,6 @@ aOp13   Pmoscili gkAmp[13], kCps*gkRat[13], aOp12
 aOp14   Pmoscili gkAmp[14], kCps*gkRat[14], aOp15
 aOp15   Pmoscili gkAmp[15], kCps*gkRat[15]
 aSig = aOp02+aOp06+aOp07
-;p3-time declick (doesn't scale with p3)
 sbus_mix 3, aSig*db(-3)
 gaVerbInL += aSig*db(-12)
 gaVerbInR += aSig*db(-12)
@@ -113,7 +112,11 @@ endif
 ;bass------------------------------
 kFrq  = $TEMPO*8/60
 kBT   metro kFrq ;BassTrigger
-kBC[] fillarray 3, 1, 3, 1, 2, 2, 2, 2 ;BassCount
+kBC[] init 8 ;BassCount
+kBC fillarray k(3), 1, 3, 1, 2, 2, 2, 2 ;hackish af! wth, fillarray!
+if kS == 0 then
+    kBC[] fillarray k(8), 16, 3, 1, 2, 2, 2, 2
+endif
 kBBS, kBBT[] utBasemath kBT, kBC ;BassBasmaStep, BassBasmaTrigger array
 iBS ftgenonce 0,0,-7*3,-51, 7,2,cpspch(6), 0,
 2^(0/12),2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12) ;BassScale
