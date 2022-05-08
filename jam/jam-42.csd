@@ -112,11 +112,14 @@ endif
 ;bass------------------------------
 kFrq  = $TEMPO*8/60
 kBT   metro kFrq ;BassTrigger
-kBC[] init 8 ;BassCount
-kBC fillarray k(3), 1, 3, 1, 2, 2, 2, 2 ;hackish af! wth, fillarray!
-if kS == 0 then
-    kBC[] fillarray k(8), 16, 3, 1, 2, 2, 2, 2
-endif
+;karr1[] fillarray 3, 1, 3, 1, 2, 2, 2, 2
+;karr2[] fillarray 8, 8, 8, 8, 8, 8, 8, 8
+karr1[] fillarray 3, 4, 3, 2, 4
+karr2[] fillarray 3, 3, 4, 2, 4
+kBC[] = karr1
+;if kS == 0 then
+;    kBC = karr2
+;endif
 kBBS, kBBT[] utBasemath kBT, kBC ;BassBasmaStep, BassBasmaTrigger array
 iBS ftgenonce 0,0,-7*3,-51, 7,2,cpspch(6), 0,
 2^(0/12),2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12) ;BassScale
