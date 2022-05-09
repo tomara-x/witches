@@ -92,10 +92,11 @@ schedkwhen(kBT,0,0, "Bass",0,kp3,-9,kBTP[(kBTS+3)%8]*2, .8,.9,.95)
 endin
 
 instr Out
-;kCO = linseg(20, 2, 10000, 2, 20, 1, 10000)
-;kFB = linseg(10, 4, 60, 2, 40)
-;ga_sbus[2][0] diode_ladder ga_sbus[2][0], kCO, 10, 1, kFB
-;ga_sbus[2][1] diode_ladder ga_sbus[2][1], kCO, 10, 1, kFB
+;kCF = randomi(20, 10000, .5)
+;kSa = randomi(1, 80, .8)
+;kFB = randomi(0, 17, .2)
+;ga_sbus[2][0] diode_ladder ga_sbus[2][0], kCF, kFB, 1, kSa
+;ga_sbus[2][1] diode_ladder ga_sbus[2][1], kCF, kFB, 1, kSa
 
 aL, aR sbus_out
 ;kSM = linseg(1, p3/2, .01, p3/2, 1)
