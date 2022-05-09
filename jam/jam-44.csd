@@ -45,8 +45,8 @@ aSig    diode_ladder aSig, p5*8, 10, 1, 10
 aEnv    linseg 1, p3-0.05, 1, 0.05, 0
 aSig *= aEnv
 sbus_mix 2, aSig*db(-3)
-gaVerbInL += aSig*db(-6)
-gaVerbInR += aSig*db(-6)
+gaVerbInL += aSig*db(-24)
+gaVerbInR += aSig*db(-24)
 endin
 
 gaVerbInL,gaVerbInR init 0
@@ -76,17 +76,19 @@ kKT metro $TEMPO/60 ;KickTrigger
 ;bass------------------------------
 kFrq  = $TEMPO*4/60
 kBT   metro kFrq ;BassTrigger
-kBC[] fillarray 2, 1, 2, 1, 2, 2, 2, 4
-kBBS, kBBT[] utBasemath kBT, kBC ;BassBasmaStep, BassBasmaTriggers
-iBS ftgenonce 0,0,-3*2,-51, 3,2,cpspch(6), 0,
-2^(0/12),2^(2/12),2^(5/12) ;BassScale
+;iBS ftgenonce 0,0,-3*2,-51, 3,2,cpspch(6), 0,
+;2^(0/12),2^(2/12),2^(5/12) ;BassScale
+iBS ftgenonce 0,0,-7*3,-51, 7,2,cpspch(6), 0,
+2^(0/12),2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12) ;BassScale
 kBN[] fillarray 1, 1, 1, 0, 2, 4, 4, 3  ;BassNotes
 kBG[] fillarray 0, 2, 0, 0, 0, 1, 0, 2  ;BassGain (transposition)
 kBQ[] fillarray 0, 0, 0, 0, 0, 0, 0, 0  ;BassQueue
-kBTS, kBTP[], kBTT[] Taphath kBBT[kBBS], kBN,kBG,kBQ, iBS, 0, 0, 2 
-kp3 = kBC[kBBS]/kFrq
-kp5 = kBTP[kBTS]/2
-schedkwhen(kBBT[kBBS],0,0, "Bass",0,kp3,.5,kp5, .65,.8,.9)
+kBTS, kBTP[], kBTT[] Taphath kBT, kBN,kBG,kBQ, iBS
+kp3 = 1/kFrq
+schedkwhen(kBT,0,0, "Bass",0,kp3,-6,kBTP[kBTS], .6,.9,.8)
+schedkwhen(kBT,0,0, "Bass",0,kp3,-9,kBTP[(kBTS+1)%8]*2, .8,.9,.95)
+schedkwhen(kBT,0,0, "Bass",0,kp3,-9,kBTP[(kBTS+2)%8]*2, .8,.9,.95)
+schedkwhen(kBT,0,0, "Bass",0,kp3,-9,kBTP[(kBTS+3)%8]*2, .8,.9,.95)
 endin
 
 instr Out
