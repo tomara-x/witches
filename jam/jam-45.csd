@@ -75,9 +75,28 @@ gaVerbInL += aSig*db(-3)
 gaVerbInR += aSig*db(-3)
 endin
 
+instr Hat
+aSig noise p4, p5
+aEnv expseg 1, p3, db(-60)
+aSig *= aEnv
+sbus_mix 6, aSig*db(-9), aSig*db(-3)
+gaVerbInL += aSig*db(-6)
+gaVerbInR += aSig*db(-6)
+endin
+
+instr Cabasa
+aSig cabasa p4, p3, 1000
+sbus_mix 7, aSig*db(-6), aSig*db(-3)
+gaVerbInL += aSig*db(-3)
+gaVerbInR += aSig*db(-3)
+endin
+
+instr Bar
+endin
+
 gaVerbInL,gaVerbInR init 0
 instr Verb
-kRoomSize   init      0.55     ; room size (range 0 to 1)
+kRoomSize   init      0.75     ; room size (range 0 to 1)
 kHFDamp     init      0.9      ; high freq. damping (range 0 to 1)
 aVerbL,aVerbR freeverb gaVerbInL,gaVerbInR,kRoomSize,kHFDamp
 sbus_mix 15, aVerbL, aVerbR
@@ -103,14 +122,15 @@ schedkwhen(kDBT[0],0,0, "Kick",0,ib, 0.09, 230, 40, 1)
 schedkwhen(kDBT[1],0,0, "Bambo",0,ib, .1)
 schedkwhen(kDBT[2],0,0, "Crunch",0,ib, .1)
 
-schedkwhen(kDBT[3],0,0, "Snare",0*ib/3/5,ib/3/5, .1, 460)
-schedkwhen(kDBT[3],0,0, "Snare",1*ib/3/5,ib/3/5, .1, 460)
-schedkwhen(kDBT[3],0,0, "Snare",2*ib/3/5,ib/3/5, .1, 460)
-schedkwhen(kDBT[3],0,0, "Snare",3*ib/3/5,ib/3/5, .1, 460)
-schedkwhen(kDBT[3],0,0, "Snare",4*ib/3/5,ib/3/5, .1, 460)
+schedkwhen(kDBT[3],0,0, "Cabasa",0*ib/3/5,ib/3/5, .1)
+schedkwhen(kDBT[3],0,0, "Cabasa",1*ib/3/5,ib/3/5, .1)
+schedkwhen(kDBT[3],0,0, "Cabasa",2*ib/3/5,ib/3/5, .1)
+schedkwhen(kDBT[3],0,0, "Cabasa",3*ib/3/5,ib/3/5, .1)
+schedkwhen(kDBT[3],0,0, "Cabasa",4*ib/3/5,ib/3/5, .1)
 
-schedkwhen(kDBT[3],0,0, "Snare",1*ib/3,ib/3, .1, 460)
-schedkwhen(kDBT[3],0,0, "Snare",2*ib/3,ib/3, .1, 460)
+schedkwhen(kDBT[3],0,0, "Cabasa",1*ib/3,ib/3, .2)
+;schedkwhen(kDBT[3],0,0, "Cabasa",1*ib/3+ib/6,ib/3/2, .1)
+schedkwhen(kDBT[3],0,0, "Cabasa",2*ib/3,ib/3, .1)
 ;bass------------------------------
 kFrq  = $TEMPO*4/60
 kBT   metro kFrq ;BassTrigger
