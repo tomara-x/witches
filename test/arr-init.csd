@@ -13,14 +13,39 @@ ksmps   =   441
 nchnls  =   1
 0dbfs   =   1
 
-instr Main
-print(pcount())
-print p4
-print p5
+instr Main1
+iArr[] = fillarray(13, 42, 69, 105)
+kFlag init 0
+if kFlag == 0 then
+    kFlag = 1
+    kArr[] = iArr
+endif
+kArr[3] = kArr[3] + 1
+printarray(kArr)
 endin
 
-schedule("Main", 0, 1, 42, 69)
-schedule("Main", 1, 1, 42)
+instr Main2
+iArr[] = fillarray(13, 42, 69, 105)
+kFlag init 0
+kArr[] = iArr
+kArr[3] = kArr[3] + 1
+printarray(kArr)
+endin
+
+instr Main3
+iArr[] = fillarray(13, 42, 69, 105)
+if timeinstk() == 1 then
+    kArr[] = iArr
+endif
+kArr[3] = kArr[3] + 1
+printarray(kArr)
+endin
+
 </CsInstruments>
+<CsScore>
+i"Main3" 0 .1
+e
+</CsScore>
 </CsoundSynthesizer>
+
 
