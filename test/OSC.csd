@@ -30,6 +30,13 @@ out aSig1+aSig2+aSig3
 endin
 schedule("Main", 0, 60)
 
+;;kmessage, kxy0[] OSClisten gicharles, "/xy0", "ff"
+;kbutton0 init 0
+;kans OSClisten gicharles, "/button0", "f", kbutton0
+;ktrig0 trigger kbutton0, .5, 2
+;printk2 ktrig0
+;schedkwhen(ktrig0,0,0, "Bass",0,5,-9,kBTP[0], .8,.9,.6)
+
 </CsInstruments>
 </CsoundSynthesizer>
 
