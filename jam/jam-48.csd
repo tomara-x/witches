@@ -54,6 +54,25 @@ endin
 instr Bar
 endin
 
+instr Grain
+kGFrq = 5
+kGPhs = 0
+kFMD, kPMD = 50, .0
+kGDur = .5
+kGDens = 5
+iMaxOvr = 3
+iWav ftgenonce 0,0,2^14,9, 1,1,0, 2,.2,0, 3,.1,0
+iWin ftgenonce 0,0,2^10,20, 2, 1
+kFRPow, kPRPow = 1, 1
+
+aSig grain3 kGFrq,kGPhs, kFMD,kPMD, kGDur,kGDens, iMaxOvr,
+            iWav, iWin, kFRPow,kPRPow, 420, 16
+sbus_mix 3, aSig*db(-6)
+gaVerbInL += aSig*db(-12)
+gaVerbInR += aSig*db(-12)
+endin
+schedule("Grain", 0, -1)
+
 gaVerbInL,gaVerbInR init 0
 instr Verb
 kRoomSize   init      0.65     ; room size (range 0 to 1)
@@ -82,6 +101,7 @@ kBTS, kBTP[], kBTT[] Taphath kBT, kBN,kBG,kBQ, iBS
 kBTR[] init 8 ;BassTaphyReps
 kBTR[kBTS] = kBTR[kBTS] + kBTT[kBTS]
 kp3 = 1/kBassFrq
+/*
 if kBTR[0] % 2 == 1 then
 schedkwhen(kBTT[0],0,0, "Bass",0,kp3,-9,kBTP[0], .8,.9,.9)
 schedkwhen(kBTT[3],0,0, "Bass",0,kp3,-9,kBTP[3], .7,.9,.9)
@@ -96,11 +116,11 @@ endif
 if kBTR[0] > 16 then
 schedkwhen(kBTT[kBTS],0,0, "Bass",0,kp3,-24,kBTP[kBTS]*4, .6,.8,.8, 10, 40)
 endif
+*/
 endin
 
 instr Out
 aL, aR sbus_out
-;kSM = linseg(1, p3/2, .01, p3/2, 1)
 kSM = 1
 aL limit aL, -kSM, kSM
 aR limit aR, -kSM, kSM
