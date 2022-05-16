@@ -14,8 +14,10 @@ nchnls  =   2
 0dbfs   =   1
 
 #define TEMPO #131#
+#define FRQ #$TEMPO/60#
+#define Beat #1/$FRQ#
+
 #include "../sequencers.orc"
-;#include "../oscillators.orc"
 #include "../mixer.orc"
 #include "../utils.orc"
 
@@ -51,22 +53,26 @@ gaVerbInL += aSig*db(-24)
 gaVerbInR += aSig*db(-24)
 endin
 
-instr Bar
-endin
-
 instr Grain
-kGFrq = 5
+seed 420 ;good for the environment
+iScale ftgenonce 0,0,-7*2,-51, 7,2,cpspch(6), 0,
+1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12) ;BassScale
+kGFrq = table(randomi:k(0, 14, $FRQ/4), iScale)
 kGPhs = 0
-kFMD, kPMD = 50, .0
-kGDur = .5
-kGDens = 5
-iMaxOvr = 3
+kFMD = randomi(0, 1, $FRQ/4)
+kPMD = .0
+kGDur = randomh(0.01, .7, $FRQ/4)
+kGDens = randomh(3, 16, $FRQ/2)
+iMaxOvr = 20
 iWav ftgenonce 0,0,2^14,9, 1,1,0, 2,.2,0, 3,.1,0
-iWin ftgenonce 0,0,2^10,20, 2, 1
+iWin ftgenonce 0,0,2^14,20, 2, 1
 kFRPow, kPRPow = 1, 1
-
 aSig grain3 kGFrq,kGPhs, kFMD,kPMD, kGDur,kGDens, iMaxOvr,
-            iWav, iWin, kFRPow,kPRPow, 420, 16
+            iWav, iWin, kFRPow,kPRPow, getseed(), 16
+;aSig pdhalf aSig, randomi:k(-.9, -.4, $FRQ/4)
+iTanh ftgenonce 0,0,2^10+1,"tanh", -5, 5, 0
+aSig distort aSig, randomi:k(.05, .4, $FRQ/4), iTanh
+aSig *= db(-3)
 sbus_mix 3, aSig*db(-6)
 gaVerbInL += aSig*db(-12)
 gaVerbInR += aSig*db(-12)
@@ -82,43 +88,6 @@ sbus_mix 15, aVerbL, aVerbR
 clear gaVerbInL,gaVerbInR
 endin
 
-instr Main
-;drums------------------------------
-ib = 60/$TEMPO ;duration of one beat
-kDrmFrq = $TEMPO/60
-kDT     metro kDrmFrq ;DrumTrigger
-kDC[]   fillarray 1, 1, 1, 1, 1, 1, 1, 1
-kDBS, kDBT[] utBasemath kDT, kDC
-;bass------------------------------
-kBassFrq = $TEMPO*4/60
-kBT metro kBassFrq ;BassTrigger
-iBS ftgenonce 0,0,-7*2,-51, 7,2,cpspch(6), 0,
-1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12) ;BassScale
-kBN[] fillarray 1, 1, 1, 0, 2, 4, 4, 3  ;BassNotes
-kBG[] fillarray 0, 2, 0, 0, 0, 1, 0, 2  ;BassGain (transposition)
-kBQ[] fillarray 0, 0, 0, 0, 0, 0, 0, 0  ;BassQueue
-kBTS, kBTP[], kBTT[] Taphath kBT, kBN,kBG,kBQ, iBS
-kBTR[] init 8 ;BassTaphyReps
-kBTR[kBTS] = kBTR[kBTS] + kBTT[kBTS]
-kp3 = 1/kBassFrq
-/*
-if kBTR[0] % 2 == 1 then
-schedkwhen(kBTT[0],0,0, "Bass",0,kp3,-9,kBTP[0], .8,.9,.9)
-schedkwhen(kBTT[3],0,0, "Bass",0,kp3,-9,kBTP[3], .7,.9,.9)
-schedkwhen(kBTT[7],0,0, "Bass",0,kp3,-9,kBTP[7], .8,.7,.9)
-elseif kBTR[0] % 2 == 0 then
-schedkwhen(kBTT[2],0,0, "Bass",0,kp3,-9,kBTP[2], .8,.9,.9)
-schedkwhen(kBTT[4],0,0, "Bass",0,kp3,-9,kBTP[4], .7,.9,.9)
-endif
-if kBTR[0] > 8 then
-schedkwhen(kBTT[kBTS],0,0, "Bass",0,kp3,-24,kBTP[kBTS]*2, .6,.8,.8, 10, 40)
-endif
-if kBTR[0] > 16 then
-schedkwhen(kBTT[kBTS],0,0, "Bass",0,kp3,-24,kBTP[kBTS]*4, .6,.8,.8, 10, 40)
-endif
-*/
-endin
-
 instr Out
 aL, aR sbus_out
 kSM = 1
@@ -130,8 +99,7 @@ endin
 </CsInstruments>
 <CsScore>
 i"Verb" 0 -1
-i"Main" 0 [4*64*(60/131)]
-i"Out"  0 [4*64*(60/131)+4]
+i"Out"  0 [4*64*(60/131)]
 e
 </CsScore>
 </CsoundSynthesizer>
