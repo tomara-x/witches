@@ -55,9 +55,10 @@ endin
 
 instr Grain
 seed 420 ;good for the environment
-iScale ftgenonce 0,0,-7*2,-51, 7,2,cpspch(6), 0,
+iScale ftgenonce 0,0,-7*4,-51, 7,2,cpspch(6), 0,
 1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12) ;BassScale
-kGFrq = table(randomi:k(0, 14, $FRQ/4), iScale)
+;kGFrq = table(randomi:k(0, 7*4, $FRQ/4), iScale)
+kGFrq = table(rspline(0, 7*4, $FRQ/16, $FRQ), iScale)
 kGPhs = 0
 kFMD = randomi(0, 1, $FRQ/4)
 kPMD = .0
@@ -72,7 +73,7 @@ aSig grain3 kGFrq,kGPhs, kFMD,kPMD, kGDur,kGDens, iMaxOvr,
 ;aSig pdhalf aSig, randomi:k(-.9, -.4, $FRQ/4)
 iTanh ftgenonce 0,0,2^10+1,"tanh", -5, 5, 0
 aSig distort aSig, randomi:k(.05, .4, $FRQ/4), iTanh
-aSig *= db(-3)
+aSig *= db(-24)
 sbus_mix 3, aSig*db(-6)
 gaVerbInL += aSig*db(-12)
 gaVerbInR += aSig*db(-12)
