@@ -16,42 +16,7 @@ nchnls  =   2
 #define TEMPO #131#
 #define FRQ #$TEMPO/60#
 #define Beat #1/$FRQ#
-
-#include "../sequencers.orc"
 #include "../mixer.orc"
-#include "../utils.orc"
-
-instr Kick
-;p4, p5, p6, p7 : freq decay, freq[i], freq[f], effect
-iIFrq, iEFrq = p5, p6
-aAEnv   expseg 1,p3,0.0001
-aFEnv   expseg iIFrq,p4,iEFrq
-aSig    oscili aAEnv, aFEnv
-aSig    moogladder aSig, p5*4, .2
-if p7 == 1 then
-    aSig pdhalf aSig, -0.7
-endif
-sbus_mix 1, aSig*db(-3), aSig*db(-6)
-gaVerbInL += aSig*db(-3)
-gaVerbInR += aSig*db(-3)
-endin
-
-instr Bass
-iPlk    =    p6 ;(0 to 1)
-kAmp    =    ampdb(p4)
-iCps    =    p5 ;cpspch(p5)
-kPick   =    p7 ;pickup point
-kRefl   =    p8 ;rate of decay ]0,1[
-aSig    wgpluck2 iPlk,kAmp,iCps,kPick,kRefl
-if pcount() > 8 then
-    aSig diode_ladder aSig, p5*8, p9, 1, p10
-endif
-aEnv    linseg 0, 0.002, 1, p3-0.013, 1, 0.005, 0
-aSig *= aEnv
-sbus_mix 2, aSig*db(-3)
-gaVerbInL += aSig*db(-24)
-gaVerbInR += aSig*db(-24)
-endin
 
 instr Grain
 seed 420 ;good for the environment
