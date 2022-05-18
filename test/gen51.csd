@@ -19,10 +19,10 @@ instr 1
 
 ;it IS the ratio of interval covered before repeating, and that's why it's a mult!
 ;holup i think the opposite is more accurate?
+;CLOSEST!
 ;it IS a ratio multiplier after each cycle through the ratios, and that's why
 ;it is the interval covered by the ratios as they are given?
 
-;FORGET ALL THE ABOVE!
 ;static int gen51(FGDATA *ff, FUNC *ftp)    /* Gab 1/3/2005 */
 ;{
 ;    int     j, notenum, grade, numgrades, basekeymidi, nvals;
@@ -69,8 +69,25 @@ instr 1
 ;doesn't that mean it's multiplying by the step ratio twice? in theory that is?
 ;in practice that is not what's happening! ugh! there's something i'm missing
 
+;yeah, i'm not wrong!
+;print(pchoct(octcps(440*2^(0/12)*2^(0/12))))
+;the realization is gonna be epic!
+iv0 = pchoct(octcps(440)) 
+iv1 = pchoct(octcps(440*2^(1/12)))
+iv2 = pchoct(octcps(440*2^(1/12)*2^(1/12)))
+print(iv0, iv1, iv2)
 
-iFt ftgen 0,0,-12*3,-51,12,2,cpspch(6),0,
+;it's weird because at interval 0 the first cycle through the ratios is accurate,
+;and then we get -inf... i'm getting more questions!
+;iFt ftgen 0,0,-(12*3+1),-51,12,0,cpspch(6),0, (with the 12 ratios)
+
+;at interval 1 it's just repeating the ratios for the length
+
+;okay don't even wanna think about negative intervals lol
+
+;there is no truth
+
+iFt ftgen 0,0,-(12*3+1),-51,12,-2,cpspch(6),0,
 2^(0/12),
 2^(1/12),
 2^(2/12),
@@ -98,6 +115,7 @@ iFt ftgen 0,0,-12*3,-51,12,2,cpspch(6),0,
 ;must you specify all optional parameters just to use last one?!
 ;ftprint(iFt, 1, 0, ftlen(iFt), 1, 1)
 
+;maybe a test print is always a good idea to check what's actually happening
 iC = 0
 while iC < ftlen(iFt) do
     ;print(table(iC, iFt), pchoct(octcps(table(iC, iFt))), octcps(table(iC, iFt)))
