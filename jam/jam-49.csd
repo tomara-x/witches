@@ -56,14 +56,14 @@ endin
 instr Grain
 seed 420 ;good for the environment
 iScale ftgenonce 0,0,-7*4,-51, 7,2,cpspch(6), 0,
-1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12) ;BassScale
-;kGFrq = table(randomi:k(0, 7*4, $FRQ/4), iScale)
-kGFrq = table(rspline(0, 7*4, $FRQ/16, $FRQ), iScale)
+1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
+kGFrq = table(randomh:k(0, 7*4, $FRQ/4), iScale)
+;kGFrq = table(rspline(0, 7*4, $FRQ/16, $FRQ), iScale)
 kGPhs = 0
 kFMD = randomi(0, 1, $FRQ/4)
 kPMD = .0
-kGDur = randomh(0.01, .7, $FRQ/4)
-kGDens = randomh(3, 16, $FRQ/2)
+kGDur = randomi(0.01, .7, $FRQ/4)
+kGDens = randomi(3, 16, $FRQ/2)
 iMaxOvr = 20
 iWav ftgenonce 0,0,2^14,9, 1,1,0, 2,.2,0, 3,.1,0
 iWin ftgenonce 0,0,2^14,20, 2, 1

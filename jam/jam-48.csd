@@ -21,7 +21,7 @@ nchnls  =   2
 instr Grain
 seed 420 ;good for the environment
 iScale ftgenonce 0,0,-7*4,-51, 7,2,cpspch(6), 0,
-1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12) ;BassScale
+1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
 ;kGFrq = table(randomi:k(0, 7*4, $FRQ/4), iScale)
 kGFrq = table(rspline(0, 7*4, $FRQ/16, $FRQ), iScale)
 kGPhs = 0
