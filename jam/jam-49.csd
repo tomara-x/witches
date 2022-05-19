@@ -15,54 +15,26 @@ nchnls  =   2
 
 #define TEMPO #131#
 #define FRQ #$TEMPO/60#
-#define Beat #1/$FRQ#
+;#define Beat #1/$FRQ#
 
-#include "../sequencers.orc"
+;#include "../sequencers.orc"
 #include "../mixer.orc"
-#include "../utils.orc"
-
-instr Kick
-;p4, p5, p6, p7 : freq decay, freq[i], freq[f], effect
-iIFrq, iEFrq = p5, p6
-aAEnv   expseg 1,p3,0.0001
-aFEnv   expseg iIFrq,p4,iEFrq
-aSig    oscili aAEnv, aFEnv
-aSig    moogladder aSig, p5*4, .2
-if p7 == 1 then
-    aSig pdhalf aSig, -0.7
-endif
-sbus_mix 1, aSig*db(-3), aSig*db(-6)
-gaVerbInL += aSig*db(-3)
-gaVerbInR += aSig*db(-3)
-endin
-
-instr Bass
-iPlk    =    p6 ;(0 to 1)
-kAmp    =    ampdb(p4)
-iCps    =    p5 ;cpspch(p5)
-kPick   =    p7 ;pickup point
-kRefl   =    p8 ;rate of decay ]0,1[
-aSig    wgpluck2 iPlk,kAmp,iCps,kPick,kRefl
-if pcount() > 8 then
-    aSig diode_ladder aSig, p5*8, p9, 1, p10
-endif
-aEnv    linseg 0, 0.002, 1, p3-0.013, 1, 0.005, 0
-aSig *= aEnv
-sbus_mix 2, aSig*db(-3)
-gaVerbInL += aSig*db(-24)
-gaVerbInR += aSig*db(-24)
-endin
+;#include "../utils.orc"
 
 instr Grain
 seed 420 ;good for the environment
-iScale ftgenonce 0,0,-7*4,-51, 7,2,cpspch(6), 0,
-1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
-kGFrq = table(randomh:k(0, 7*4, $FRQ/4), iScale)
-;kGFrq = table(rspline(0, 7*4, $FRQ/16, $FRQ), iScale)
-kGPhs = 0
+iScale ftgenonce 0,0,-7*4,-51, 10,4,cpspch(5), 0,
+2^(00/12),2*2^(00/12),
+2^(02/12),2*2^(02/12),
+2^(05/12),2*2^(06/12),
+2^(08/12),2*2^(08/12),
+2^(10/12),2*2^(10/12)
+;kGFrq = table(phasor:k($FRQ/8)+randomi:k(-.1,.1,$FRQ), iScale, 1)
+kGFrq = table(randomh:k(0,1,$FRQ/2), iScale, 1)
+kGPhs = randomh:k(0,1,$FRQ*32)
 kFMD = randomi(0, 1, $FRQ/4)
 kPMD = .0
-kGDur = randomi(0.01, .7, $FRQ/4)
+kGDur = randomi(0.01, .7, $FRQ/1)
 kGDens = randomi(3, 16, $FRQ/2)
 iMaxOvr = 20
 iWav ftgenonce 0,0,2^14,9, 1,1,0, 2,.2,0, 3,.1,0
@@ -70,13 +42,13 @@ iWin ftgenonce 0,0,2^14,20, 2, 1
 kFRPow, kPRPow = 1, 1
 aSig grain3 kGFrq,kGPhs, kFMD,kPMD, kGDur,kGDens, iMaxOvr,
             iWav, iWin, kFRPow,kPRPow, getseed(), 16
-;aSig pdhalf aSig, randomi:k(-.9, -.4, $FRQ/4)
+aSig pdhalf aSig, randomi:k(-.8, -.4, $FRQ/4)
 iTanh ftgenonce 0,0,2^10+1,"tanh", -5, 5, 0
-aSig distort aSig, randomi:k(.05, .4, $FRQ/4), iTanh
-aSig *= db(-24)
+aSig distort aSig, randomi:k(.05, .9, $FRQ*4), iTanh
+aSig diode_ladder aSig, 10000, 1, 1
 sbus_mix 3, aSig*db(-6)
-gaVerbInL += aSig*db(-12)
-gaVerbInR += aSig*db(-12)
+;gaVerbInL += aSig*db(-12)
+;gaVerbInR += aSig*db(-12)
 endin
 schedule("Grain", 0, -1)
 
