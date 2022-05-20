@@ -78,7 +78,7 @@ iv2 = pchoct(octcps(440*2^(1/12)*2^(1/12)))
 print(iv0, iv1, iv2)
 
 ;it's weird because at interval 0 the first cycle through the ratios is accurate,
-;and then we get -inf... i'm getting more questions!
+;and then we get -inf... i'm getting more questions! (present amy: prolly POWER)
 ;iFt ftgen 0,0,-(12*3+1),-51,12,0,cpspch(6),0, (with the 12 ratios)
 
 ;at interval 1 it's just repeating the ratios for the length
@@ -86,6 +86,10 @@ print(iv0, iv1, iv2)
 ;okay don't even wanna think about negative intervals lol
 
 ;there is no truth
+
+;it's funny because i understand how it will behave, but i don't understand how
+;this code does it!
+
 
 iFt ftgen 0,0,-(12*3+1),-51,12,-2,cpspch(6),0,
 2^(0/12),
