@@ -40,9 +40,7 @@ old stuff I don't use anymore (to keep dependant files working) or just me playi
 
 ---
 
-Here's my [soundcloud](https://soundcloud.com/nope-null) where you can find some renders of some of the files here.
-
-If you make something with these, I'd love love love to have a listen/look! Also if you find anything confusing please feel free to message me 💜
+If you make something with these, I'd love love love to have a listen/look! Also if you find anything confusing please feel free to open a discussion or an issue 💜
 
 ###### Made using [Vim](https://www.vim.org/) and [Csound](https://csound.com/) installed on a [Fedora](https://fedoraproject.org/) ([Void](https://voidlinux.org/) now) proot on [Termux](https://termux.com/) on an android (version 8.1) phone, void of any analog warmth! (except for that fm diagram, i drafted that on paper!) [[setup recipe]](https://github.com/tomara-x/csound-proot-distro-recipe)
 
