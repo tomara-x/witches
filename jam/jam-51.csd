@@ -15,7 +15,7 @@ ksmps   =   42
 nchnls  =   2
 0dbfs   =   1
 
-#define TEMPO #131#
+#define TEMPO #113#
 #define FRQ #($TEMPO/60)#
 #define BEAT #(1/$FRQ)#
 
@@ -25,7 +25,7 @@ nchnls  =   2
 
 instr Grain
 seed 420 ;good for the environment
-iScale ftgenonce 0,0,-7*4,-51, 10,4,cpspch(5), 0,
+iScale ftgenonce 0,0,-7*4,-51, 10,4,cpspch(6), 0,
 2^(00/12),2*2^(00/12),
 2^(02/12),2*2^(02/12),
 2^(05/12),2*2^(05/12),
@@ -42,8 +42,8 @@ kGFrq = kP[kS]
 kGPhs = (lfo:k(1, $FRQ*1, 4)+1)/2
 kFMD = randomi(0, 1, $FRQ/4)
 kPMD = .0
-kGDur = randomh($BEAT/8, $BEAT/4, $FRQ/2);*((lfo:k(1, $FRQ*4, 4)+1.001)/2)
-kGDens = randomi(1/kGDur, 4/kGDur, $FRQ/16)
+kGDur = randomh($BEAT/16, $BEAT/8, $FRQ/4);*((lfo:k(1, $FRQ*4, 4)+1.001)/2)
+kGDens = randomi(4/kGDur, 16/kGDur, $FRQ/8)
 iMaxOvr = 30
 iWav ftgenonce 0,0,2^14,9, 1,1,0, 2,.2,0, 3,.1,0, 4,.05,0
 iWin ftgenonce 0,0,2^14,20, 2, 1
@@ -53,7 +53,7 @@ aSig grain3 kGFrq,kGPhs, kFMD,kPMD, kGDur,kGDens, iMaxOvr,
 aSig pdhalf aSig, randomi:k(-.8, -.4, $FRQ/4)
 iTanh ftgenonce 0,0,2^10+1,"tanh", -5, 5, 0
 aSig distort aSig, (lfo:k(.8, $FRQ)+1)/2, iTanh
-aSig diode_ladder aSig, 18000, 1, 1
+aSig diode_ladder aSig, 10000, 1, 1
 sbus_mix 0, aSig*db(-6)
 ;gaVerbInL += aSig*db(-12)
 ;gaVerbInR += aSig*db(-12)
@@ -80,7 +80,7 @@ endin
 <CsScore>
 i"Verb"  0 -1
 i"Grain" 0 -1
-i"Out"   0 [4*64*(60/131)]
+i"Out"   0 [4*64*(60/113)]
 e
 </CsScore>
 </CsoundSynthesizer>
