@@ -4,7 +4,10 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
+;hail satan
 ;hail satan tonight
+;hail satan
+;hail hail
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m227 ;-m231
@@ -32,6 +35,7 @@ iScale ftgenonce 0,0,-7*4,-51, 10,4,cpspch(6), 0,
 2^(08/12),2*2^(08/12),
 2^(10/12),2*2^(10/12)
 kTrig    metro $FRQ*4
+;4 step
 kNote[]  fillarray 0,  1,  3,  2,  2,  4,  4,  4
 kTrans[] fillarray 1,  1,  3,  0,  0,  1,  9,  6
 kQueue[] fillarray 0,  0,  0,  0,  0,  0,  0,  0
@@ -67,6 +71,9 @@ aVerbL,aVerbR freeverb gaVerbInL,gaVerbInR,kRoomSize,kHFDamp
 sbus_mix 15, aVerbL, aVerbR
 clear gaVerbInL,gaVerbInR
 endin
+
+;a "fuck with the stereo field" instr
+;bform for rotation?
 
 instr Out
 aL, aR sbus_out
