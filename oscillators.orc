@@ -6,6 +6,8 @@
 
 ;phase modulation oscillator
 ;syntax: ares Pmoscili xamp, kfreq [,aphase] [,ifn]
+;note: feedback is not done sample by sample here
+;using it without feedback is fine, but with makes it ksmps dependent
 opcode Pmoscili, a, kkaj
 kamp, kfreq, aphs, ifn xin
 acarrier    phasor kfreq
