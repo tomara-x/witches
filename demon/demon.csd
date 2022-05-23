@@ -6,6 +6,7 @@
 
 // Engine settings
 // run using: 'csound demon.csd'
+// and edit/send from the 'demon.orc'
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin --port=10000 -m231 ;-t128

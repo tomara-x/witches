@@ -10,6 +10,7 @@ I execute chunks of this in vim using:
 with visual mode range selected, or:
 :.w !nc -u 127.0.0.1 10000 -c
 for executing the current line
+you can make vim macros for this stuff
 */
 
 schedule("clock", 0, -1)
@@ -33,7 +34,9 @@ endin
 
 {
 #define TEMPO #128# ;"parser failed due to no input" when executed alone (but works)
-#include "../opcodes.orc"
+#include "../sequencers.orc"
+#include "../oscillators.orc"
+#include "../utils.orc"
 #include "../modular-effects.orc"
 instr clock
 gk_clock_out metro $TEMPO/60
@@ -82,6 +85,7 @@ event "i","t2",0,8, 0,0, -4,02, 8,-4, -4,2, -8,3, .14,.04,.04,.08,.01
 event_i "i","t2",0,8, 0,0, -4,02, 8,-4, -4,2, -8,3, .14,.04,.04,.08,.01
 
 ;why is duration still in seconds though even with a t statement in the csd?
+;^ cause realtime events don't folow the t statement
 ;             SM LM  1i 1f 2i 2f 3i 3f 4i 4f op1             op5
 $i"t2" 0  08  0  0   -4 02 08 -4 -4 02 -8 03 .14 .04 .04 .08 .01
 $i"t2" 0  08  0  0   -4 02 08 -4 -4 02 -8 03 .14 .04 .04 .08 .05
