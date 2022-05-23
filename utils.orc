@@ -23,7 +23,7 @@ endif
 xout kout
 endop
 
-
+// this can be improved. also steven has audio-rate clock dividers
 opcode ClkDivp, k, kko
 /*
 Clock divider with phase input.
