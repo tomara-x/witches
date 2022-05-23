@@ -80,51 +80,51 @@ kTrigArr[]  init    ilen
 
 ;do this only on the first k-cycle the opcode runs
 kfirst  init 1
-ckgoto kfirst!=1, PastKOne
-kfirst = 0
-;store initial notes
-kmem = kNoteIndx
-;initial active step
-if kStepMode == 0 then
-    kAS = (ilen-1)%ilen
-else
-    kAS = 0
-endif
-;initialize the pitch array
-kn = 0
-while kn < ilen do
-    ; limit mode
-    if kLmtMode == 1 then
-        if kIntrp == 1 then
-            kPitchArr[kn] = tableikt(limit(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn)
-        elseif kIntrp == 2 then
-            kPitchArr[kn] = tablexkt(limit(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,4)
-        else
-            kPitchArr[kn] = tablekt(limit(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn)
-        endif
-    ; mirror mode
-    elseif kLmtMode == 2 then
-        if kIntrp == 1 then
-            kPitchArr[kn] = tableikt(mirror(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn)
-        elseif kIntrp == 2 then
-            kPitchArr[kn] = tablexkt(mirror(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,4)
-        else
-            kPitchArr[kn] = tablekt(mirror(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn)
-        endif
-    ; wrap mode (defaut)
+if kfirst == 1 then
+    kfirst = 0
+    ;store initial notes
+    kmem = kNoteIndx
+    ;initial active step
+    if kStepMode == 0 then
+        kAS = (ilen-1)%ilen
     else
-        if kIntrp == 1 then
-            kPitchArr[kn] = tableikt(wrap(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,0,1)
-        elseif kIntrp == 2 then
-            kPitchArr[kn] = tablexkt(wrap(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,4,0,0,1)
-        else
-            kPitchArr[kn] = tablekt(wrap(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,0,1)
-        endif
+        kAS = 0
     endif
-    kn += 1
-od
+    ;initialize the pitch array
+    kn = 0
+    while kn < ilen do
+        ; limit mode
+        if kLmtMode == 1 then
+            if kIntrp == 1 then
+                kPitchArr[kn] = tableikt(limit(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn)
+            elseif kIntrp == 2 then
+                kPitchArr[kn] = tablexkt(limit(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,4)
+            else
+                kPitchArr[kn] = tablekt(limit(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn)
+            endif
+        ; mirror mode
+        elseif kLmtMode == 2 then
+            if kIntrp == 1 then
+                kPitchArr[kn] = tableikt(mirror(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn)
+            elseif kIntrp == 2 then
+                kPitchArr[kn] = tablexkt(mirror(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,4)
+            else
+                kPitchArr[kn] = tablekt(mirror(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn)
+            endif
+        ; wrap mode (defaut)
+        else
+            if kIntrp == 1 then
+                kPitchArr[kn] = tableikt(wrap(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,0,1)
+            elseif kIntrp == 2 then
+                kPitchArr[kn] = tablexkt(wrap(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,4,0,0,1)
+            else
+                kPitchArr[kn] = tablekt(wrap(kNoteIndx[kn],kMin[kn],kMax[kn]),kFn,0,0,1)
+            endif
+        endif
+        kn += 1
+    od
+endif
 
-PastKOne:
 kTrigArr = 0 ;clear trigger outputs
 if kTrig != 0 then
     ; go to the next step
@@ -259,22 +259,22 @@ kTrigArr[]  init    ilen
 
 ;do this only on the first k-cycle the opcode runs
 kfirst  init 1
-ckgoto kfirst!=1, PastKOne
-kfirst = 0
-;initial active step
-if kStepMode == 0 then
-    kAS = wrap(iInitStep-1, 0, ilen)%ilen ;Amy, listen! It's important! Leave it!
-else
-    kAS = wrap(iInitStep, 0, ilen)
+if kfirst == 1 then
+    kfirst = 0
+    ;initial active step
+    if kStepMode == 0 then
+        kAS = wrap(iInitStep-1, 0, ilen)%ilen ;Amy, listen! It's important! Leave it!
+    else
+        kAS = wrap(iInitStep, 0, ilen)
+    endif
+    ;initialize the pitch array
+    kn = 0
+    while kn < ilen do
+        kPitchArr[kn] = table(kNoteIndx[kn], iFn, 0, 0, 1)
+        kn += 1
+    od
 endif
-;initialize the pitch array
-kn = 0
-while kn < ilen do
-    kPitchArr[kn] = table(kNoteIndx[kn], iFn, 0, 0, 1)
-    kn += 1
-od
 
-PastKOne:
 kTrigArr    =   0
 if kTrig != 0 then
     ;move to next step
@@ -364,35 +364,35 @@ kDivArr[]       init    ilen
 
 ;first k-cycle stuff
 kfirst init 1
-ckgoto kfirst!=1, PastKOne
-kfirst = 0
-;store initial state
-kmem1[] = kLength
-kmem2[] = kDivision
-;initialize active step
-if kStepMode == 0 then
-    kAS = (ilen-1)%ilen
-else
-    kAS = 0
-endif
-;step biz
-knewlen[kAS] = klengainsum[kAS]+kLength[kAS]
-knewdiv[kAS] = kdivgainsum[kAS]+kDivision[kAS]
-; limit mode
-if kLmtMode == 1 then
-    knewlen[kAS] = limit(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
-    knewdiv[kAS] = limit(knewdiv[kAS], 0, kMaxDiv[kAS])
-; mirror mode
-elseif kLmtMode == 2 then
-    knewlen[kAS] = mirror(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
-    knewdiv[kAS] = mirror(knewdiv[kAS], 0, kMaxDiv[kAS])
-; wrap mode
-else
-    knewlen[kAS] = wrap(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
-    knewdiv[kAS] = wrap(knewdiv[kAS], 0, kMaxDiv[kAS])
+if kfirst == 1 then
+    kfirst = 0
+    ;store initial state
+    kmem1[] = kLength
+    kmem2[] = kDivision
+    ;initialize active step
+    if kStepMode == 0 then
+        kAS = (ilen-1)%ilen
+    else
+        kAS = 0
+    endif
+    ;step biz
+    knewlen[kAS] = klengainsum[kAS]+kLength[kAS]
+    knewdiv[kAS] = kdivgainsum[kAS]+kDivision[kAS]
+    ; limit mode
+    if kLmtMode == 1 then
+        knewlen[kAS] = limit(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
+        knewdiv[kAS] = limit(knewdiv[kAS], 0, kMaxDiv[kAS])
+    ; mirror mode
+    elseif kLmtMode == 2 then
+        knewlen[kAS] = mirror(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
+        knewdiv[kAS] = mirror(knewdiv[kAS], 0, kMaxDiv[kAS])
+    ; wrap mode
+    else
+        knewlen[kAS] = wrap(knewlen[kAS], kMinLen[kAS], kMaxLen[kAS])
+        knewdiv[kAS] = wrap(knewdiv[kAS], 0, kMaxDiv[kAS])
+    endif
 endif
 
-PastKOne:
 kfreq = 1/(kTimeUnit == 0? 1 : abs(kTimeUnit))
 kTrigArr = 0
 kDivArr = 0
@@ -500,16 +500,16 @@ kTrigArr[]  init    ilen
 
 ;first k-cycle stuff
 kfirst init 1
-ckgoto kfirst!=1, PastKOne
-kfirst = 0
-;initialize active step
-if kStepMode == 0 then
-    kAS = wrap(iInitStep-1, 0, ilen)%ilen
-else
-    kAS = wrap(iInitStep, 0, ilen)
+if kfirst == 1 then
+    kfirst = 0
+    ;initialize active step
+    if kStepMode == 0 then
+        kAS = wrap(iInitStep-1, 0, ilen)%ilen
+    else
+        kAS = wrap(iInitStep, 0, ilen)
+    endif
 endif
 
-PastKOne:
 kfreq = 1/(kTimeUnit == 0? 1 : abs(kTimeUnit))
 kTrigArr = 0
 ktrig metro kfreq/(kLength[kAS] > 0? kLength[kAS] : 1)
@@ -584,18 +584,18 @@ kcnt        init    0
 
 ;first k-cycle stuff
 kfirst init 1
-ckgoto kfirst!=1, PastKOne
-kfirst = 0
-;store initial state
-kmem1[] = kCount
-;pick initial step
-if kStepMode == 0 then
-    kAS = (ilen-1)%ilen
-else
-    kAS = 0
+if kfirst == 1 then
+    kfirst = 0
+    ;store initial state
+    kmem1[] = kCount
+    ;pick initial step
+    if kStepMode == 0 then
+        kAS = (ilen-1)%ilen
+    else
+        kAS = 0
+    endif
 endif
 
-PastKOne:
 kTrigArr = 0
 if kcnt < 1 && kTrig != 0 then
     ; go to the next step
@@ -715,16 +715,16 @@ kcnt        init    0
 
 ;first k-cycle stuff
 kfirst init 1
-ckgoto kfirst!=1, PastKOne
-kfirst = 0
-;pick initial step
-if kStepMode == 0 then
-    kAS = wrap(iInitStep-1, 0, ilen)%ilen
-else
-    kAS = wrap(iInitStep, 0, ilen)
+if kfirst == 1 then
+    kfirst = 0
+    ;pick initial step
+    if kStepMode == 0 then
+        kAS = wrap(iInitStep-1, 0, ilen)%ilen
+    else
+        kAS = wrap(iInitStep, 0, ilen)
+    endif
 endif
 
-PastKOne:
 kTrigArr = 0
 if kcnt < 1 && kTrig != 0 then
     ; go to the next step
