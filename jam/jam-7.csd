@@ -16,7 +16,7 @@ nchnls  =   2
 #define TEMPO #86#
 #include "../opcodes.orc"
 #include "../function-tables.orc"
-#include "../send-effects.orc"
+#include "../effects/send-effects.orc"
 
 instr kick
 iifrq   = 230

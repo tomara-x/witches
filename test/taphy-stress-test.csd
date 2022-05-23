@@ -16,12 +16,13 @@ nchnls  =   2
 #define TEMPO #128#
 #include "../opcodes.orc"
 #include "../function-tables.orc"
-#include "../send-effects.orc"
+#include "../effects/send-effects.orc"
 alwayson "taphy"
 
 instr taphy
 ktrig   metro $TEMPO*4/60
 ;lol finally started to "Buffer uderrun in RT audio out" with 16384 long arrs!
+;this is done on a 1.8GHz octa-core cpu (running on proot so i think single thread)
 knote[] init 2^14
 kgain[] init 2^14
 kQ[]    init 2^14
