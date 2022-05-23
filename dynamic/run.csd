@@ -11,6 +11,8 @@
 //but can be useful with the Q of basma, or slower recompile rate
 //also it'd be great for testing out drone things with faster rate
 //or might figure out a way to trigger it manually so it'd be like a refresh button
+
+//^ lol i didn't know about blue back then
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin
