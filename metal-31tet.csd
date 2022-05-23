@@ -4,7 +4,9 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-; This one's for you, K (when it's done and epic)
+//This one's for you, K (when it's done and epic)
+//i wanna do it, but this is too cute to edit!
+//when you're back here start the 31 stuff in new file
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
@@ -15,9 +17,18 @@ ksmps   =   42 ;kr=1050
 nchnls  =   2
 0dbfs   =   1
 
-;lmao this file is a mess!
+#define TEMPO #256#
+#include "function-tables.orc"
+#include "send-effects2.orc"
+#include "sequencers.orc"
+#include "oscillators.orc"
+#include "utils.orc"
+alwayson "verb"
+alwayson "dist"
+;alwayson "taphy"
+
+;would sound cute with a distort and pdhalf
 instr Hsboscil ;originally stolen from floss example 04A13_hsboscil.csd
-;km, kdata[] OSClisten gicharles, "/orientation", "fff" ;that was nuts
 iSin    ftgenonce 0, 0, 2^10, 10, 1
 iWindow ftgenonce 0, 0, 2^10, -19, 1, 0.5, 270, 0.5
 iWav    ftgenonce 0, 0, 2^18, 9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
@@ -38,14 +49,6 @@ endif
 aEnv linseg 1, p3, 0
 gaHsboscilOut = aSig*aEnv
 endin
-
-#define TEMPO #256#
-#include "function-tables.orc"
-#include "opcodes.orc"
-#include "send-effects2.orc"
-alwayson "verb"
-alwayson "dist"
-;alwayson "taphy"
 
 instr taphy
 ktrig   metro $TEMPO/4/60
@@ -128,12 +131,13 @@ kpick   init        0.8 ;pickup point
 krefl   init        p5 ;rate of decay? ]0,1[
 asig    wgpluck2    iplk,kamp,icps,kpick,krefl
 kenv2   linsegr     0,0.003,1,p3,1,p6,0 ;declick
-asig    *=          kenv2
+asig    *=          kenv2*.8
         outs        asig,asig
 gaDstSend += asig*p7
 gaRvbSend += asig*0.2
 endin
 
+;let's never ever do that again!
 instr 1
 ktrig   metro $TEMPO*p5/60
 kcnt[]  fillarray p6, p7, p8, p9
