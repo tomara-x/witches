@@ -4,7 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-;This one's for my witches 
+//This one's for my witches
 <CsoundSynthesizer>
 <CsOptions>
 ; RT/Render
@@ -18,7 +18,9 @@ nchnls  =   1
 0dbfs   =   1
 
 #include "function-tables.orc"
-#include "opcodes.orc"
+#include "sequencers.orc"
+#include "oscillators.orc"
+#include "utils.orc"
 
 instr 1
 ktmpo       init    137 ;bpm
