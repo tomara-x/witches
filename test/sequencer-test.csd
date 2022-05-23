@@ -9,7 +9,7 @@ ksmps   =   42
 nchnls  =   1
 0dbfs   =   1
 
-#include "../opcodes.orc"
+#include "../sequencers.orc"
 
 instr Taphy
 iScale ftgenonce 0,0,-7*4,-51, 7,2,cpspch(6),0,

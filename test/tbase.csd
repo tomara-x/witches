@@ -10,7 +10,8 @@ sr      =   44100
 ksmps   =   42 ;kr=1050
 nchnls  =   1
 0dbfs   =   1
-#include "opcodes.orc"
+
+#include "../sequencers.orc"
 
 instr 1
 ktrig1  metro 120*15/60

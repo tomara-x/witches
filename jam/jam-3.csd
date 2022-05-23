@@ -23,7 +23,9 @@ nchnls  =   2
 #define TEMPO #128#
 
 #include "../function-tables.orc"
-#include "../opcodes.orc"
+#include "../sequencers.orc"
+#include "../oscillators.orc"
+#include "../utils.orc"
 
 gaRvbSend init 0
 alwayson "verb"
@@ -51,7 +53,7 @@ knotes[]    fillarray   0,    9,    0,    4
 kincs[]     fillarray   1,    3,    3,    0
 kQ[]        fillarray   0,    0,    0,    0
 
-ktAS, kpitch[], kttrig[] Taphath kbdiv[kbAS], knotes, kincs, kQ, giud
+ktAS, kpitch[], kttrig[] Taphath kbdiv[kbAS], knotes, kincs, kQ, giud4
 kQ[ktAS] = kQ[ktAS] * 0
 
 ;schedkwhen  kbdiv[kbAS]-kbdiv[4], 0, 0, "pluck1", 0, .1, kpitch[ktAS], 0.7, 0.0

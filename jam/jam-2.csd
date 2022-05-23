@@ -19,7 +19,9 @@ nchnls  =   2
 
 #define TEMPO #128#
 #include "../function-tables.orc"
-#include "../opcodes.orc"
+#include "../sequencers.orc"
+#include "../oscillators.orc"
+#include "../utils.orc"
 gaRvbSend init 0
 alwayson "verb"
 gaDstSend init 0

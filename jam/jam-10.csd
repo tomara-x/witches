@@ -17,7 +17,9 @@ nchnls  =   2
 0dbfs   =   1
 
 #define TEMPO #128#
-#include "../opcodes.orc"
+#include "../sequencers.orc"
+#include "../oscillators.orc"
+#include "../utils.orc"
 #include "../function-tables.orc"
 #include "../effects/send-effects.orc"
 alwayson "taphy"

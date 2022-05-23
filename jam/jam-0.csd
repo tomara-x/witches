@@ -20,8 +20,10 @@ ksmps   =   42
 nchnls  =   2
 0dbfs   =   1
 
-#include "function-tables.orc"
-#include "opcodes.orc"
+#include "../function-tables.orc"
+#include "../sequencers.orc"
+#include "../oscillators.orc"
+#include "../utils.orc"
 
 gaRvbSend init 0
 alwayson "verb"
@@ -38,7 +40,7 @@ ktrig       metro       113/2/60
 knotes[]    fillarray   0,    7,    14,   21
 kincs[]     fillarray   0,    0,    0,    4
 kQ[]        fillarray   0,    0,    0,    0
-kAS, kpitches[], ktrigs[] Taphath ktrig, knotes, kincs, kQ, gifn1, 0
+kAS, kpitches[], ktrigs[] Taphath ktrig, knotes, kincs, kQ, giud4, 0
 kQ[kAS]     = kQ[kAS] * 0
 
 ;kAS, kpitches[], ktrigs[] uTaphath ktrig, knotes, gifn1, 0
@@ -133,7 +135,7 @@ endin
 <CsScore>
 ;read the manual, amy!
 t       0       113
-i3      0       64
+i1      0       64
 e
 </CsScore>
 </CsoundSynthesizer>

@@ -16,7 +16,9 @@ nchnls  =   2
 0dbfs   =   1
 
 #define TEMPO #96#
-#include "../opcodes.orc"
+#include "../sequencers.orc"
+#include "../oscillators.orc"
+#include "../utils.orc"
 
 
 ;taphy

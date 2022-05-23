@@ -16,7 +16,9 @@ nchnls  =   2
 0dbfs   =   1
 
 #define TEMPO #69#
-#include "../opcodes.orc"
+#include "../sequencers.orc"
+#include "../oscillators.orc"
+#include "../utils.orc"
 
 instr Taphy ;girl, I might take you inside main
 ;multiple instances would need 2d arrays (getrow/setrow) (need an extra p-field)

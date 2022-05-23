@@ -17,7 +17,9 @@ nchnls  =   2
 0dbfs   =   1
 
 #define TEMPO #96#
-#include "../opcodes.orc"
+#include "../sequencers.orc"
+#include "../oscillators.orc"
+#include "../utils.orc"
 #include "../mixer.orc"
 ;taphy
 #define ROW #4# ;global array rows (number of simultanious instances)

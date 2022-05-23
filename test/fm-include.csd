@@ -67,7 +67,7 @@ gkFM15Amp[][] init 4,4
 gkFM15Cps[][] init 4,4
 gkFM15Rat[][] init 4,4
 
-#include "../opcodes.orc"
+#include "../oscillators.orc"
 #include "../fm/fm.orc"
 
 </CsInstruments>
