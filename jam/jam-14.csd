@@ -18,7 +18,7 @@ nchnls  =   2
 #define TEMPO #128#
 #include "../function-tables.orc"
 #include "../opcodes.orc"
-#include "../send-effects2.orc"
+#include "../effects/send-effects2.orc"
 alwayson "verb"
 ;alwayson "verb2"
 ;alwayson "dist"

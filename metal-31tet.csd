@@ -19,7 +19,7 @@ nchnls  =   2
 
 #define TEMPO #256#
 #include "function-tables.orc"
-#include "send-effects2.orc"
+#include "effects/send-effects2.orc"
 #include "sequencers.orc"
 #include "oscillators.orc"
 #include "utils.orc"
