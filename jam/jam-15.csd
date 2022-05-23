@@ -17,7 +17,7 @@ nchnls  =   2
 
 #define TEMPO #128#
 #include "../opcodes.orc"
-#include "../modular-effects.orc"
+#include "../effects/modular-effects.orc"
 
 instr base
 ktrig       metro $TEMPO*4/60

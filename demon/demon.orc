@@ -37,7 +37,7 @@ endin
 #include "../sequencers.orc"
 #include "../oscillators.orc"
 #include "../utils.orc"
-#include "../modular-effects.orc"
+#include "../effects/modular-effects.orc"
 instr clock
 gk_clock_out metro $TEMPO/60
 endin
