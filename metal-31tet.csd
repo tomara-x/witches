@@ -7,6 +7,7 @@
 //This one's for you, K (when it's done and epic)
 //i wanna do it, but this is too cute to edit!
 //when you're back here start the 31 stuff in new file
+//or clean this up (declick) and have it as the into
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
