@@ -27,9 +27,8 @@ Running csound in server mode for live coding
 ### usage:
 1. you'll need csound to execute the files here (grab it at https://csound.com/)
 2. you'll want to clone this project:
-- using git:
-```git clone https://github.com/tomara-x/witches.git```
-- or you can just download the zip (though git is better because you can check for updates and stuff)
+    - using git: `git clone https://github.com/tomara-x/witches.git`
+    - or you can just download the zip (though git is better because you can check for updates and stuff)
 3. run whatever files you like by running `csound file.csd` in a command line (you can also run them in a gui frontend like csoundqt)
 4. see the [floss manual](https://flossmanual.csound.com/introduction/preface) and the [csound canonical manual](https://csound.com/docs/manual/index.html) for more details about the csound language
 5. make some noise and have fun
