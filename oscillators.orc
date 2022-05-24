@@ -30,16 +30,15 @@ xout    oscili(aamp, kfreq, ifn)
 endop
 
 ;pmo2
+;hmm this way won't work
 opcode Pmoscili2, a, kkaj
 kamp, kfreq, aphs, ifn xin
-acarrier    phasor kfreq
+acarrier phasor kfreq
 kcnt = 0
 while kcnt < ksmps do
-    acarrier[kcnt] = acarrier[kcnt] + aphs[kcnt]
-    ;okay but i need to have the table access here somehow?
+    asig[kcnt] = tablei(acarrier[kcnt]+aphs[kcnt], ifn, 1,0,1)
     kcnt += 1
 od
-asig        tablei acarrier+aphs, ifn, 1,0,1
 xout        asig*kamp
 endop
 opcode Pmoscili2, a, kkj ;just an oscili if no phase input is given
