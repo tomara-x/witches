@@ -6,7 +6,7 @@ At the end of 2019 I met [his successor](https://github.com/AriaSalvatrice) in a
 
 Months after I lost my favorite instrument, I missed the magic, so I did this:
 
-### sequencers.orc
+#### sequencers.orc
 (full documentation in file)
 
 - `Taphath` tries to mimick Aria's MSR as much as possible. (with just a few quirks) It's an arbitrary-length, self-modulating, pitch-quantized[^1] sequencer. (this is how it all started)
@@ -17,28 +17,22 @@ Months after I lost my favorite instrument, I missed the magic, so I did this:
 
 - `uTaphath`, `uBasemath`, and `utBasemath` are minimal versions.
 
-### mixer.orc
-Stereo audio bus/mixer from the [csound-live-code](https://github.com/kunstmusik/csound-live-code) library by Steven Yi with a few additions for my uses.
-
-### utils.orc
-Opcodes for working with the ladies. (clock divider, 2D array ops)
-
-### oscillators.orc
-A pretty nice phase-modulation oscillator opcode. (for now)
-
-### jam/
+#### jam/
 Music/sounds, check them out for examples.
 
-### fm/
-FM algorithms fun
-
-### demon/
+#### demon/
 Running csound in server mode for live coding
 
-### other files
-old stuff I don't use anymore (to keep dependant files working) or just me playing around, experimenting and stuff
-
 ---
+### usage:
+1. you'll need csound to execute the files here (grab it at https://csound.com/)
+2. you'll want to clone this project:
+- using git:
+```git clone https://github.com/tomara-x/witches.git```
+- or you can just download the zip (though git is better because you can check for updates and stuff)
+3. run whatever files you like by running `csound file.csd` in a command line (you can also run them in a gui frontend like csoundqt)
+4. see the [floss manual](https://flossmanual.csound.com/introduction/preface) and the [csound canonical manual](https://csound.com/docs/manual/index.html) for more details about the csound language
+5. make some noise and have fun
 
 If you make something with these, I'd love love love to have a listen/look! Also if you find anything confusing please feel free to open a discussion or an issue 💜
 
