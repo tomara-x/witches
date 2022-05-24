@@ -29,19 +29,4 @@ aamp, kfreq, ifn xin
 xout    oscili(aamp, kfreq, ifn)
 endop
 
-;pmo2
-;hmm this way won't work
-opcode Pmoscili2, a, kkaj
-kamp, kfreq, aphs, ifn xin
-acarrier phasor kfreq
-kcnt = 0
-while kcnt < ksmps do
-    asig[kcnt] = tablei(acarrier[kcnt]+aphs[kcnt], ifn, 1,0,1)
-    kcnt += 1
-od
-xout        asig*kamp
-endop
-opcode Pmoscili2, a, kkj ;just an oscili if no phase input is given
-kamp, kfreq, ifn xin
-xout    oscili(kamp, kfreq, ifn)
-endop
+

@@ -33,14 +33,29 @@ gkcps = kp[kAS]*4
 endin
 instr 1
 aop1, aop2, aop3, aop4, aop5, aop6, aop7, aop8 init 0
-aop1    Pmoscili2 p04, gkcps/p12, aop1*.8
-aop2    Pmoscili2 p05, gkcps/p13
-aop3    Pmoscili2 p06, gkcps/p14, aop1+aop2
-aop4    Pmoscili2 p07, gkcps/p15, aop1+aop2
-aop5    Pmoscili2 p08, gkcps/p16, aop1+aop2
-aop6    Pmoscili2 p09, gkcps/p17, aop3
-aop7    Pmoscili2 p10, gkcps/p18, aop4+aop7*0.5
-aop8    Pmoscili2 p11, gkcps/p19, aop5
+aop1    Pmoscili p04, gkcps/p12, aop1*.8
+aop2    Pmoscili p05, gkcps/p13
+aop3    Pmoscili p06, gkcps/p14, aop1+aop2
+aop4    Pmoscili p07, gkcps/p15, aop1+aop2
+aop5    Pmoscili p08, gkcps/p16, aop1+aop2
+aop6    Pmoscili p09, gkcps/p17, aop3
+aop7    Pmoscili p10, gkcps/p18, aop4+aop7*0.5
+aop8    Pmoscili p11, gkcps/p19, aop5
+aout    = aop6 + aop7 + aop8
+aout    = aout * 0.1
+gaRvbSend += aout*0.05
+outs    aout, aout
+endin
+instr 2
+aop1, aop2, aop3, aop4, aop5, aop6, aop7, aop8 init 0
+aop1    poscil  p04, gkcps/p12 + phasor(gkcps/p12)
+aop2    poscil  p05, gkcps/p13 
+aop3    poscil  p06, gkcps/p14 + phasor(gkcps/p14)
+aop4    poscil  p07, gkcps/p15 + phasor(gkcps/p15)
+aop5    poscil  p08, gkcps/p16 + phasor(gkcps/p16)
+aop6    poscil  p09, gkcps/p17 + phasor(gkcps/p17)
+aop7    poscil  p10, gkcps/p18 + phasor(gkcps/p18)
+aop8    poscil  p11, gkcps/p19 + phasor(gkcps/p19)
 aout    = aop6 + aop7 + aop8
 aout    = aout * 0.1
 gaRvbSend += aout*0.05
@@ -62,16 +77,16 @@ endin
 </CsInstruments>
 <CsScore>
 t 0 128
-i1      +   28  .1 .2 .0 .0 .0 .5 .4 .5  002 002 001 004 004 004 004 008
-i1      +   28  .1 .2 .1 .1 .1 .5 .4 .5  002 002 001 004 004 004 004 008
+i2      +   28  .1 .2 .0 .0 .0 .5 .4 .5  002 002 001 004 004 004 004 008
+i2      +   28  .1 .2 .1 .1 .1 .5 .4 .5  002 002 001 004 004 004 004 008
 i"kick" ^+28 0.00001
-i1      +   28  .1 .4 .2 .1 .4 .5 .5 .5  .50 004 008 004 004 016 016 001
+i2      +   28  .1 .4 .2 .1 .4 .5 .5 .5  .50 004 008 004 004 016 016 001
 i"kick" ^+28 0.00001
-i1      +   28  .2 .4 .2 .1 .4 .5 .5 .5  .50 008 008 004 004 016 016 001
+i2      +   28  .2 .4 .2 .1 .4 .5 .5 .5  .50 008 008 004 004 016 016 001
 i"kick" ^+28 0.00001
-i1      +   28  .1 .2 .1 .1 .1 .5 .5 .5  002 001 008 004 004 002 004 001
+i2      +   28  .1 .2 .1 .1 .1 .5 .5 .5  002 001 008 004 004 002 004 001
 i"kick" ^+28 0.00001
-i1      +   28  .1 .2 .0 .0 .0 .5 .2 .5  002 002 001 004 004 004 004 008
+i2      +   28  .1 .2 .0 .0 .0 .5 .2 .5  002 002 001 004 004 004 004 008
 e
 </CsScore>
 </CsoundSynthesizer>
