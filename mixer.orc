@@ -65,20 +65,7 @@ opcode sbus_mult, 0, ikk ;each stereo channel separately
   ga_sbus[ibus][1] = ga_sbus[ibus][1] * kmr
 endop
 
-;output a mix of all 16 channels
-/*
-opcode sbus_out, aa, 0
-  al, ar init 0
-  clear al, ar
-  kbus = 0
-  while kbus < 16 do
-    al = al + ga_sbus[kbus][0] 
-    ar = ar + ga_sbus[kbus][1] 
-    kbus += 1
-  od
-  xout al, ar
-endop
-*/
+;output a stereo mix of all 16 channels
 opcode sbus_out, aa, 0
  al = ga_sbus[0][0]+ga_sbus[1][0]+ga_sbus[2][0]+ga_sbus[3][0]+
       ga_sbus[4][0]+ga_sbus[5][0]+ga_sbus[6][0]+ga_sbus[7][0]+
@@ -91,6 +78,7 @@ opcode sbus_out, aa, 0
   xout al, ar
 endop
 
+;clear entire bus
 opcode sbus_clear_all, 0, 0
   sbus_clear 0
   sbus_clear 1
