@@ -23,8 +23,8 @@ nchnls  =   2
 #define BEAT #(1/$FRQ)#
 
 #include "../sequencers.orc"
-#include "../mixer.orc"
 ;#include "../utils.orc"
+gay, gal, gar init 0
 
 instr Grain
 seed 420 ;good for the environment
@@ -58,43 +58,32 @@ aSig pdhalf aSig, randomi:k(-.8, -.4, $FRQ/4)
 iTanh ftgenonce 0,0,2^10+1,"tanh", -5, 5, 0
 aSig distort aSig, (lfo:k(.8, $FRQ)+1)/2, iTanh
 aSig diode_ladder aSig, 10000, 1, 1
-sbus_mix 0, aSig*db(-6)
+gay += aSig*db(-6)
+gaVerbInL += aSig*db(-12)
+gaVerbInR += aSig*db(-12)
 endin
 
-;bform for rotation?
-instr Deep
-sbus_mix p4, delay(ga_sbus[p4][0], 0.0001),
-             delay(ga_sbus[p4][1], 0.0003)
-endin
-
-;some's wrong
-instr SndVrb
-gaVerbInL += ga_sbus[p4][0]*db(p5)
-gaVerbInR += ga_sbus[p4][1]*db(p5)
-endin
-
+;use spat3d
 gaVerbInL,gaVerbInR init 0
 instr Verb
 kRoomSize   init      0.65     ; room size (range 0 to 1)
 kHFDamp     init      0.9      ; high freq. damping (range 0 to 1)
 aVerbL,aVerbR freeverb gaVerbInL,gaVerbInR,kRoomSize,kHFDamp
-sbus_mix 15, aVerbL, aVerbR
+gal += aVerbL
+gar += aVerbR
 clear gaVerbInL,gaVerbInR
 endin
 
 instr Out
-aL, aR sbus_out
 kSM = 1
-aL limit aL, -kSM, kSM
-aR limit aR, -kSM, kSM
-outs aL, aR
-sbus_clear_all
+gal limit gal+gay, -kSM, kSM
+gar limit gar+gay, -kSM, kSM
+outs gal, gar
+clear gay, gal, gar
 endin
 </CsInstruments>
 <CsScore>
 i"Verb"   0 -1
-i"Deep"   0 -1 0
-i"VrbSnd" 0 -1 0 0 
 i"Grain"  0 -1
 i"Out"    0 [4*64*(60/113)]
 e
