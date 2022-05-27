@@ -58,6 +58,11 @@ iTanh ftgenonce 0,0,2^10+1,"tanh", -5, 5, 0
 aSig distort aSig, (lfo:k(.8, $FRQ)+1)/2, iTanh
 aSig diode_ladder aSig, 10000, 1, 1
 
+;i haven't played with everything, but it's really nice.
+;however, i keep thinking about other situations where running one of
+;these for every instrument is just not practical for me cause it's cpu-hungry.
+;and running a send instrument would mean that all the sound sources will
+;have the same placement in 3d space (not cool)
 iRoom ftgenonce   1, 0, 64, -2,                             \
 /* depth1, depth2, max delay, IR length, idist, seed */     \
     1, 0, -1, 0.01,  0, 123,                                \
