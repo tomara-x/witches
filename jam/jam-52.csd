@@ -273,7 +273,7 @@ s
 t 0 113
 i"Out"      0   64
 i"KickSq"   0   4    1 ;kick
-i"KickSq"   +   60   0 ;puney kick
+i"KickSq"   +   60   0 ;puny kick
 i"Grain2"   0   64 -18 0.5
 s
 t 0 113
