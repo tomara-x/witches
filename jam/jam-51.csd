@@ -61,8 +61,11 @@ aSig diode_ladder aSig, 10000, 1, 1
 ;i haven't played with everything, but it's really nice.
 ;however, i keep thinking about other situations where running one of
 ;these for every instrument is just not practical for me cause it's cpu-hungry.
-;and running a send instrument would mean that all the sound sources will
+;  running a send instrument would mean that all the sound sources will
 ;have the same placement in 3d space (not cool)
+;  i think it would be cool if this thing took a b-format signal.
+;that way you can put sparate signals in different places and then mix them all
+;and pass this b-format mix to spat3d to simuate the room
 iRoom ftgenonce   1, 0, 64, -2,                             \
 /* depth1, depth2, max delay, IR length, idist, seed */     \
     1, 0, -1, 0.01,  0, 123,                                \
@@ -72,6 +75,7 @@ iRoom ftgenonce   1, 0, 64, -2,                             \
     1,  9.317, 0.05, 0.37, 5000.0, 0.8, 0.7, 2, /*back*/    \
     1, 17.545, 0.05, 0.37, 5000.0, 0.8, 0.7, 2, /*right*/   \
     1, 12.156, 0.05, 0.37, 5000.0, 0.8, 0.7, 2  /*left*/
+denorm aSig
 aW,aX,aY,aZ spat3di aSig, 0, -8, -10, .5, iRoom, 1;, 2, 2
 gal += aW + 0.7071*aY
 gar += aW - 0.7071*aY
