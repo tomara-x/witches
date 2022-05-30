@@ -5,6 +5,7 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 ;need ma clock dividah
+;dissect this shit!
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m227 ;-m231
@@ -87,7 +88,6 @@ endin
 
 instr KickSq
 kTrig metro $FRQ
-kCount[] fillarray 1, 1, 1, 1
 schedkwhen(kTrig, 0,0, "Kick", 0, 1, 0.1, 230, 20, p4)
 endin
 
