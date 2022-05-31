@@ -36,8 +36,8 @@ endin
 gaOps[] init 16
 gkFrq[] init 16
 instr Op
-;setksmps 1
-aEnv  linseg 0, p4, p5, p6, p5, p7, 0
+setksmps 1  ;WHY! WHY ARE YOU FUNKY?!
+aEnv  linseg 0, p4+0.0001, p5, p6, p5, p7, 0
 aphs  init 0
 acar  phasor gkFrq[p10]*p8
 if pcount() > 10 then
@@ -48,16 +48,16 @@ if pcount() > 10 then
     od
 endif
 asig  tablei acar+aphs, p9, 1,0,1
-gaOps[p10] = asig
+gaOps[p10] = asig*aEnv
 endin
 instr Algo ;i know! use schedkwhen + multiple metros... bohahaha!
 ;                      att  hldA  hldT   rel    Rat   FT   car    mods
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  00,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  01,    01
+schedule "Op", 0, p3,  0,  .5,    .8,    .5,    01,   -1,  01,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  02,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  03,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    .5,   -1,  03,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  04,    01
-schedule "Op", 0, p3,  1,   1,    .5,    .5,    01,   -1,  05,    01
+schedule "Op", 0, p3,  0,   1,     5,    .5,    01,   -1,  05,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  06,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  07,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  08,    01
@@ -69,7 +69,7 @@ schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  13,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  14,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  15,    01
 gkFrq = gkTaphy ;taphy pitch to entire array
-gay += gaOps[5]
+gay += (gaOps[5] + gaOps[3])*db(-18)
 endin
 
 instr Out
