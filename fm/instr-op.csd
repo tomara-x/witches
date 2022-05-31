@@ -54,15 +54,15 @@ asig  tablei acar+aphs, p9, 1,0,1
 gaOps[p10] = asig*aEnv
 endin
 instr Algo ;i know! use schedkwhen + multiple metros... bohahaha!
-;indexes of modulator(s) (if any) ────────────────────────────────┐
-;index of carrier (where to write in the global array) ─────┐     │
-;waveform function table ─────────────────────────────┐     │     │
-;frequency ratio (multiplier for gkFrq[car]) ───┐     │     │     │
-;release time ───────────────────────────┐      │     │     │     │
-;hold time ────────────────────────┐     │      │     │     │     │
-;hold amplitude ─────────────┐     │     │      │     │     │     │
-;attack time ───────────┐    │     │     │      │     │     │     │
-;                       ↓    ↓     ↓     ↓      ↓     ↓     ↓     ↓
+;indexes of modulator(s) (if any) --------------------------------+
+;index of carrier (where to write in the global array) -----+     |
+;waveform function table -----------------------------+     |     |
+;frequency ratio (multiplier for gkFrq[car]) ---+     |     |     |
+;release time ---------------------------+      |     |     |     |
+;hold time ------------------------+     |      |     |     |     |
+;hold amplitude -------------+     |     |      |     |     |     |
+;attack time -----------+    |     |     |      |     |     |     |
+;                       V    V     V     V      V     V     V     V
 ;                      att  hldA  hldT   rel    Rat   FT   car    mods
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  00,    01
 schedule "Op", 0, p3,  0,  .1,    .8,    .5,    01,   -1,  01
