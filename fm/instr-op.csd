@@ -36,7 +36,8 @@ endin
 gaOps[] init 16
 gkFrq[] init 16
 instr Op
-setksmps 1  ;WHY! WHY ARE YOU FUNKY?!
+;what's even the point if i can't be with my beloved nor write to global a-sigs?
+;setksmps 1
 aEnv  linseg 0, p4+0.0001, p5, p6, p5, p7, 0
 aphs  init 0
 acar  phasor gkFrq[p10]*p8
@@ -53,7 +54,7 @@ endin
 instr Algo ;i know! use schedkwhen + multiple metros... bohahaha!
 ;                      att  hldA  hldT   rel    Rat   FT   car    mods
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  00,    01
-schedule "Op", 0, p3,  0,  .5,    .8,    .5,    01,   -1,  01,    01
+schedule "Op", 0, p3,  0,  .1,    .8,    .5,    01,   -1,  01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  02,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    .5,   -1,  03,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  04,    01
@@ -69,7 +70,7 @@ schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  13,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  14,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  15,    01
 gkFrq = gkTaphy ;taphy pitch to entire array
-gay += (gaOps[5] + gaOps[3])*db(-18)
+gay += (gaOps[5] + gaOps[3] + gaOps[1])*db(-18)
 endin
 
 instr Out
