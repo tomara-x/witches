@@ -32,14 +32,38 @@ kQueue[] init 16
 kS, kP[], kT[], kI[] Taphath kTrig, kNote, kTrans, kQueue, iScale
 endin
 
-gaOps[] init 17 ;index 16 for empty modulation
+gaOps[] init 16
+gkFrq[] init 16
 instr Op
-;setksmps 1
-aEnv  linseg 0, p4, 1, p5, 1, p6, 0
-acar  phasor kfreq
-aphs  = gaOps[p7]
+setksmps 1
+aEnv  linseg 0, p4, p5, p6, p5, p7, 0
+acar  phasor gkFrq[p9]*p8
+if pcount() == 7 then
+    aphs = 0
+else ;loop through rest of p-fields (pcount & p)
+    aphs  = gaOps[p10]
+endif
 asig  tablei acarrier+aphs, -1, 1,0,1
-gaOps[p8] += asig
+gaOps[p9] += asig
+endin
+instr Algo
+;                      att  hldA  hldT   rel    Rat   car    mods
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   00,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   01,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   02,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   03,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   04,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   05,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   06,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   07,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   08,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   09,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   10,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   11,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   12,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   13,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   14,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   15,    01
 endin
 
 instr Out
