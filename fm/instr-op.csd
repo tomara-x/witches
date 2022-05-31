@@ -3,6 +3,8 @@
 //This work is free. You can redistribute it and/or modify it under the
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
+
+;feedback needs debugging
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m227 ;-m231
@@ -36,7 +38,7 @@ endin
 gaOps[] init 16
 gkFrq[] init 16
 instr Op
-;what's even the point if i can't be with my beloved nor write to global a-sigs?
+;until this is debugged, steer clear of feedback and local ksmps (very sad times)
 ;setksmps 1
 aEnv  linseg 0, p4+0.0001, p5, p6, p5, p7, 0
 aphs  init 0
@@ -52,6 +54,15 @@ asig  tablei acar+aphs, p9, 1,0,1
 gaOps[p10] = asig*aEnv
 endin
 instr Algo ;i know! use schedkwhen + multiple metros... bohahaha!
+;indexes of modulator(s) (if any) ────────────────────────────────┐
+;index of carrier (where to write in the global array) ─────┐     │
+;waveform function table ─────────────────────────────┐     │     │
+;frequency ratio (multiplier for gkFrq[car]) ───┐     │     │     │
+;release time ───────────────────────────┐      │     │     │     │
+;hold time ────────────────────────┐     │      │     │     │     │
+;hold amplitude ─────────────┐     │     │      │     │     │     │
+;attack time ───────────┐    │     │     │      │     │     │     │
+;                       ↓    ↓     ↓     ↓      ↓     ↓     ↓     ↓
 ;                      att  hldA  hldT   rel    Rat   FT   car    mods
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  00,    01
 schedule "Op", 0, p3,  0,  .1,    .8,    .5,    01,   -1,  01
