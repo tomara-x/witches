@@ -42,7 +42,7 @@ instr Op
 ;setksmps 1
 aEnv  linseg 0, p4+0.0001, p5, p6, p5, p7, 0
 aphs  init 0
-acar  phasor gkFrq[p10]*p8
+acar  phasor gkFrq[p10]*(2^p8)
 if pcount() > 10 then
     kcnt = 11
     while kcnt <= pcount() do
@@ -57,29 +57,29 @@ instr Algo ;i know! use schedkwhen + multiple metros... bohahaha!
 ;indexes of modulator(s) (if any) --------------------------------+
 ;index of carrier (where to write in the global array) -----+     |
 ;waveform function table -----------------------------+     |     |
-;frequency ratio (multiplier for gkFrq[car]) ---+     |     |     |
+;octave transpose ------------------------------+     |     |     |
 ;release time ---------------------------+      |     |     |     |
 ;hold time ------------------------+     |      |     |     |     |
 ;hold amplitude -------------+     |     |      |     |     |     |
 ;attack time -----------+    |     |     |      |     |     |     |
 ;                       V    V     V     V      V     V     V     V
-;                      att  hldA  hldT   rel    Rat   FT   car    mods
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  00,    01
-schedule "Op", 0, p3,  0,  .1,    .8,    .5,    01,   -1,  01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  02,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    .5,   -1,  03,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  04,    01
-schedule "Op", 0, p3,  0,   1,     5,    .5,    01,   -1,  05,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  06,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  07,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  08,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  09,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  10,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  11,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  12,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  13,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  14,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  15,    01
+;                      att  hldA  hldT   rel    Oct   FT   car    mods
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  00,    01
+schedule "Op", 0, p3,  0,  .1,    .8,    .5,    00,   -1,  01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  02,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    -1,   -1,  03,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  04,    01
+schedule "Op", 0, p3,  0,   1,     5,    .5,    00,   -1,  05,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  06,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  07,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  08,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  09,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  10,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  11,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  12,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  13,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  14,    01
+schedule "Op", 0, p3,  0,   1,    .5,    .5,    00,   -1,  15,    01
 gkFrq = gkTaphy ;taphy pitch to entire array
 gay += (gaOps[5] + gaOps[3] + gaOps[1])*db(-18)
 endin
