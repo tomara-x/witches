@@ -30,33 +30,34 @@ kNote[]  fillarray 1, 2, 3, 4, 2, 2, 0, 1,  1,1,1,1,1,1,1,1
 kTrans[] fillarray 0, 0, 0, 0, 0, 0, 0, 0,  0,0,0,0,0,0,0,0
 kQueue[] init 16
 kS, kP[], kT[], kI[] Taphath kTrig, kNote, kTrans, kQueue, iScale
+gkTaphy = kP[kS]
 endin
 
 gaOps[] init 16
 gkFrq[] init 16
 instr Op
-setksmps 1
+;setksmps 1
 aEnv  linseg 0, p4, p5, p6, p5, p7, 0
 aphs  init 0
 acar  phasor gkFrq[p10]*p8
 if pcount() > 10 then
     kcnt = 11
-    while kcnt <= pcount() do  ;not sure about this
-        aphs += gaOps[p(icnt)]
+    while kcnt <= pcount() do
+        aphs += gaOps[p(kcnt)]
         kcnt += 1
     od
 endif
-asig  tablei acarrier+aphs, p9, 1,0,1
+asig  tablei acar+aphs, p9, 1,0,1
 gaOps[p10] = asig
 endin
-instr Algo
+instr Algo ;i know! use schedkwhen + multiple metros... bohahaha!
 ;                      att  hldA  hldT   rel    Rat   FT   car    mods
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  00,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  01,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  02,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  03,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  04,    01
-schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  05,    01
+schedule "Op", 0, p3,  1,   1,    .5,    .5,    01,   -1,  05,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  06,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  07,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  08,    01
@@ -67,6 +68,8 @@ schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  12,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  13,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  14,    01
 schedule "Op", 0, p3,  0,   1,    .5,    .5,    01,   -1,  15,    01
+gkFrq = gkTaphy ;taphy pitch to entire array
+gay += gaOps[5]
 endin
 
 instr Out
@@ -78,7 +81,9 @@ clear gay, gal, gar
 endin
 </CsInstruments>
 <CsScore>
-i"Out"  0 10
+i"Out"   0 10
+i"Taphy" 0 10
+i"Algo"  0 10
 e
 </CsScore>
 </CsoundSynthesizer>
