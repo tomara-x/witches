@@ -216,7 +216,7 @@ if timeinsts() == p3+10 then
 scoreline "e", 1
 endif
 endin
-schedule("Main", 0, (2*64)*($TEMPO/60)) ;2 loops of tBasemath in seconds
+schedule("Main", 0, (2*64)*($TEMPO/60)) ;2 loops of tBasemath in seconds <- lmao i was wrong here (60/tempo for beat duration)
 </CsInstruments>
 </CsoundSynthesizer>
 
