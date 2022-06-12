@@ -26,18 +26,17 @@ gay, gal, gar init 0
 
 instr Grain1
 seed 113
-iScale ftgenonce 0,0,-7*3,-51, 14,4,cpspch(6), 0,
-2^(00/12),2*2^(00/12),
-2^(02/12),2*2^(02/12),
-2^(03/12),2*2^(03/12),
-2^(05/12),2*2^(05/12),
-2^(07/12),2*2^(07/12),
-2^(08/12),2*2^(08/12),
-2^(10/12),2*2^(10/12)
-kTrig    metro $FRQ
-kNote[]  fillarray 0, 1, 3, 2, 19, 1, 2, 7
-kTrans[] fillarray 1, 1, 3, 0, 1,  0, 0, 0
-kQueue[] init 8
+;nine-tone blues
+iScale ftgenonce 0,0,-9*3,-51, 9,2,cpspch(6), 0,
+2^(00/12),2^(02/12),2^(03/12),
+2^(04/12),2^(05/12),2^(06/12),
+2^(07/12),2^(09/12),2^(10/12)
+kTrig    metro $FRQ*4
+kNote[]  fillarray 0, 1, 3, 2, 19,1, 2, 7,  0, 1, 3, 2, 19,1, 2, 7,
+                   0, 1, 3, 2, 19,1, 2, 7,  0, 1, 3, 2, 19,1, 2, 7
+kTrans[] fillarray 1, 1, 3, 0, 1, 0, 0, 0,  0, 0, 0, 0, 0, 0, 2, 0,
+                   0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0
+kQueue[] init 32
 kS, kP[], kT[], kI[] Taphath kTrig, kNote, kTrans, kQueue, iScale
 kGFrq = kP[kS]
 kGPhs = (lfo:k(1, $FRQ*1, 4)+1)/2
@@ -63,32 +62,22 @@ gaVerbL += al*db(-6)
 gaVerbR += ar*db(-6)
 endin
 
-instr Rawr
-aSig bamboo p4, p3, 50, .01, .0, 407, 268, 790
-aSig limit aSig, -.5, .5
-gay += aSig*db(-6)
-gaVerbL += aSig*db(-6)
-gaVerbR += aSig*db(-6)
-endin
-
 instr Kick
-;p4, p5, p6, p7 : freq decay, freq[i], freq[f], effect
+;p4, p5, p6, p7 : freq decay, freq[i], freq[f], distortion
 iIFrq, iEFrq = p5, p6
 aAEnv   expseg 1,p3,0.0001
 aFEnv   expseg iIFrq,p4,iEFrq
 aSig    oscili aAEnv, aFEnv
 aSig    moogladder aSig, p5*4, .2
-if p7 == 1 then
-    aSig pdhalf aSig, -0.7
-endif
-gay += aSig*db(-3)
-gaVerbL += aSig*db(-3)
-gaVerbR += aSig*db(-3)
+aSig    pdhalf aSig, p7
+gay += aSig*db(p8) ;trying something
+gaVerbL += aSig*db(p9)
+gaVerbR += aSig*db(p9)
 endin
 
 instr KickSq
 kTrig metro $FRQ
-schedkwhen(kTrig, 0,0, "Kick", 0, 1, 0.1, 230, 20, p4)
+schedkwhen(kTrig, 0,0, "Kick", 0, 1, 0.1, 230, 20, p6, p4, p5) ;evil
 endin
 
 gaVerbL,gaVerbR init 0
@@ -116,12 +105,11 @@ i"Verb"    0 -1
 t 0 113
 i"Out"      0   64
 i"Grain1"   0   64 -18 0.5
-s
-t 0 113
-i"Out"      0   64
-i"KickSq"   0   4    1 ;kick
-i"KickSq"   +   60   0 ;puny kick
-i"Grain2"   0   64 -18 0.5
+;s
+;t 0 113
+;i"Out"      0   64
+;i"KickSq"   0   4   -3 -3   -0.5 ;kick
+;i"KickSq"   +   60  -3 -3   0    ;puny kick
 e
 </CsScore>
 </CsoundSynthesizer>
