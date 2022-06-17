@@ -35,7 +35,8 @@ kNote[]  fillarray 1, 1, 0, 3, 1, 1, 7, 1,  1, 1, 0, 4, 1, 1, 8, 3,
 kTrans[] init 32 
 kQueue[] init 32
 kR[]     init 32
-if kR[0] == 4 || kR[0] == 8 then
+if kR[0]%4 == 0 then
+;there should be a cleaner way to force assign at k-time without them silly k()
     kTrans fillarray k(8), 3, 9, 3, 0, 0, 0, 2,  0, 0, 6, 0, 0, 6, 7, 0,
                         0, 7, 0,-9, 0, 7, 2, 1,  2, 4,-3, 7, 0, 7, 0, 3
 else
@@ -46,7 +47,7 @@ kS, kP[], kT[], kI[] Taphath kTrig, kNote, kTrans, kQueue, iScale
 kR[kS] = kR[kS] + kT[kS]
 
 
-kGFrq = kP[kS]
+kGFrq = kP[kS]*p6
 kGPhs = 0 ;(lfo:k(1, $FRQ*1, 4)+1)/2
 kFMD = randomi(0, 1, $FRQ/4)
 kPMD = .1
@@ -61,6 +62,8 @@ iWin ftgenonce 0,0,2^14,20, 2, 1
 kFRPow, kPRPow = 1, 1
 aSig grain3 kGFrq,kGPhs, kFMD,kPMD, kGDur,kGDens, iMaxOvr,
             iWav, iWin, kFRPow,kPRPow, getseed(), 16
+;aSig *= trigExpseg(kT[kS], 1, 1/($FRQ*4), 0.01)
+aSig *= (1 - phasor:a($FRQ*4))^2 ;envelope (long story)
 ;aSig pdhalf aSig, -0.8 
 ;iTanh ftgenonce 0,0,2^10+1,"tanh", -5, 5, 0
 ;aSig distort aSig, .8, iTanh
@@ -114,8 +117,8 @@ i"Verb"    0 -1
 ;-------------
 t 0 113
 i"Out"      0   [4*64]
-;i"KickSq"   0   64   -3 -6   -0.5 ;kick
-i"Grain1"   0   [4*64] -18 0.5
+i"Grain1"   0   [4*64] -18 0.5 .5
+i"Grain1"   0   [4*64] -18 0.5 8
 e
 </CsScore>
 </CsoundSynthesizer>
