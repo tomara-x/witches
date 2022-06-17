@@ -25,11 +25,11 @@ gay, gal, gar init 0
 instr Grain1
 seed 113
 ;nine-tone blues
-iScale ftgenonce 0,0,-9*3,-51, 9,2,cpspch(6), 0,
+iScale ftgenonce 0,0,-9*3,-51, 9,2,cpspch(p7+4), 0,
 2^(00/12),2^(02/12),2^(03/12),
 2^(04/12),2^(05/12),2^(06/12),
 2^(07/12),2^(09/12),2^(10/12)
-kTrig    metro $FRQ*4
+kTrig    metro $FRQ*p6
 kNote[]  fillarray 1, 1, 0, 3, 1, 1, 7, 1,  1, 1, 0, 4, 1, 1, 8, 3,
                    1, 1, 0, 3, 1, 1, 5, 1,  1, 1, 0, 4, 1, 1, 5, 3
 kTrans[] init 32 
@@ -47,7 +47,7 @@ kS, kP[], kT[], kI[] Taphath kTrig, kNote, kTrans, kQueue, iScale
 kR[kS] = kR[kS] + kT[kS]
 
 
-kGFrq = kP[kS]*p6
+kGFrq = kP[kS]
 kGPhs = 0 ;(lfo:k(1, $FRQ*1, 4)+1)/2
 kFMD = randomi(0, 1, $FRQ/4)
 kPMD = .1
@@ -63,10 +63,16 @@ kFRPow, kPRPow = 1, 1
 aSig grain3 kGFrq,kGPhs, kFMD,kPMD, kGDur,kGDens, iMaxOvr,
             iWav, iWin, kFRPow,kPRPow, getseed(), 16
 ;aSig *= trigExpseg(kT[kS], 1, 1/($FRQ*4), 0.01)
-aSig *= (1 - phasor:a($FRQ*4))^2 ;envelope (long story)
-;aSig pdhalf aSig, -0.8 
-;iTanh ftgenonce 0,0,2^10+1,"tanh", -5, 5, 0
-;aSig distort aSig, .8, iTanh
+if p8 == 1 then
+    aSig *= (1 - phasor:a($FRQ*p6))^2 ;envelope (long story)
+endif
+if p9 == 1 then
+    aSig pdhalf aSig, -0.8 
+endif
+if p10 == 1 then
+    iTanh ftgenonce 0,0,2^10+1,"tanh", -5, 5, 0
+    aSig distort aSig, .8, iTanh
+endif
 aSig diode_ladder aSig, 10000, 1, 1
 al, ar pan2 aSig*db(p4), p5
 gal += al
@@ -75,6 +81,7 @@ gaVerbL += al*db(-6)
 gaVerbR += ar*db(-6)
 endin
 
+/*
 instr Kick
 ;p4, p5, p6, p7 : freq decay, freq[i], freq[f], distortion
 iIFrq, iEFrq = p5, p6
@@ -92,6 +99,7 @@ instr KickSq
 kTrig metro $FRQ
 schedkwhen(kTrig, 0,0, "Kick", 0, .8, 0.1, 230, 20, p6, p4, p5) ;evil
 endin
+*/
 
 gaVerbL,gaVerbR init 0
 instr Verb
@@ -116,9 +124,11 @@ endin
 i"Verb"    0 -1
 ;-------------
 t 0 113
-i"Out"      0   [4*64]
-i"Grain1"   0   [4*64] -18 0.5 .5
-i"Grain1"   0   [4*64] -18 0.5 8
+i"Out"      0   [8*64+4]
+;                       db pan    clk  oct  env dist more
+i"Grain1"   0   [8*64] -03 0.55   4    0    1   0    0
+i"Grain1"   0   [8*64] -06 0.45   4    5    1   0    1
+i"Grain1"   0   [8*64] -12 0.50   .5   2    0   0    0
 e
 </CsScore>
 </CsoundSynthesizer>
