@@ -35,7 +35,7 @@ kNote[]  fillarray 1, 1, 0, 3, 1, 1, 7, 1,  1, 1, 0, 4, 1, 1, 8, 3,
 kTrans[] init 32 
 kQueue[] init 32
 kR[]     init 32
-if kR[0]%4 == 0 then
+if kR[0]%4 == 0 && kR[0] != 0 then
 ;there should be a cleaner way to force assign at k-time without them silly k()
     kTrans fillarray k(8), 3, 9, 3, 0, 0, 0, 2,  0, 0, 6, 0, 0, 6, 7, 0,
                         0, 7, 0,-9, 0, 7, 2, 1,  2, 4,-3, 7, 0, 7, 0, 3
@@ -51,13 +51,16 @@ kGFrq = kP[kS]
 kGPhs = 0 ;(lfo:k(1, $FRQ*1, 4)+1)/2
 kFMD = randomi(0, 1, $FRQ/4)
 kPMD = .1
-kGDur = randomi($BEAT/2, $BEAT/128, $FRQ*4)
-kGDens = randomi(1/kGDur, 16/kGDur, $FRQ*8)
-;kGDens = randomi($FRQ*16, $FRQ*32, $FRQ*8)
-;kGDur = 1/kP[kS]
-;kGDens = kP[kS]
+if p11 == 0 then
+    kGDur = randomi($BEAT/2, $BEAT/128, $FRQ*4)
+    ;kGDens = randomi(1/kGDur, 16/kGDur, $FRQ*8)
+    kGDens = randomi($FRQ*16, $FRQ*32, $FRQ*8)
+elseif p11 == 1 then
+    kGDur = 1/kP[kS]
+    kGDens = kP[kS]
+endif
 iMaxOvr = 32
-iWav ftgenonce 0,0,2^14,9, 1,.1,0, 2,.2,0, 3,.2,0
+iWav ftgenonce 0,0,2^14,9, 1,1,0, 2,.2,0, 3,.2,0
 iWin ftgenonce 0,0,2^14,20, 2, 1
 kFRPow, kPRPow = 1, 1
 aSig grain3 kGFrq,kGPhs, kFMD,kPMD, kGDur,kGDens, iMaxOvr,
@@ -101,14 +104,23 @@ clear gay, gal, gar
 endin
 </CsInstruments>
 <CsScore>
-t 0 113
 i"Verb"  0      -1
+
+t 0 113
+i"Out"   0      [1*64]
+i"Grain" 0      [1*64] -03 0.55   4    0    1   0    0     1
+i"Grain" 0      [1*64] -06 0.45   4    5    1   0    0     1
+s
+
+t 0 113
 i"Out"   0      [8*64+4]
-;        start  dur     db pan    clk  oct  env dist more
-i"Grain" 0      [8*64] -03 0.55   4    0    1   0    0
-i"Grain" 0      [1*64] -06 0.45   4    5    1   0    0
-i"Grain" [1*64] [7*64] -06 0.45   4    7    1   0    0
-i"Grain" 0      [8*64] -12 0.50   .5   2    0   0    0
+;        start  dur     db pan    clk  oct  env dist more  mode
+i"Grain" 0      [8*64] -12 0.50   .5   2    0   0    0     0
+i"Grain" 0      [8*64] -03 0.55   4    0    1   0    0     0
+i"Grain" 0      [1*64] -06 0.45   4    5    1   0    0     0
+i"Grain" [1*64] [1*64] -06 0.45   4    7    1   0    0     0
+i"Grain" [2*64] [1*64] -06 0.45   4    6    1   0    0     0
+i"Grain" [3*64] [5*64] -06 0.45   4    8    1   0    1     0
 e
 </CsScore>
 </CsoundSynthesizer>
