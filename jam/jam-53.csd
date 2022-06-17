@@ -127,7 +127,7 @@ t 0 113
 i"Out"      0   [8*64+4]
 ;                       db pan    clk  oct  env dist more
 i"Grain1"   0   [8*64] -03 0.55   4    0    1   0    0
-i"Grain1"   0   [8*64] -06 0.45   4    5    1   0    1
+i"Grain1"   0   [8*64] -06 0.45   4    7    1   0    0
 i"Grain1"   0   [8*64] -12 0.50   .5   2    0   0    0
 e
 </CsScore>
