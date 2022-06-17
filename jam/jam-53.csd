@@ -22,7 +22,7 @@ nchnls  =   2
 #include "../utils.orc"
 gay, gal, gar init 0
 
-instr Grain1
+instr Grain
 seed 113
 ;nine-tone blues
 iScale ftgenonce 0,0,-9*3,-51, 9,2,cpspch(p7+4), 0,
@@ -81,26 +81,6 @@ gaVerbL += al*db(-6)
 gaVerbR += ar*db(-6)
 endin
 
-/*
-instr Kick
-;p4, p5, p6, p7 : freq decay, freq[i], freq[f], distortion
-iIFrq, iEFrq = p5, p6
-aAEnv   expseg 2,p3,0.0001
-aFEnv   expseg iIFrq,p4,iEFrq
-aSig    oscili aAEnv, aFEnv
-aSig    moogladder aSig, p5*4, .2
-aSig    pdhalf aSig, p7
-gay += aSig*db(p8) ;trying something
-gaVerbL += aSig*db(p9)
-gaVerbR += aSig*db(p9)
-endin
-
-instr KickSq
-kTrig metro $FRQ
-schedkwhen(kTrig, 0,0, "Kick", 0, .8, 0.1, 230, 20, p6, p4, p5) ;evil
-endin
-*/
-
 gaVerbL,gaVerbR init 0
 instr Verb
 kRoomSize  init  0.85 ; room size (range 0 to 1)
@@ -121,14 +101,14 @@ clear gay, gal, gar
 endin
 </CsInstruments>
 <CsScore>
-i"Verb"    0 -1
-;-------------
 t 0 113
-i"Out"      0   [8*64+4]
-;                       db pan    clk  oct  env dist more
-i"Grain1"   0   [8*64] -03 0.55   4    0    1   0    0
-i"Grain1"   0   [8*64] -06 0.45   4    7    1   0    0
-i"Grain1"   0   [8*64] -12 0.50   .5   2    0   0    0
+i"Verb"  0      -1
+i"Out"   0      [8*64+4]
+;        start  dur     db pan    clk  oct  env dist more
+i"Grain" 0      [8*64] -03 0.55   4    0    1   0    0
+i"Grain" 0      [1*64] -06 0.45   4    5    1   0    0
+i"Grain" [1*64] [7*64] -06 0.45   4    7    1   0    0
+i"Grain" 0      [8*64] -12 0.50   .5   2    0   0    0
 e
 </CsScore>
 </CsoundSynthesizer>
