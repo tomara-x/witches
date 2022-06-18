@@ -36,6 +36,7 @@ kNote[]  fillarray 1, 1, 0, 3, 1, 1, 7, 1,  1, 1, 0, 4, 1, 1, 8, 3,
 kTrans[] init 32 
 kQueue[] init 32
 kR[]     init 32
+;can be optimized to assign only at first step's trigger high, right? (kT[0] == 1)
 if kR[0]%4 == 0 && kR[0] != 0 then
 ;there should be a cleaner way to force assign at k-time without them silly k()
     kTrans fillarray k(8), 3, 9, 3, 0, 0, 0, 2,  0, 0, 6, 0, 0, 6, 7, 0,
