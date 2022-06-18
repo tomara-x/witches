@@ -4,6 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
+;short jam
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m227 ;-m231
@@ -104,23 +105,53 @@ clear gay, gal, gar
 endin
 </CsInstruments>
 <CsScore>
-i"Verb"  0      -1
+i"Verb"  0      -1 ;reverb always running
+
+t 0 113 ;tempo = 113bpm
+i"Out"   0      [1*64]
+;just a dumb preset ---------------------------------------+
+;wave-shape distortion ------------------------------+     |
+;pd half distortion ----------------------------+    |     |
+;envelope (0=sustained, 1=exponential) -----+   |    |     |
+;octave -------------------------------+    |   |    |     |
+;clock multiplier (1=$FRQ) -------+    |    |   |    |     |
+;stereo panning -----------+      |    |    |   |    |     |
+;amp (not accurate db) -+  |      |    |    |   |    |     |
+;                       |  |      |    |    |   |    |     |
+;                       v  v      v    v    v   v    v     v
+;        start  dur     db pan    clk  oct  env dist more  mode
+i"Grain" 0      [1*64] -06 0.50   .5   3    0   0    0     1
+i"Grain" 0      [1*64] -03 0.55   4    2    1   0    0     1
+i"Grain" 0      [1*64] -06 0.45   4    5    1   0    0     1
+s ;end section
+
+t 0 113
+i"Out"   0      [8*64+2]
+;        start  dur     db pan    clk  oct  env dist more  mode
+i"Grain" 0      [8*64] -12 0.50   .5   2    0   0    0     0
+i"Grain" 0      [8*64] -12 0.50   .5   3    0   0    0     0
+i"Grain" 0      [8*64] -03 0.55   4    0    1   0    0     0
+i"Grain" 0      [1*64] -06 0.45   4    5    1   0    0     0
+i"Grain" [1*64] [1*64] -12 0.45   4    5    1   1    1     0
+i"Grain" [2*64] [1*64] -06 0.45   4    6    1   0    0     0
+i"Grain" [3*64] [5*64] -06 0.45   4    8    1   0    1     0
+s
 
 t 0 113
 i"Out"   0      [1*64]
-i"Grain" 0      [1*64] -03 0.55   4    0    1   0    0     1
-i"Grain" 0      [1*64] -06 0.45   4    5    1   0    0     1
+;        start  dur     db pan    clk  oct  env dist more  mode
+i"Grain" [0*64] [1*64] -06 0.50   .5   3    0   0    0     1
+i"Grain" [0*64] [1*64] -03 0.55   4    8    1   0    0     1
+i"Grain" [0*64] [1*64] -06 0.45   4    5    1   0    0     1
 s
 
 t 0 113
 i"Out"   0      [8*64+4]
 ;        start  dur     db pan    clk  oct  env dist more  mode
 i"Grain" 0      [8*64] -12 0.50   .5   2    0   0    0     0
+i"Grain" 0      [8*64] -12 0.50   .5   3    0   0    0     0
 i"Grain" 0      [8*64] -03 0.55   4    0    1   0    0     0
-i"Grain" 0      [1*64] -06 0.45   4    5    1   0    0     0
-i"Grain" [1*64] [1*64] -06 0.45   4    7    1   0    0     0
-i"Grain" [2*64] [1*64] -06 0.45   4    6    1   0    0     0
-i"Grain" [3*64] [5*64] -06 0.45   4    8    1   0    1     0
+i"Grain" 0      [8*64] -12 0.45   4    5    1   1    1     0
 e
 </CsScore>
 </CsoundSynthesizer>
