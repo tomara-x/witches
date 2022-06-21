@@ -14,7 +14,7 @@ nchnls  =   2
 0dbfs   =   1
 
 #define TEMPO #131#
-#define FRQ #$TEMPO/60#
+#define FRQ #$TEMPO/60# ;never do this! always keep them in parentheses: #($TEMPO/60)#
 ;#define Beat #1/$FRQ#
 
 ;#include "../sequencers.orc"

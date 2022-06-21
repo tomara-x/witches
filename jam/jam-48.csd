@@ -15,7 +15,7 @@ nchnls  =   2
 
 #define TEMPO #131#
 #define FRQ #$TEMPO/60#
-#define Beat #1/$FRQ#
+#define Beat #1/$FRQ# ;lol this equals 1/131/60 which is not 1/(131/60)
 #include "../mixer.orc"
 
 instr Grain
