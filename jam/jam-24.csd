@@ -5,6 +5,8 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 //i understand some of this stuff
+// okay as hilarious as the code is, this actually sounds like fun
+// maybe we can replicate some of it with grain3 (the sample input and a slow freq)
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231

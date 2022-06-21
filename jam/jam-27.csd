@@ -4,10 +4,10 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-//babe? hbout some additive and vectorial fun? <- epic date
+//babe? hbout some additive and vectorial fun? ← epic date
 <CsoundSynthesizer>
 <CsOptions>
--odac -Lstdin -m97 ;<- just note amps (1) and colors (96)
+-odac -Lstdin -m97 ;just note amps (1) and colors (96)
 </CsOptions>
 <CsInstruments>
 sr      =   44100

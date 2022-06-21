@@ -18,7 +18,7 @@ nchnls  =   2
 #define TEMPO #110#
 #include "../sequencers.orc"
 ;#include "../oscillators.orc"
-#include "../utils.orc"
+;#include "../utils.orc"
 #include "../mixer.orc"
 
 /*
@@ -122,19 +122,19 @@ kTAS0, kTP0[], kTT0[] Taphath kTrig0,kTN0,kTG0,kTQ0, iTS0
 ;schedkwhen(kBT0[kBAS0],0,0, "Bass",0,0.1, 0, 0.1, kTP0[kTAS0])
 ;sbus_write 3, gaBassOut[0]+gaBassOut[1]
 ;additive------------------------------
-kTrig1  metro $TEMPO*4/60
-iTS1    ftgenonce 0,0,-7*3,-51, 7,2,cpspch(6),0,
-2^(0/12),2^(1/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
-kTN1[]  fillarray 3, 3, 4, 2, 6, 6, 8, 0
-kTG1[]  fillarray 0, 0, 17, 0, 0, 1, 1, 1
-kTQ1[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0
-kTAS1, kTP1[], kTT1[] Taphath kTrig1,kTN1,kTG1,kTQ1, iTS1, 0, 0, 2
-iAdAmp  ftgenonce 0,0,64,-7, 0.05, 64, 0.05
-iAdFrq  ftgenonce 0,0,64,-7, 1, 64, 64
-aAdSig  adsynt 0.5, kTP1[kTAS1], -1, iAdFrq, iAdAmp, 8 ;200?
-if ClkDiv(kTrig1, 4) == 1 then
-    vadd iAdFrq, 0.01, 5, 1
-endif
+;kTrig1  metro $TEMPO*4/60
+;iTS1    ftgenonce 0,0,-7*3,-51, 7,2,cpspch(6),0,
+;2^(0/12),2^(1/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12)
+;kTN1[]  fillarray 3, 3, 4, 2, 6, 6, 8, 0
+;kTG1[]  fillarray 0, 0, 17, 0, 0, 1, 1, 1
+;kTQ1[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0
+;kTAS1, kTP1[], kTT1[] Taphath kTrig1,kTN1,kTG1,kTQ1, iTS1, 0, 0, 2
+;iAdAmp  ftgenonce 0,0,64,-7, 0.05, 64, 0.05
+;iAdFrq  ftgenonce 0,0,64,-7, 1, 64, 64
+;aAdSig  adsynt 0.5, kTP1[kTAS1], -1, iAdFrq, iAdAmp, 8 ;200?
+;if ClkDiv(kTrig1, 4) == 1 then
+;    vadd iAdFrq, 0.01, 5, 1
+;endif
 ;sbus_write 2, aAdSig
 ;sbus_mult  2, ampdb(-6)
 ;hsboscil------------------------------

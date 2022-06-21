@@ -40,6 +40,7 @@ if p4 > 1 then
 endif
 turnoff
 endin
+
 instr s3
 idur = $B/6
 schedule "Bass", 0*idur, idur, -12, 6.02, .2, .9, .9
@@ -53,6 +54,7 @@ if p4 > 1 then
 endif
 turnoff
 endin
+
 instr s4
 idur = $B/6
 schedule "Bass", 0*idur, idur, -12, 6.02, .2, .9, .9
@@ -66,6 +68,7 @@ if p4 > 1 then
 endif
 turnoff
 endin
+
 instr s2
 schedule "Kick", $B*0, .8, -12, .04, 230, 20
 if p4 > 1 then
@@ -105,43 +108,43 @@ aSig *= ampdb(p4)
 outs aSig, aSig
 endin
 
-gaVerbSnd   init 0
-instr Verb ;stolen from the floss manual 05E01_freeverb.csd
-kRoomSize   init      0.55     ; room size (range 0 to 1)
-kHFDamp     init      0.9      ; high freq. damping (range 0 to 1)
-aL,aR freeverb gaVerbSnd,gaVerbSnd,kRoomSize,kHFDamp
-outs aL, aR
-clear gaVerbSnd
-endin
+;gaVerbSnd   init 0
+;instr Verb ;stolen from the floss manual 05E01_freeverb.csd
+;kRoomSize   init      0.55     ; room size (range 0 to 1)
+;kHFDamp     init      0.9      ; high freq. damping (range 0 to 1)
+;aL,aR freeverb gaVerbSnd,gaVerbSnd,kRoomSize,kHFDamp
+;outs aL, aR
+;clear gaVerbSnd
+;endin
 
-instr Hsboscil ;originally stolen from floss example 04A13_hsboscil.csd
-iWindow ftgenonce 0, 0, 2^10, -19, 1, 0.5, 270, 0.5
-iSin    ftgenonce 0, 0, 2^10, 10, 1
-iWav    ftgenonce 0, 0, 2^18, 9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
-        816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
-;skip init
-if p6 == 1 then
-    igoto end
-endif
-kAmp = .5
-kTone rspline -1,1,4,7
-;kBrite rspline -3,3,4,8
-kBrite rspline -1,1,1,2
-iBasFreq = 220
-;switch between sin and wav based on p5
-kcps = p4
-kcps tonek kcps, 10 ;¡muy interesante!
-if p5 == 0 then
-    aSig hsboscil kAmp, kcps, kBrite, iBasFreq, iSin, iWindow, 3
-elseif p5 == 1 then
-    aSig hsboscil kAmp, kcps, kBrite, iBasFreq/100, iWav, iWindow, 3
-elseif p5 == 2 then
-    aSig = hsboscil(kAmp, kcps, kBrite, iBasFreq, iSin, iWindow, 3) +
-           hsboscil(kAmp, kcps, kBrite, 228, iSin, iWindow, 3)
-endif
-outs aSig, aSig
-end:
-endin
+;instr Hsboscil ;originally stolen from floss example 04A13_hsboscil.csd
+;iWindow ftgenonce 0, 0, 2^10, -19, 1, 0.5, 270, 0.5
+;iSin    ftgenonce 0, 0, 2^10, 10, 1
+;iWav    ftgenonce 0, 0, 2^18, 9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
+;        816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
+;;skip init
+;if p6 == 1 then
+;    igoto end
+;endif
+;kAmp = .5
+;kTone rspline -1,1,4,7
+;;kBrite rspline -3,3,4,8
+;kBrite rspline -1,1,1,2
+;iBasFreq = 220
+;;switch between sin and wav based on p5
+;kcps = p4
+;kcps tonek kcps, 10 ;¡muy interesante!
+;if p5 == 0 then
+;    aSig hsboscil kAmp, kcps, kBrite, iBasFreq, iSin, iWindow, 3
+;elseif p5 == 1 then
+;    aSig hsboscil kAmp, kcps, kBrite, iBasFreq/100, iWav, iWindow, 3
+;elseif p5 == 2 then
+;    aSig = hsboscil(kAmp, kcps, kBrite, iBasFreq, iSin, iWindow, 3) +
+;           hsboscil(kAmp, kcps, kBrite, 228, iSin, iWindow, 3)
+;endif
+;outs aSig, aSig
+;end:
+;endin
 
 instr WG
 ;play with wguide2 and rspline

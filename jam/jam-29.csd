@@ -62,7 +62,6 @@ gaKickOut = aSig
 endin
 
 instr Hsboscil ;originally stolen from floss example 04A13_hsboscil.csd
-;km, kdata[] OSClisten gicharles, "/orientation", "fff" ;that was nuts
 iSin    ftgenonce 0, 0, 2^10, 10, 1
 iWindow ftgenonce 0, 0, 2^10, -19, 1, 0.5, 270, 0.5
 iWav    ftgenonce 0, 0, 2^18, 9, 100,1.000,0, 278,0.500,0, 518,0.250,0,

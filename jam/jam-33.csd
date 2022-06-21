@@ -19,7 +19,7 @@ nchnls  =   2
 ;how do other systems deal with those ../ paths?
 #include "../sequencers.orc"
 #include "../oscillators.orc"
-#include "../utils.orc"
+;#include "../utils.orc"
 #include "../mixer.orc"
 
 gkFM10Amp[] init 16

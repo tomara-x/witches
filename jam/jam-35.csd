@@ -17,6 +17,7 @@ nchnls  =   2
 
 ;#include "../sequencers.orc"
 ;#include "../oscillators.orc"
+
 #define TEMPO #115#
 #define S #(60/$TEMPO)*# ; $S 4 = duration of 4 beats in seconds
 ;have a bad feeling about this

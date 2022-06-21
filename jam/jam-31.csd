@@ -211,7 +211,7 @@ if kV == 9 then
     sbus_mult 1, 0
 endif
 ;verb------------------------------
-schedule("Verb",0,-1)
+schedule("Verb",0,-1) ;i mean for this situation.. do you schedule this or not?
 gaVerbIn = gaKickOut*ampdb(-32) +
            gaHsboscilOut*ampdb(-64)
 sbus_write 15, gaVerbOutL, gaVerbOutR

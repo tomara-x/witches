@@ -7,6 +7,9 @@
 //i miss the score!
 //hold on! i'll see blue, then i'll come back to this
 //↑ lol! did not know what i was getting into!
+
+// why the hell did i have such a buggy patch just settong there?
+// amd after fixing it, it actially does nothing!
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m227 ;-m231
@@ -20,6 +23,7 @@ nchnls  =   2
 #include "../sequencers.orc"
 #include "../oscillators.orc"
 #include "../utils.orc"
+#include "../mixer.orc"
 
 instr FM10
 kAmp[] init 16
@@ -89,6 +93,10 @@ gaEnvOut[p4] = adsr(p5,p6,p7,p8)
 endin
 
 ;wave guide instrument
+gaWGIn init 0
+gkWGFrq init 110
+gkWGCo init 3000
+gkWGFb init 0.9
 instr WG
 ;play with wguide2 and rspline
 asig1 wguide1 gaWGIn, gkWGFrq, gkWGCo+1000, gkWGFb+0.1
@@ -117,6 +125,7 @@ endin
 
 instr Main
 ;kick------------------------------
+kTempo = 137
 kFrq = kTempo*4/60
 kTrig  metro kFrq
 schedkwhen(kTrig, 0,0, "Kick", 0, 1/kFrq, 0.10, cpspch(6), 20)

@@ -44,8 +44,7 @@ if p5 == 0 then
 else
     aSig1 hsboscil kAmp, kTone, kBrite, iBasFreq/100, iWav, iWindow
 endif
-aEnv linseg 1, p3, 0
-gaHsboscilOut = (aSig1)*aEnv
+gaHsboscilOut = aSig1*linseg:a(1,p3,0) ;oh this is fun
 endin
 
 instr Verb ;stolen from the floss manual 05E01_freeverb.csd

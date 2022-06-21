@@ -18,7 +18,7 @@ nchnls  =   2
 #define TEMPO #110#
 #include "../sequencers.orc"
 ;#include "../oscillators.orc"
-#include "../utils.orc"
+;#include "../utils.orc"
 #include "../mixer.orc"
 
 /*

@@ -118,7 +118,6 @@ endin
 instr WG
 ;play with wguide2 and rspline
 endin
-
 </CsInstruments>
 </CsoundSynthesizer>
 
