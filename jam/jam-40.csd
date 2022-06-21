@@ -19,7 +19,7 @@ nchnls  =   2
 #include "../sequencers.orc"
 #include "../oscillators.orc"
 #include "../mixer.orc"
-#include "../utils.orc"
+;#include "../utils.orc"
 
 instr Kick
 ;;the holy kick (for good luck)

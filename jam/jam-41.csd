@@ -19,7 +19,7 @@ nchnls  =   2
 #include "../sequencers.orc"
 #include "../oscillators.orc"
 #include "../mixer.orc"
-#include "../utils.orc"
+;#include "../utils.orc"
 
 instr Kick
 ;p4, p5, p6, p7 : freq decay, freq[i], freq[f], effect

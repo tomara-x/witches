@@ -5,6 +5,7 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 ;stop looking for the ultimate setup, just enjoy the jam!
+;why is time so wonky here
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231 ;-m97
@@ -19,7 +20,7 @@ nchnls  =   2
 #include "../sequencers.orc"
 #include "../oscillators.orc"
 #include "../mixer.orc"
-#include "../utils.orc"
+;#include "../utils.orc"
 
 instr Kick
 ;p4, p5, p6, p7 : freq decay, freq[i], freq[f], effect

@@ -40,6 +40,7 @@ schedule "s2", $B*16*4, -1, 1, 4
 endin
 schedule("Score", 0, -1)
 
+;recursive scheduing instrumrnt
 instr s1
 idur = $B/p4
 ipch[] = fillarray(6.02, 6.02, 6, 6.06, 6.02, 6, 6.04, 6.04, 6.07)
