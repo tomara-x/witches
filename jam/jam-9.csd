@@ -28,7 +28,8 @@ klfo1   lfo 600, 5+kcps/256
 klfo2   lfo 300, kcps/256
 asig    poscil 1, kcps+klfo1
 ;try other fiters
-aout    rbjeq asig, 40+kcps+klfo2, 4, 8, 1, 4
+;aout    rbjeq asig, 40+kcps+klfo2, 4, 8, 1, 4
+aout    butbp asig, 10+kcps+klfo2, 1
 aout    = aout * 0.1
 outs    aout, aout
 endin
