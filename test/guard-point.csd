@@ -3,6 +3,9 @@
 //This work is free. You can redistribute it and/or modify it under the
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
+
+//if you need a guard point, table size must be (power of 2)+1 and must be positive
+//negative sizes are always exact sizes
 <CsoundSynthesizer>
 <CsOptions>
 -n -Lstdin -m231

@@ -53,7 +53,7 @@ i"Out"  0 -1
 ;energy back (0-1) ----+
 ;damp (0-.05) -----+   |
 ;number -------+   |   |
-;              v   v   v
+;              v   v   v  frq1 frq2 frq3
 i"Rawr" + 4 .1 20 .05 .00 1407 1048 7090
 s
 i"Rawr" + 4 .1 80 .01 .01 1407 148  790
