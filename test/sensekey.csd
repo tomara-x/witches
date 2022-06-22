@@ -5,6 +5,8 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 //not work! why?
+//this is actually a mess on pc as well, i don't know if it has something
+//to do with the command line frontend or what. it needs testing
 <CsoundSynthesizer>
 <CsOptions>
 -n -Lstdin -m231

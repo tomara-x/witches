@@ -35,7 +35,7 @@ ix Sum 3, 4, 3, 2
 print ix
 iy, iz Sum 3, 4, 3, 2
 print iy, iz
-ij, ik Sum 3, 9 ;aaaaaah!
+ij, ik Sum 3, 9 ;aaaaaah! [months later. dam girl, you said it all!]
 print ij
 endin
 schedule("Main", 0, 1)
