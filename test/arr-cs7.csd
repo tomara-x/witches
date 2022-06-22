@@ -14,6 +14,8 @@ ksmps   =   441
 nchnls  =   1
 0dbfs   =   1
 
+;what same? what were you doing?! TELL ME!
+; why name it cs7? and what's with the turnoff? so many questions!
 instr 1
   kA[] fillarray 1, 2, 3, 4
   kB[] = kA * 2   ; the same happends if kB was inited before

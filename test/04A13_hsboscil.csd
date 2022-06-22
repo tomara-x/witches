@@ -1,3 +1,4 @@
+// i brought this here just to mess around
 <CsoundSynthesizer>
 <CsOptions>
 -o dac -m231 -Lstdin

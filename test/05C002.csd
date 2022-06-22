@@ -1,3 +1,4 @@
+//lfo fmimg a fiter's resonance
 <CsoundSynthesizer>
 <CsOptions>
 -odac -L stdin

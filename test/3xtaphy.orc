@@ -1,3 +1,7 @@
+;i mean that's nice and all, but can be done with one sequencer
+;since they all use the same trigger. (not the queue stuff though)
+;also running these with different triggers and/or having different
+;length sequences is lots of fun
 instr taphy
 ktrig   metro $TEMPO/60
 kn1[]   fillarray 05, 00, 00, 00, 00, 00, 00, 00

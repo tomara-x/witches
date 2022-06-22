@@ -4,7 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-//testing using the app "Sensors2OSC" on android phone to send sensor
+//testing using the app "Sensors2OSC" (from fdroid) on android phone to send sensor
 //data received here to be used as modulation sources
 <CsoundSynthesizer>
 <CsOptions>
@@ -27,5 +27,4 @@ schedule("Main", 0, 60)
 
 </CsInstruments>
 </CsoundSynthesizer>
-
 
