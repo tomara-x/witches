@@ -26,7 +26,7 @@ kTrig[]: An array of trigger outputs from each step. A trigger is
 kIndex[]: The transposed index of each step. can be left out
 
 kInTrig: Trigger signal that runs the sequencer.(metro, metro2, seqtime, Basemath..)
-        The sequencer advances one step every k-cycle where kTrig != 0
+        The sequencer advances one step every k-cycle where kInTrig != 0
         (direction determined by kStepMode)
 kNoteIndx[]: 1D array the length of which is the length of the sequence.
         It contains index values of the kFn for every sequence
