@@ -280,29 +280,23 @@ if kcnt < 1 && kTrig != 0 then
         else
         endif
     endif
-
-    ;step biz
-    ; limit mode
-    ; we ain't mofefying the array outside, this is pass-by-value
-    if kLmtMode == 1 then
-        kCount[kAS] = limit(kCount[kAS], kMin[kAS], kMax[kAS])
-    ; mirror mode
-    elseif kLmtMode == 2 then
-        kCount[kAS] = mirror(kCount[kAS], kMin[kAS], kMax[kAS])
-    ; wrap mode
-    else
-        kCount[kAS] = wrap(kCount[kAS], kMin[kAS], kMax[kAS])
-    endif
     kTrigArr[kAS] = 1
 endif
 
 ;counter
 if kTrig != 0 then
-    ;what fuckery is this?! like i get it, but no! just no
-    ;it increments the count (init at 0) then remainder against the step count in
-    ;if count is 0 then we're at a new step
-    ;clean that mess sometime maybe? yeah right! lmao!
-    kcnt = (kcnt+1)%kCount[kAS]
+    ;when trigger is recieved, increment count then % against
+    ;limited kCount input. if counter is at 0 it's considered a new step
+    ; limit mode
+    if kLmtMode == 1 then
+        kcnt = (kcnt+1) % limit(kCount[kAS], kMin[kAS], kMax[kAS])
+    ; mirror mode
+    elseif kLmtMode == 2 then
+        kcnt = (kcnt+1) % mirror(kCount[kAS], kMin[kAS], kMax[kAS])
+    ; wrap mode
+    else
+        kcnt = (kcnt+1) % wrap(kCount[kAS], kMin[kAS], kMax[kAS])
+    endif
 endif
 
 xout kAS, kTrigArr

@@ -21,7 +21,7 @@ nchnls  =   2
 gay, gal, gar init 0
 
 instr Seq1
-kTrig    metro $FRQ*4
+kTrig    metro $FRQ*1
 kCount[] fillarray 1, 1, 1, 1
 kGain[]  fillarray 1, 3, 1, 2
 iScale   ftgenonce 0,0,-7*3,-51, 7,2,cpspch(7),0,
@@ -36,7 +36,7 @@ kTS, kTP[], kTT[] Taphy kBT[kBS], kNote, kQueue, iScale
 kCount[kBS] = kCount[kBS] + kGain[kBS]*kBT[kBS]
 kNote[kTS] = kNote[kTS] + kTrans[kTS]*kTT[kTS]
 
-schedkwhen(kBT[kBS],0,0, "Bleep", 0, .1, -06, .5, kTP[kTS])
+schedkwhen(kBT[kBS],0,0, "Bleep", 0, .8, -06, .5, kTP[kTS])
 endin
 
 instr Bleep
