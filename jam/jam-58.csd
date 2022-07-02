@@ -21,10 +21,10 @@ nchnls  =   2
 gay, gal, gar init 0
 
 instr Seq1
-kTrig    metro $FRQ*1
+kTrig    metro $FRQ*4
 kCount[] fillarray 1, 1, 1, 1
 kGain[]  fillarray 1, 8, 3, 2
-iScale   ftgenonce 0,0,-7*3,-51, 7,2,cpspch(7),0,
+iScale   ftgenonce 0,0,-7*3,-51, 7,2,cpspch(6),0,
 1,2^(3/12),2^(4/12),2^(5/12),2^(6/12),2^(7/12),2^(10/12) ;7-tone blues
 kNote[]  fillarray 6, 2, 9, 1
 kTrans[] fillarray 1, 0,-2, 3
@@ -36,7 +36,8 @@ kTS, kTP[], kTT[] Taphy kBT[kBS], kNote, kQueue, iScale
 kCount[kBS] = kCount[kBS] + kGain[kBS]*kBT[kBS]
 kNote[kTS] = kNote[kTS] + kTrans[kTS]*kTT[kTS]
 
-schedkwhen(kBT[kBS],0,0, "Bleep", 0, .8, -06, .5, kTP[kTS])
+schedkwhen(kBT[kBS],0,0, "Bleep", 0, .4, -06, .5, kTP[kTS])
+schedkwhen(kBT[0],0,0, "Drm1", 0, .5, -18, .5)
 endin
 
 instr Bleep
@@ -51,6 +52,26 @@ gal += al
 gar += ar
 gaVerbL += al*db(-6)
 gaVerbR += ar*db(-6)
+endin
+
+instr Drm1
+iTanh ftgenonce 0,0,1024,"tanh", -5, 5, 0
+iIFrq   = 230
+iEFrq   = 20
+aAEnv   linseg 1,p3,0
+aFEnv   expseg iIFrq,p3/4,iEFrq
+aSig1   oscili aAEnv^2, aFEnv
+aSig2   oscili aAEnv^2, aFEnv/2
+aSig3   oscili aAEnv^2, aFEnv*4
+aSig = (aSig1+aSig2+aSig3)/3
+aSig    distort aSig*2, 0.2, iTanh
+;aSig    limit aSig, -0.5,0.5
+aSig    += moogladder(aSig, iIFrq*2, .3)
+al, ar pan2 aSig*db(p4), p5
+gal += al
+gar += ar
+gaVerbL += al*db(-12)
+gaVerbR += ar*db(-12)
 endin
 
 gaVerbL,gaVerbR init 0
