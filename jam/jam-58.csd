@@ -21,7 +21,7 @@ nchnls  =   2
 gay, gal, gar init 0
 
 instr Seq1
-kTrig    metro $FRQ*4
+kTrig    metro $FRQ*8
 kCount[] fillarray 1, 1, 1, 1
 kGain[]  fillarray 1, 8, 3, 2
 iScale   ftgenonce 0,0,-7*3,-51, 7,2,cpspch(6),0,
@@ -30,14 +30,15 @@ kNote[]  fillarray 6, 2, 9, 1
 kTrans[] fillarray 1, 0,-2, 3
 kQueue[] init 4
 
-kBS, kBT[] Basma kTrig, kCount, 1, 4, kQueue
+kBS, kBT[] Basma kTrig, kCount, 1, 8, kQueue
 kTS, kTP[], kTT[] Taphy kBT[kBS], kNote, kQueue, iScale
 
 kCount[kBS] = kCount[kBS] + kGain[kBS]*kBT[kBS]
 kNote[kTS] = kNote[kTS] + kTrans[kTS]*kTT[kTS]
 
-schedkwhen(kBT[kBS],0,0, "Bleep", 0, .4, -06, .5, kTP[kTS])
+schedkwhen(kBT[kBS],0,0, "Bleep", 0, .2, -06, .5, kTP[kTS])
 schedkwhen(kBT[0],0,0, "Drm1", 0, .5, -18, .5)
+schedkwhen(kBT[2],0,0, "Drm2", 0, .15, -24, .5)
 endin
 
 instr Bleep
@@ -59,14 +60,34 @@ iTanh ftgenonce 0,0,1024,"tanh", -5, 5, 0
 iIFrq   = 230
 iEFrq   = 20
 aAEnv   linseg 1,p3,0
-aFEnv   expseg iIFrq,p3/4,iEFrq
-aSig1   oscili aAEnv^2, aFEnv
-aSig2   oscili aAEnv^2, aFEnv/2
-aSig3   oscili aAEnv^2, aFEnv*4
-aSig = (aSig1+aSig2+aSig3)/3
-aSig    distort aSig*2, 0.2, iTanh
+aSig1   oscili aAEnv^2, expseg:k(iIFrq,p3/4,iEFrq)
+aSig2   oscili aAEnv^2, expseg:k(iIFrq,p3/4,iEFrq)
+aSig3   oscili aAEnv^2, expseg:k(iIFrq,p3/2,iEFrq*2^7)
+aSig = (aSig1*2+aSig2+aSig3*.5)/3
+aSig    distort aSig*2, 0.6, iTanh
 ;aSig    limit aSig, -0.5,0.5
 aSig    += moogladder(aSig, iIFrq*2, .3)
+al, ar pan2 aSig*db(p4), p5
+gal += al
+gar += ar
+gaVerbL += al*db(-12)
+gaVerbR += ar*db(-12)
+endin
+
+instr Drm2
+iTanh ftgenonce 0,0,1024,"tanh", -5, 5, 0
+iIFrq   = 420
+iEFrq   = 230
+aAEnv   linseg 1,p3,0
+aSig1   oscili aAEnv^2, expseg:k(iIFrq,p3/4,iEFrq)
+aSig2   oscili aAEnv^2, expseg:k(iIFrq,p3/4,iEFrq)
+aSig3   oscili aAEnv^2, expseg:k(iIFrq,p3/2,iEFrq*2^7)
+aSig4   noise  aAEnv^2, expseg:k(-0.9, p3/4, -0.1)
+aSig = (aSig1*2+aSig2+aSig3*.5+aSig4)/4
+aSig    distort aSig*2, 0.6, iTanh
+;aSig    limit aSig, -0.5,0.5
+aSig    += moogladder(aSig, iIFrq*2, .3)
+aSig    pdhalf aSig, -0.8
 al, ar pan2 aSig*db(p4), p5
 gal += al
 gar += ar
