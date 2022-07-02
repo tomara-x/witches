@@ -23,11 +23,11 @@ gay, gal, gar init 0
 instr Seq1
 kTrig    metro $FRQ*1
 kCount[] fillarray 1, 1, 1, 1
-kGain[]  fillarray 1, 3, 1, 2
+kGain[]  fillarray 1, 8, 3, 2
 iScale   ftgenonce 0,0,-7*3,-51, 7,2,cpspch(7),0,
 1,2^(3/12),2^(4/12),2^(5/12),2^(6/12),2^(7/12),2^(10/12) ;7-tone blues
 kNote[]  fillarray 6, 2, 9, 1
-kTrans[] fillarray 1, 0, 0, 3
+kTrans[] fillarray 1, 0,-2, 3
 kQueue[] init 4
 
 kBS, kBT[] Basma kTrig, kCount, 1, 4, kQueue
@@ -41,9 +41,9 @@ endin
 
 instr Bleep
 aEnv linseg 1, p3, 0
-aS1  oscili aEnv^4, p6   +(1-aEnv)*lfo(100, 2)
-aS2  oscili aEnv^4, p6*2 +(1-aEnv)*lfo(200, 4)
-aS3  oscili aEnv^4, p6*3 +(1-aEnv)*lfo(150, 3)
+aS1  oscili aEnv^4, p6   +(1-aEnv)*lfo(410, 8.1)
+aS2  oscili aEnv^4, p6*2 +(1-aEnv)*lfo(330, 6.5)
+aS3  oscili aEnv^4, p6*3 +(1-aEnv)*lfo(250, 4.9)
 aSig = (aS1+aS2+aS3)/3
 aSig diode_ladder aSig, 8000, 1, 1
 al, ar pan2 aSig*db(p4), p5
