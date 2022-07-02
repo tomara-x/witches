@@ -17,6 +17,10 @@ Months after I lost my favorite instrument, I missed the magic, so I did this:
 
 - `uTaphath`, `uBasemath`, and `utBasemath` are minimal versions.
 
+#### sequencers2.orc
+`Taphy` and `Basma` (modified Taphath and tBasemath)
+New versions without the modulation array inputs. All control is done from the calling instrument. They're a bit more effecient, and allow for more control (actually they just force you to use a certain way of sequence modulation which gives more control!)
+
 #### jam/
 Music/sounds, check them out for examples.
 
