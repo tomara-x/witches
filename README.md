@@ -9,7 +9,7 @@ Months after I lost my favorite instrument, I missed the magic, so I did this:
 #### sequencers.orc
 (full documentation in file)
 
-- `Taphath` tries to mimick Aria's MSR as much as possible. (with just a few quirks) It's an arbitrary-length, self-modulating, pitch-quantized[^1] sequencer. (this is how it all started)
+- `Taphath` tries to mimick Aria's MSR as much as possible. (with just a few quirks) It's an arbitrary-length, self-modulating, pitch-quantized sequencer. (this is how it all started)
 
 - `Basemath` is the same idea applied to rhythm, an arbitrary-length, self-modulating rhythm sequencer. (use `tBasemath` to avoid issue #15)
 
@@ -18,8 +18,7 @@ Months after I lost my favorite instrument, I missed the magic, so I did this:
 - `uTaphath`, `uBasemath`, and `utBasemath` are minimal versions.
 
 #### sequencers2.orc
-`Taphy` and `Basma` (modified Taphath and tBasemath)
-New versions without the modulation array inputs. All control is done from the calling instrument. They're a bit more effecient, and allow for more control (actually they just force you to use a certain way of sequence modulation which gives more control!)
+`Taphy` and `Basma` (modified Taphath and tBasemath) are new versions without the modulation array inputs. All control is done from the calling instrument. They're a bit more effecient, and allow for more control (actually they just force you to use a certain way of sequence modulation which gives more control!)
 
 #### jam/
 Music/sounds, check them out for examples.
@@ -43,5 +42,3 @@ If you make something with these, I'd love love love to have a listen/look! Also
 
 
 💜
-
-[^1]: When used with a [GEN51](https://csound.com/docs/manual/GEN51.html) function table.
