@@ -43,8 +43,8 @@ xout kout
 endop
 
 
-;array operations
-;set row to constant
+;array operations (those work at k-time)
+;set row to scalar
 opcode SetRow, k[], k[]kk
 kArr[], knum, kndx xin
 irowlen = lenarray(getrow(kArr,0))
@@ -66,7 +66,7 @@ while kcnt < irowlen do
 od
 xout kArr
 endop
-;set column to constant
+;set column to scalar
 opcode SetCol, k[], k[]kk
 kArr[], knum, kndx xin
 icollen = lenarray(getcol(kArr,0))
@@ -85,6 +85,22 @@ kcnt = 0
 while kcnt < irowlen do
     kArr[kcnt][kndx] = kv[kcnt]
     kcnt += 1
+od
+xout kArr
+endop
+;set 2d array to scalar
+opcode ScalarSet, k[], k[]k
+kArr[], kn xin
+icols = lenarray(getrow(kArr,0))
+irows = lenarray(getcol(kArr,0))
+krow = 0
+while krow < irows do
+    kcol = 0
+    while kcol < icols do
+        kArr[krow][kcol] = kn
+        kcol += 1
+    od
+    krow += 1
 od
 xout kArr
 endop
