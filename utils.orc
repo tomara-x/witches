@@ -105,4 +105,35 @@ od
 xout kArr
 endop
 
-
+;array shift register right
+;shifts all elements to the right and insert input at index 0 when triggered
+;syntax: kRes[] ShftR kTrig, kInput, kArr[]
+opcode ShiftR, k[], kkk[]
+kTrig, kIn, kArr[] xin
+iLen = lenarray(kArr)
+if kTrig != 0 then
+    kndx = iLen-1
+    while kndx > 0 do
+        kArr[kndx] = kArr[kndx-1]
+        kndx -= 1
+    od
+    kArr[0] = kIn
+endif
+xout kArr
+endop
+;array shift register left
+;shifts all elements to the left and insert input at last index when triggered
+;syntax: kRes[] ShftL kTrig, kInput, kArr[]
+opcode ShiftL, k[], kkk[]
+kTrig, kIn, kArr[] xin
+iLen = lenarray(kArr)
+if kTrig != 0 then
+    kndx = 0
+    while kndx < iLen-1 do
+        kArr[kndx] = kArr[kndx+1]
+        kndx += 1
+    od
+    kArr[iLen-1] = kIn
+endif
+xout kArr
+endop
