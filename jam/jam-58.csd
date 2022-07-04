@@ -14,39 +14,56 @@ ksmps   =   42
 nchnls  =   2
 0dbfs   =   1
 
-#define TEMPO #256#
+#define TEMPO #128#
 #define FRQ #($TEMPO/60)#
 #define BEAT #(1/$FRQ)#
 #include "../sequencers2.orc"
+#include "../utils.orc"
 gay, gal, gar init 0
 
 instr Seq1
-kTrig    metro $FRQ*8
-kCount[] fillarray 1, 1, 1, 1
-kGain[]  fillarray 1, 8, 3, 2
-iScale   ftgenonce 0,0,-7*3,-51, 7,2,cpspch(6),0,
+kTrig    metro $FRQ*4
+kCount[] fillarray 1, 1, 1, 1, 1, 1, 1, 1
+kGain[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0
+iScale   ftgenonce 0,0,-7*3,-51, 7,2,cpspch(5),0,
 1,2^(3/12),2^(4/12),2^(5/12),2^(6/12),2^(7/12),2^(10/12) ;7-tone blues
-kNote[]  fillarray 6, 2, 9, 1
-kTrans[] fillarray 1, 0,-2, 3
-kQueue[] init 4
+kNote[]  fillarray 6, 2, 9, 1, 0, 7, 0, 4
+kTrans[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
+kQueue[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 
-kBS, kBT[] Basma kTrig, kCount, 1, 8, kQueue
+kBS, kBT[] Basma kTrig, kCount, 1, 4, kQueue
 kTS, kTP[], kTT[] Taphy kBT[kBS], kNote, kQueue, iScale
 
 kCount[kBS] = kCount[kBS] + kGain[kBS]*kBT[kBS]
 kNote[kTS] = kNote[kTS] + kTrans[kTS]*kTT[kTS]
 
+kTrans[0] = randomh(0, 3, $FRQ/16)
+kTrans[1] = randomh(0, 3, $FRQ/16)
+kTrans[2] = randomh(0, 3, $FRQ/16)
+kTrans[3] = randomh(0, 3, $FRQ/16)
+kTrans[4] = randomh(0, 3, $FRQ/16)
+kTrans[5] = randomh(0, 3, $FRQ/16)
+kTrans[6] = randomh(0, 3, $FRQ/16)
+kTrans[7] = randomh(0, 3, $FRQ/16)
+
+kGain[4] = randomh(-4, 4, $FRQ)
+kGain[5] = randomh(-4, 4, $FRQ)
+kGain[6] = randomh(-4, 4, $FRQ)
+kGain[7] = randomh(-4, 4, $FRQ)
+
 schedkwhen(kBT[kBS],0,0, "Bleep", 0, .2, -06, .5, kTP[kTS])
-schedkwhen(kBT[0],0,0, "Drm1", 0, .5, -18, .5)
-schedkwhen(kBT[2],0,0, "Drm2", 0, .15, -24, .5)
+;schedkwhen(kBT[0],0,0, "Drm1", 0, .5, -18, .5)
+;schedkwhen(kBT[4],0,0, "Drm2", 0, .1, -32, .5)
 endin
 
 instr Bleep
 aEnv linseg 1, p3, 0
-aS1  oscili aEnv^4, p6   +(1-aEnv)*lfo(410, 8.1)
-aS2  oscili aEnv^4, p6*2 +(1-aEnv)*lfo(330, 6.5)
-aS3  oscili aEnv^4, p6*3 +(1-aEnv)*lfo(250, 4.9)
+aS1  oscili aEnv^4, p6   +(1-aEnv)*lfo(41, 3.1)
+aS2  oscili aEnv^4, p6*2 +(1-aEnv)*lfo(33, 5.5)
+aS3  oscili aEnv^4, p6*3 +(1-aEnv)*lfo(25, 4.9)
 aSig = (aS1+aS2+aS3)/3
+klmt = 0.5 * aEnv
+aSig limit aSig, -klmt, klmt
 aSig diode_ladder aSig, 8000, 1, 1
 al, ar pan2 aSig*db(p4), p5
 gal += al
