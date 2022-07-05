@@ -4,6 +4,8 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
+//holy fuck! this is way more cpu hungry than it should!
+//that's a prob bob
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m227 ;-m231
@@ -14,7 +16,7 @@ ksmps   =   42
 nchnls  =   2
 0dbfs   =   1
 
-#define TEMPO #128#
+#define TEMPO #136#
 #define FRQ #($TEMPO/60)#
 #define BEAT #(1/$FRQ)#
 #include "../sequencers2.orc"
@@ -31,11 +33,15 @@ kNote[]  fillarray 6, 2, 9, 1, 0, 7, 0, 4
 kTrans[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 kQueue[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 
-kBS, kBT[] Basma kTrig, kCount, 1, 4, kQueue
+kBS, kBT[] Basma kTrig, kCount, 1, 3, kQueue
 kTS, kTP[], kTT[] Taphy kBT[kBS], kNote, kQueue, iScale
 
-kCount[kBS] = kCount[kBS] + kGain[kBS]*kBT[kBS]
-kNote[kTS] = kNote[kTS] + kTrans[kTS]*kTT[kTS]
+if kBT[kBS] == 1 then
+    kCount[kBS] = kCount[kBS] + ((2^kGain[kBS]))
+endif
+if kTT[kTS] == 1 then
+    kNote[kTS] = kNote[kTS] + kTrans[kTS]
+endif
 
 kTrans[0] = randomh(0, 1, $FRQ/16)
 kTrans[1] = randomh(0, 3, $FRQ/16)
@@ -46,12 +52,16 @@ kTrans[5] = randomh(0, 3, $FRQ/16)
 kTrans[6] = randomh(0, 4, $FRQ/16)
 kTrans[7] = randomh(0, 8, $FRQ/16)
 
-kCount[4] = randomh(-4, 4, $FRQ)
-kCount[5] = randomh(-4, 4, $FRQ)
-kCount[6] = randomh(-4, 4, $FRQ)
-kCount[7] = randomh(-4, 4, $FRQ)
+kGain[0] = randomh(-4, 4, $FRQ)
+kGain[1] = randomh(-4, 4, $FRQ)
+kGain[2] = randomh(-4, 4, $FRQ)
+kGain[3] = randomh(-4, 4, $FRQ)
+kGain[4] = randomh(-4, 4, $FRQ)
+kGain[5] = randomh(-4, 4, $FRQ)
+kGain[6] = randomh(-4, 4, $FRQ)
+kGain[7] = randomh(-4, 4, $FRQ)
 
-schedkwhen(kBT[kBS],0,0, "Bleep", 0, .2, -06, .5, kTP[kTS])
+schedkwhen(kBT[kBS],0,0, "Bleep", 0, kCount[kBS]*$BEAT/8, -06, .5, kTP[kTS])
 ;schedkwhen(kBT[0],0,0, "Drm1", 0, .5, -18, .5)
 ;schedkwhen(kBT[4],0,0, "Drm2", 0, .1, -32, .5)
 endin
@@ -135,7 +145,7 @@ endin
 i"Verb" 0 -1
 t 0 256
 i"Out"  0 [8*64]
-i"Seq1" 0 [8*64]
+i"Seq1" 0 [1*64]
 </CsScore>
 </CsoundSynthesizer>
 
