@@ -61,7 +61,7 @@ kGain[5] = randomh(-4, 4, $FRQ)
 kGain[6] = randomh(-4, 4, $FRQ)
 kGain[7] = randomh(-4, 4, $FRQ)
 
-schedkwhen(kBT[kBS],0,0, "Bleep", 0, kCount[kBS]*$BEAT/8, -06, .5, kTP[kTS])
+;schedkwhen(kBT[kBS],0,0, "Bleep", 0, kCount[kBS]*$BEAT/8, -06, .5, kTP[kTS])
 ;schedkwhen(kBT[0],0,0, "Drm1", 0, .5, -18, .5)
 ;schedkwhen(kBT[4],0,0, "Drm2", 0, .1, -32, .5)
 endin
