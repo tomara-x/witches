@@ -4,6 +4,8 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
+;mkay, i like this point here
+;work on the scream, then bounce to another file
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m227 ;-m231
@@ -53,7 +55,7 @@ kTrans[5] = randomh(0, 3, $FRQ/16)
 kTrans[6] = randomh(0, 4, $FRQ/16)
 kTrans[7] = randomh(0, 8, $FRQ/16)
 
-kGain[0] = randomh(-4, 4, $FRQ)
+kGain[0] = randomh(-4, 4, $FRQ) ;add imode=3 for random init values
 kGain[1] = randomh(-4, 4, $FRQ)
 kGain[2] = randomh(-4, 4, $FRQ)
 kGain[3] = randomh(-4, 4, $FRQ)
@@ -237,7 +239,7 @@ gay += amix
 endin
 
 instr Scream
-kTrig    metro $FRQ*4
+kTrig    metro $FRQ*8
 kCount[] fillarray 1, 1, 1, 1, 1, 1, 1, 1
 kGain[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0
 iScale ftgenonce 0,0,-31*2,-51, 31,2,cpspch(8),0,
@@ -253,7 +255,7 @@ kNote[]  fillarray 6, 2, 9, 1, 0, 7, 0, 4
 kTrans[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 kQueue[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 
-kBS, kBT[] Basma kTrig, kCount, 1, 3, kQueue
+kBS, kBT[] Basma kTrig, kCount, 1, 16, kQueue
 kTS, kTP[], kTT[] Taphy kBT[kBS], kNote, kQueue, iScale
 
 if kBT[kBS] == 1 then
@@ -282,6 +284,8 @@ kGain[6] = randomh(-4, 4, $FRQ)
 kGain[7] = randomh(-4, 4, $FRQ)
 
 ;scream
+fof2
+fofilter
 ;aaaaaaaaaaaaaaaaaaaaaaaaaaaa!
 
 ;gay += aSig
@@ -313,8 +317,8 @@ i"Verb"   0 -1
 t 0 136
 i"Out"    0 [8*64]
 ;i"Seq1"   0 [2*64]
-i"Seq2"   0 [2*64]
-;i"Scream" 0 [2*64]
+;i"Seq2"   0 [2*64]
+i"Scream" 0 [2*64]
 </CsScore>
 </CsoundSynthesizer>
 
