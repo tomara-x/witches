@@ -33,6 +33,7 @@ iN8 ftgen 8,0,-16,-2, 0,0,0,0,0,1,0,0
 ;the index after which we have the mother node and children, make that a variable?
 ;so it'd be a vatiable number of values per step? who needs more than 4 tho?
 ;indexes 0 to 3 are node values (frequency, intensity, whatever)
+;ooo maybe even node repetition? reset node counter for n-times?
 ;index 4 is node counter
 ;mother at 5 and then children at 6+
 ;(use 2 tables per node? i don't like it, i want it simple lol)
@@ -44,10 +45,10 @@ iN8 ftgen 8,0,-16,-2, 0,0,0,0,0,1,0,0
 ;a connect-nodes udo (tab write input to empty child/mother indices)
 ;a disconnect udo
 ;a set-values udo
-;a set-counter udo
+;a set-counter udo (not if walk tracks counts)
 ;a clear-children udo
 ;a clear-mother udo?
-;a reset all counters udo?
+;a reset all counters udo? (reset node counter?)
 ;a walk udo (hbout this udo keeps track of the counts?)
 ;hbout the walk just outputs node number, and have a get-node-values udo?
 
