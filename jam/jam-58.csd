@@ -73,7 +73,61 @@ schedkwhen(kBT[kBS],0,0, "Bleep", 0, .4, -0, .5, kTP[kTS]/2)
 ;p this
 ;schedkwhen(kBT[0],0,0, "Drm1", 0, .5, -18, .5)
 ;schedkwhen(kBT[4],0,0, "Snare", 0, 1, 2, 1)
-gkcps = kTP[kTS]
+endin
+
+instr Seq2 ;this'll need its own bleep
+kTrig    metro $FRQ*16
+kTrig2   metro $FRQ/4
+kCount[] fillarray 2, 3, 3, 4, 4, 2, 1, 2
+kGain[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0
+;p the range and root note
+iScale   ftgenonce 0,0,-7*3,-51, 7,2,cpspch(7),0,
+1,2^(3/12),2^(4/12),2^(5/12),2^(6/12),2^(7/12),2^(10/12) ;7-tone blues
+kNote[]  fillarray 6, 2, 9, 1, 0, 7, 0, 4
+kTrans[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
+kQueue[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
+
+kBS, kBT[] Basma kTrig, kCount, 1, 16, kQueue
+kTS, kTP[], kTT[] Taphy kBT[kBS], kNote, kQueue, iScale
+
+if kBT[kBS] == 1 then
+    ;maybe p this and a 2^ option
+    kCount[kBS] = kCount[kBS] + kGain[kBS]
+endif
+if kTT[kTS] == 1 then
+    kNote[kTS] = kNote[kTS] + kTrans[kTS]
+endif
+
+;p this whole deal?
+kTrans[0] = randomh(0, 1, $FRQ/16)
+kTrans[1] = randomh(0, 3, $FRQ/16)
+kTrans[2] = randomh(0, 2, $FRQ/16)
+kTrans[3] = randomh(0, 2, $FRQ/16)
+kTrans[4] = randomh(0, 8, $FRQ/16)
+kTrans[5] = randomh(0, 3, $FRQ/16)
+kTrans[6] = randomh(0, 4, $FRQ/16)
+kTrans[7] = randomh(0, 8, $FRQ/16)
+
+kGain[0] = randomh(-4, 4, $FRQ)
+kGain[1] = randomh(-4, 4, $FRQ)
+kGain[2] = randomh(-4, 4, $FRQ)
+kGain[3] = randomh(-4, 4, $FRQ)
+kGain[4] = randomh(-4, 4, $FRQ)
+kGain[5] = randomh(-4, 4, $FRQ)
+kGain[6] = randomh(-4, 4, $FRQ)
+kGain[7] = randomh(-4, 4, $FRQ)
+
+;hmm nother p?
+if ClkDiv(kBT[0], 8) == 1 then
+;    kCount = 1
+endif
+
+;p's for the parameters of the bleep?
+schedkwhen(kBT[kBS],0,0, "Bleep", 0, .4, -6, .5, kTP[kTS])
+;schedkwhen(kBT[kBS],0,0, "Bleep", 0, .4, -0, .5, kTP[kTS]/2)
+;p this
+schedkwhen(kTrig2,0,0, "Drm1", 0, .5, -18, .5)
+schedkwhen(kTrig2,0,0, "Snare", $BEAT*2, .2, 2, 2)
 endin
 
 instr Bleep
@@ -258,7 +312,8 @@ endin
 i"Verb"   0 -1
 t 0 136
 i"Out"    0 [8*64]
-i"Seq1"   0 [2*64]
+;i"Seq1"   0 [2*64]
+i"Seq2"   0 [2*64]
 ;i"Scream" 0 [2*64]
 </CsScore>
 </CsoundSynthesizer>
