@@ -42,13 +42,14 @@ iN8 ftgen 8,0,-16,-2, 0,0,0,0,0,1,0,0
 
 ;a create-node udo (we can track the numbers globally and ignore names)
 ;a connect-nodes udo (tab write input to empty child/mother indices)
+;a disconnect udo
 ;a set-values udo
 ;a set-counter udo
 ;a clear-children udo
 ;a clear-mother udo?
 ;a reset all counters udo?
-;a walk udo (the real deal)
-;there was something i forgot
+;a walk udo (hbout this udo keeps track of the counts?)
+;hbout the walk just outputs node number, and have a get-node-values udo?
 
 
 instr 1
