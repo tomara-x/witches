@@ -25,7 +25,8 @@ instr Seq1
 kTrig    metro $FRQ*4
 kCount[] fillarray 1, 1, 1, 1, 1, 1, 1, 1
 kGain[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0
-iScale   ftgenonce 0,0,-7*3,-51, 7,2,cpspch(6),0,
+;p the range and root note
+iScale   ftgenonce 0,0,-7*3,-51, 7,2,cpspch(8),0,
 1,2^(3/12),2^(4/12),2^(5/12),2^(6/12),2^(7/12),2^(10/12) ;7-tone blues
 kNote[]  fillarray 6, 2, 9, 1, 0, 7, 0, 4
 kTrans[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
@@ -67,11 +68,11 @@ if ClkDiv(kBT[0], 8) == 1 then
 endif
 
 ;p's for the parameters of the bleep?
-schedkwhen(kBT[kBS],0,0, "Bleep", 0, .2, -06, .5, kTP[kTS])    ;1 return to p3=.3
-schedkwhen(kBT[kBS],0,0, "Bleep", 0, .2, -00, .5, kTP[kTS]/2) ;try 4
+schedkwhen(kBT[kBS],0,0, "Bleep", 0, .4, -6, .5, kTP[kTS])
+schedkwhen(kBT[kBS],0,0, "Bleep", 0, .4, -0, .5, kTP[kTS]/2)
 ;p this
-schedkwhen(kBT[0],0,0, "Drm1", 0, .5, -18, .5)
-schedkwhen(kBT[4],0,0, "Snare", 0, 1, 2, 1)
+;schedkwhen(kBT[0],0,0, "Drm1", 0, .5, -18, .5)
+;schedkwhen(kBT[4],0,0, "Snare", 0, 1, 2, 1)
 gkcps = kTP[kTS]
 endin
 
@@ -81,8 +82,8 @@ aS1  vco2 1, 1*p6+(1-k(aEnv))*cpspch(lfo(0.005, 3)), 2, 0.5
 aS2  vco2 1, 2*p6+(1-k(aEnv))*cpspch(lfo(0.005, 3)), 2, 0.5
 aSig = (aS1+aS2)/2
 ;i wanna add more of these babies!
-aF1 diode_ladder aSig, p6*32*aEnv^4, 12*aEnv^32, 1, 20 ;last edit:feedback env
-aF2 diode_ladder aSig, p6*16*aEnv^8, 16*aEnv^32, 1, 80
+aF1 diode_ladder aSig, limit(p6*32*aEnv^4, 0, sr/2), 12*aEnv^32, 1, 20 ;last edit:feedback env
+aF2 diode_ladder aSig, limit(p6*16*aEnv^8, 0, sr/2), 16*aEnv^32, 1, 80
 aF2 pdhalf aF2, -0.99
 aF2 *= .2 ;2 skip dis
 aF2 limit aF2, -0.5, 0.5
