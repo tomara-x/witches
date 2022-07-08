@@ -47,6 +47,7 @@ nchnls  =   1
 ;this can self-modify
 ;when at node x, make new connection, modify values, teleport to new node,...
 
+;IMPORTANTE: segment your work into smaller udo's (goto-child-n, goto-mother, etc)
 gk_num_values = 8
 
 ;create a single empty node.
@@ -75,37 +76,4 @@ i1 0 0.1
 e
 </CsScore>
 </CsoundSynthesizer>
-
-/*
-;hbout a 2d array though? can be local or global, we can have mutiple ones,
-;no fussing about the tab numbers nonsense...
-;any downsides? lmao, we copy the whole thing in and out every cycle.. lol lmao
-
-;mkay, hbout a global one that's not passed as input?
-;it has to be one though, and a fixed name
-
-;3d arrays? x is node, y is values, z is mother and children?
-;woudln't that just complicate it further?
-
-;with arrays it's a fixed max number of nodes tho, can't just define an extra node
-;with ft's it's possible to create and connect a growing number of nodes
-
-;sorry, pirates, no arr this time
-
-;no:
-;a set-counter udo (not if walk tracks counts)
-;a reset all counters udo? (reset node counter?)
-
-gkA1[] init 4
-
-opcode test, 0, k
-kn xin
-gkA1[kn] = gkA1[kn]+1
-endop
-
-instr 1
-printarray(gkA1)
-test(0)
-endin
-*/
 
