@@ -42,7 +42,7 @@ endif
 xout kout
 endop
 
-
+;FIX: use lenarray with dimension option
 ;array operations (those work at k-time)
 ;set row to scalar
 opcode SetRow, k[], k[]kk
