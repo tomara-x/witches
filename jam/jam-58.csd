@@ -78,6 +78,7 @@ schedkwhen(kBT[kBS],0,0, "Bleep", 0, .4, -0, .5, kTP[kTS]/2)
 endin
 
 instr Seq2 ;this'll need its own bleep
+;LAYER THIS WITH AN UNMODULATED BASMA!
 kTrig    metro $FRQ*16
 kTrig2   metro $FRQ/4
 kCount[] fillarray 2, 3, 3, 4, 4, 2, 1, 2
