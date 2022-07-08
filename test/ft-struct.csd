@@ -31,6 +31,7 @@ iN8 ftgen 8,0,-16,-2, 0,0,0,0,1,0,0
 
 ;a create-node udo (we can track the numbers globally and ignore names)
 ;a connect-nodes udo (tab write input to empty child/mother indices)
+;(maybe assign more than one node to same mother)
 ;a disconnect udo
 ;a set-values udo
 ;a clear-children udo
@@ -51,8 +52,34 @@ iN8 ftgen 8,0,-16,-2, 0,0,0,0,1,0,0
 ;when at node x, make new connection, modify values, teleport to new node,...
 
 ;test create at timek/s
+
+
+
+;hbout a 2d array though? can be local or global, we can have mutiple ones,
+;no fussing about the tab numbers nonsense...
+;any downsides? lmao, we copy the whole thing in and out every cycle.. lol lmao
+
+;mkay, hbout a global one that's not passed as input?
+;it has to be one though, and a fixed name
+
+;3d arrays? x is node, y is values, z is mother and children?
+;woudln't that just complicate it further?
+
+;with arrays it's a fixed max number of nodes tho, can't just define an extra node
+;with ft's it's possible to create and connect a growing number of nodes
+
+
+gkA1[] init 4
+
+opcode test, 0, k
+kn xin
+gkA1[kn] = gkA1[kn]+1
+endop
+
+
 instr 1
-ftprint 1
+printarray(gkA1)
+test(0)
 endin
 </CsInstruments>
 <CsScore>
