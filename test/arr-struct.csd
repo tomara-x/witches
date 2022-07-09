@@ -14,8 +14,8 @@ nchnls  =   1
 0dbfs   =   1
 
 giNumOfNodes = 16
+giValuesPerNode = 8 ;mother index
 giNodeLength = 16
-giValuesPerNode = 8
 gk_struct[][] init iNumOfNodes, iNodeLength
 
 ;children -----------------------+-+-+
@@ -32,14 +32,14 @@ gk_struct[][] init iNumOfNodes, iNodeLength
 ;N#6-----------0,0,0,0,0,0,0,0,2,7,N,N                  7
 ;N#7-----------0,0,0,0,0,0,0,0,6,N,N,N   
 
-;connect-nodes udo (take mother and minimum of 1 child)
-;disconnect udo (isolate node)
-;set-values udo
-;clear-children udo
-;clear-mother udo (maybe)
-;walk udo (keeps track of the progress internally) (reset-node/all trig inputs)
-;hbout the walk just outputs node number, and have a get-node-values udo?
-;copy-node udo
+;connect-nodes udo (take mother and 1 child) (use loops outside)
+;set-values (array slice/single index value)
+;get-values
+;clear-children
+;clear-mother (maybe)
+;disconnect (isolate node) (clear children and mother)
+;copy-node
+;walk (keeps track of the progress internally) (reset-node/all trig inputs)
 
 instr 1
 endin
