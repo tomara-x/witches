@@ -13,13 +13,13 @@ ksmps   =   441
 nchnls  =   1
 0dbfs   =   1
 
-giNumOfNodes = 16
-giValuesPerNode = 8 ;mother index
-giNodeLength = 16
-gk_struct[][] init iNumOfNodes, iNodeLength
+gi_NumOfNodes = 8
+gi_ValuesPerNode = 4 ;roots index
+gi_NodeLength = 8
+gk_Tree[][] init gi_NumOfNodes, gi_NodeLength
 
-;children -----------------------+-+-+
-;mother node ------------------+ | | |
+;branches -----------------------+-+-+
+;root node --------------------+ | | |
 ;values -------+-+-+-+-+-+-+-+ | | | |
 ;              | | | | | | | | | | | |
 ;              v v v v v v v v m c c ...   
@@ -32,16 +32,18 @@ gk_struct[][] init iNumOfNodes, iNodeLength
 ;N#6-----------0,0,0,0,0,0,0,0,2,7,N,N                  7
 ;N#7-----------0,0,0,0,0,0,0,0,6,N,N,N   
 
-;connect-nodes udo (take mother and 1 child) (use loops outside)
-;set-values (array slice/single index value)
-;get-values
-;clear-children
-;clear-mother (maybe)
-;disconnect (isolate node) (clear children and mother)
+;connect-nodes udo (take root and 1 branch) (use loops outside)
+;set-values (array input / single index value) 
+;get-values (array slice / single index value)
+;clear-branches
+;clear-root (maybe)
+;disconnect (isolate node) (clear branches and root)
 ;copy-node
 ;walk (keeps track of the progress internally) (reset-node/all trig inputs)
 
 instr 1
+gk_Tree[0][4] = 420
+printarray getrow(gk_Tree, 0)
 endin
 
 </CsInstruments>
