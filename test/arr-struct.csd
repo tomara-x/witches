@@ -15,14 +15,16 @@ nchnls  =   1
 
 gi_NumOfNodes = 8
 gi_ValuesPerNode = 4 ;roots index
-gi_NodeLength = 8
+gi_NodeLength = 16
 gk_Tree[][] init gi_NumOfNodes, gi_NodeLength
+;init to -1
+
 
 ;branches -----------------------+-+-+
 ;root node --------------------+ | | |
 ;values -------+-+-+-+-+-+-+-+ | | | |
 ;              | | | | | | | | | | | |
-;              v v v v v v v v m c c ...   
+;              V V V V V V V V R B B ...
 ;N#0-----------0,0,0,0,0,0,0,0,N,1,2,3               +--0--+
 ;N#1-----------0,0,0,0,0,0,0,0,0,4,5,N               |  |  |
 ;N#2-----------0,0,0,0,0,0,0,0,0,6,N,N            +--1  2  3
@@ -32,14 +34,15 @@ gk_Tree[][] init gi_NumOfNodes, gi_NodeLength
 ;N#6-----------0,0,0,0,0,0,0,0,2,7,N,N                  7
 ;N#7-----------0,0,0,0,0,0,0,0,6,N,N,N   
 
-;connect-nodes udo (take root and 1 branch) (use loops outside)
-;set-values (array input / single index value) 
-;get-values (array slice / single index value)
-;clear-branches
-;clear-root (maybe)
-;disconnect (isolate node) (clear branches and root)
-;copy-node
-;walk (keeps track of the progress internally) (reset-node/all trig inputs)
+;tree_init
+;node_connect (take root and 1 branch) (use loops outside)
+;node_set_values (array input / single index value)
+;node_get_values (array slice / single index value)
+;node_clear_branches
+;node_clear_root
+;node_isolate (clear branches and root)
+;node_copy
+;node_walk (recursive?) (tracks progress) (reset-node/all trig inputs)
 
 instr 1
 gk_Tree[0][4] = 420
