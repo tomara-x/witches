@@ -38,6 +38,7 @@ nchnls  =   1
 ;a walk udo (keeps track of the progress internally) (reset-node/all trig inputs)
 ;hbout the walk just outputs node number, and have a get-node-values udo?
 ;copy node udo? (man i'm overdoing it with this planning biz)
+;ftfree delete node?
 
 ;variable number of values per step? make them 8?
 ;indexes 0 to 3 are node values (frequency, intensity, whatever)
@@ -49,6 +50,7 @@ nchnls  =   1
 
 ;IMPORTANTE: segment your work into smaller udo's (goto-child-n, goto-mother, etc)
 gk_num_values = 8
+;default node size?
 
 ;create a single empty node.
 ;syntax: iNodeNum node_create iSize
@@ -59,15 +61,7 @@ xout(ftgen(0,0,-abs(isize), -2, 0))
 endop
 
 instr 1
-inode[] init 4
-if timeinstk() == 3 then
-    ii = 0
-    while ii < 4 do
-        inode[ii] = node_create(17)
-        ii += 1
-    od
-endif
-printarray inode
+inode node_create 16
 endin
 
 </CsInstruments>
