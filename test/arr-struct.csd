@@ -67,7 +67,7 @@ endop
 opcode node_set_value, 0, iii
 inode, indx, iin xin
 if inode < gi_NumOfNodes && indx < gi_ValuesPerNode then
-    gk_Tree[knode][kndx] init iin
+    gk_Tree[inode][indx] init iin
 endif
 endop
 ;array of input values
@@ -177,23 +177,33 @@ endop
 
 
 
-;AMBIGUOUS CALL TEST!!!!!!!!!11
 ;array of branches overload?
 
 ;connects branch node to root
 ;(sets root index of branch and first empty branch index of root)
 ;does nothing if all root's branch indices are used (positive) and overwrites branch's root
 ;syntax: node_connect kRoot, kBranch
-opcode node_connect, 0, kk
+//opcode node_connect, 0, kk
 
 ;i-pass version
-opcode node_connect, 0, ii
+//opcode node_connect, 0, ii
 
 ;connects branch as nth branch of root (overwriting exixting connections)
 ;syntax: node_connect kRoot, kBranch, kN
-opcode node_connect, 0, kkk
+//opcode node_connect, 0, kkk
 
+opcode test, 0, i
+iin xin
+print iin
+endop
 
+opcode test, 0, ii
+iin1, iin2 xin
+print iin1, iin2
+endop
+
+test 42
+test 0, 42
 
 
 ;node_walk (recursive?) (tracks progress) (reset-node/all trig inputs)
