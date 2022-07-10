@@ -3,6 +3,8 @@
 //This work is free. You can redistribute it and/or modify it under the
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
+
+;jam responsibly
 <CsoundSynthesizer>
 <CsOptions>
 -n -Lstdin -m231
@@ -15,7 +17,7 @@ nchnls  =   1
 
 gi_NumOfNodes = 8
 gi_ValuesPerNode = 4 ;roots index
-gi_NodeLength = 16
+gi_NodeLength = 8
 gk_Tree[][] init gi_NumOfNodes, gi_NodeLength
 
 
@@ -46,13 +48,71 @@ while ii < gi_NumOfNodes do
 od
 endop
 
-tree_init ;init time only so can be called from instr 0
+tree_init ;init time only, so can be called from instr 0
+
+;write input value to node at index (in k-time)
+;will write only to node values, never changing connections
+;syntax: node_set_value kNode, kNdx, kInput
+opcode node_set_value, 0, kkk
+knode, kndx, kin xin
+if knode < gi_NumOfNodes && kndx < gi_ValuesPerNode then
+    gk_Tree[knode][kndx] = kin
+endif
+endop
+;init pass version
+opcode node_set_value, 0, iii
+inode, indx, iin xin
+if inode < gi_NumOfNodes && indx < gi_ValuesPerNode then
+    gk_Tree[knode][kndx] init iin
+endif
+endop
+;array of input values
+;writes elements of input array or number of value slots in a node (whichever's shorter)
+opcode node_set_value, 0, kk[]
+knode, kin[] xin
+if knode < gi_NumOfNodes then
+    kcnt = 0
+    while kcnt < min(lenarray(kin), gi_ValuesPerNode) do
+        gk_Tree[knode][kcnt] = kin[kcnt]
+    od
+endif
+endop
+;init pass version
+opcode node_set_value, 0, ii[]
+inode, iin[] xin
+if inode < gi_NumOfNodes then
+    icnt = 0
+    while icnt < min(lenarray(iin), gi_ValuesPerNode) do
+        gk_Tree[inode][icnt] init iin[icnt]
+    od
+endif
+endop
+
+;outputs value from index of node (in k-time)
+;will output only from a valid node and a value index (0 otherwise)
+;syntax: kOut node_get_value kNode, kNdx
+opcode node_get_value, k, kk
+knode, kndx xin
+kout = 0
+if knode < gi_NumOfNodes && kndx < gi_ValuesPerNode then
+    kout = gk_Tree[knode][kndx]
+endif
+xout kout
+endop
+
+
+;sets the root of input node to -1 (disconnected/no root node)
+;syntax: node_clear_root kNode
+opcode node_clear_root, 0, k
+knode xin
+iRootIndex = gi_ValuesPerNode
+if knode < gi_NumOfNodes then
+    gk_Tree[knode][iRootIndex] = -1
+endif
+endop
 
 ;node_connect (take root and 1 branch) (array of branches overload?)
-;node_set_values (array input / single index value)
-;node_get_values (array slice / single index value)
 ;node_clear_branches
-;node_clear_root
 ;node_isolate (clear branches and root)
 ;node_copy
 ;node_walk (recursive?) (tracks progress) (reset-node/all trig inputs)
@@ -64,7 +124,7 @@ endin
 
 </CsInstruments>
 <CsScore>
-i1 0 0.1
+i1 0 0.05
 e
 </CsScore>
 </CsoundSynthesizer>
