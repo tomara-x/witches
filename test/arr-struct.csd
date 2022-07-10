@@ -35,6 +35,8 @@ gk_Tree[][] init gi_NumOfNodes, gi_NodeLength
 ;N#6-----------0,0,0,0,0,0,0,0,2,7,N,N                  7
 ;N#7-----------0,0,0,0,0,0,0,0,6,N,N,N   
 
+
+
 ;initialize entire array to -1
 opcode tree_init, 0, 0
 ii = 0
@@ -50,6 +52,8 @@ endop
 
 tree_init ;init time only, so can be called from instr 0
 
+
+
 ;write input value to node at index (in k-time)
 ;will write only to node values, never changing connections
 ;syntax: node_set_value kNode, kNdx, kInput
@@ -59,7 +63,7 @@ if knode < gi_NumOfNodes && kndx < gi_ValuesPerNode then
     gk_Tree[knode][kndx] = kin
 endif
 endop
-;init pass version
+;init pass version (are those needed?)
 opcode node_set_value, 0, iii
 inode, indx, iin xin
 if inode < gi_NumOfNodes && indx < gi_ValuesPerNode then
@@ -68,12 +72,14 @@ endif
 endop
 ;array of input values
 ;writes elements of input array or number of value slots in a node (whichever's shorter)
+;syntax: node_set_value kNode, kValues[]
 opcode node_set_value, 0, kk[]
 knode, kin[] xin
 if knode < gi_NumOfNodes then
     kcnt = 0
     while kcnt < min(lenarray(kin), gi_ValuesPerNode) do
         gk_Tree[knode][kcnt] = kin[kcnt]
+        kcnt += 1
     od
 endif
 endop
@@ -84,9 +90,12 @@ if inode < gi_NumOfNodes then
     icnt = 0
     while icnt < min(lenarray(iin), gi_ValuesPerNode) do
         gk_Tree[inode][icnt] init iin[icnt]
+        icnt += 1
     od
 endif
 endop
+
+
 
 ;outputs value from index of node (in k-time)
 ;will output only from a valid node and a value index (0 otherwise)
@@ -100,6 +109,22 @@ endif
 xout kout
 endop
 
+;i don't think an i-pass version is possible here?
+;is it even needed?
+;i(getrow(node), index)? that line looks like it's here to cause mischief
+
+;array output of all values version
+;syntax: kValues[] node_get_value kNode
+opcode node_get_value, k[], k
+knode xin
+kout[] init gi_ValuesPerNode
+if knode < gi_NumOfNodes then
+    kout = slicearray(getrow(gk_Tree, knode), 0, gi_ValuesPerNode-1)
+endif
+xout kout
+endop
+
+
 
 ;sets the root of input node to -1 (disconnected/no root node)
 ;syntax: node_clear_root kNode
@@ -111,9 +136,49 @@ if knode < gi_NumOfNodes then
 endif
 endop
 
+
+
+;sets all branches of input node to -1 (no branches) (k-time)
+;syntax: node_clear_branches kNode
+opcode node_clear_branches, 0, k
+knode xin
+iBranchOne = gi_ValuesPerNode+1 ;index after root
+if knode < gi_NumOfNodes then
+    kcnt = iBranchOne
+    while kcnt < gi_NodeLength do
+        gk_Tree[knode][kcnt] = -1
+        kcnt += 1
+    od
+endif
+endop
+
+
+
+;sets all connections of node to -1
+;syntax: node_isolate kNode
+opcode node_isolate, 0, k
+knode xin
+node_clear_root(knode)
+node_clear_branches(knode)
+endop
+
+
+
+
+;copies node values and root (but not branches lol)
+;syntax: node_copy kSrc, kDst
+opcode node_copy, 0, kk
+ksrc, kdst xin
+if ksrc < gi_NumOfNodes && kdst < gi_NumOfNodes then
+    kcnt = 0
+    while kcnt <= gi_ValuesPerNode do ;copy vals and root
+        gk_Tree[kdst][kcnt] = gk_Tree[ksrc][kcnt]
+        kcnt += 1
+    od
+endif
+endop
+
 ;node_connect (take root and 1 branch) (array of branches overload?)
-;node_clear_branches
-;node_isolate (clear branches and root)
 ;node_copy
 ;node_walk (recursive?) (tracks progress) (reset-node/all trig inputs)
 ;drunk_walk? walk_playing_root_after_every_branch?
