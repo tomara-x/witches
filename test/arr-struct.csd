@@ -135,6 +135,7 @@ endop
 
 
 ;sets root of node to given value
+;(it doesn't set branches, but can be useful for root switching)
 ;(does not error-check if the value is a valid node)
 ;syntax: node_set_root kNode, kRoot
 opcode node_set_root, 0, kk
@@ -208,19 +209,19 @@ endop
 
 
 
-;connects branch node to root
-;(sets root index of branch and first empty branch index of root)
-;does nothing if all root's branch indices are used (> -1) and overwrites branch's root
+;connects branch node to root node
+;(sets root index of branch, and first empty branch index of root)
+;overwrites branch's root. does nothing if all root's branch indices are used (> -1)
 ;syntax: node_connect kRoot, kBranch
 opcode node_connect, 0, kk
 kroot, kbranch xin
 iRootIndex = gi_ValuesPerNode
 if kroot < gi_NumOfNodes && kbranch < gi_NumOfNodes then
-    gk_Tree[kbranch][iRootIndex] = kroot
     kcnt = iRootIndex + 1 ;first branch
     while kcnt < gi_NodeLength do
-        if gk_Tree[kroot][kcnt] == -1 then
-            gk_Tree[kroot][kcnt] = kbranch
+        if gk_Tree[kroot][kcnt] == -1 then ;empty branch slot in root node
+            gk_Tree[kbranch][iRootIndex] = kroot ;set root of branch
+            gk_Tree[kroot][kcnt] = kbranch ;set branch of root
             goto break
         endif
         kcnt += 1
@@ -233,10 +234,10 @@ opcode node_connect, 0, ii
 iroot, ibranch xin
 iRootIndex = gi_ValuesPerNode
 if iroot < gi_NumOfNodes && ibranch < gi_NumOfNodes then
-    gk_Tree[ibranch][iRootIndex] init iroot
     icnt = iRootIndex + 1 ;first branch
     while icnt < gi_NodeLength do
         if gk_Tree[iroot][icnt] == -1 then
+            gk_Tree[ibranch][iRootIndex] init iroot
             gk_Tree[iroot][icnt] init ibranch
             goto break
         endif
@@ -245,11 +246,35 @@ if iroot < gi_NumOfNodes && ibranch < gi_NumOfNodes then
     break:
 endif
 endop
+;take array of branches to connect to root
+;connects as many branches as possible ((empty spaces))
+;syntax: node_connect kRoot, kBranches[]
+opcode node_connect, 0, kk[]
+kroot, kbranches[] xin
+kcnt = 0
+while kcnt < lenarray(kbranches) do
+    node_connect(kroot, kbranches[kcnt])
+    kcnt += 1
+od
+endop
+;i-pass version
+opcode node_connect, 0, ii[]
+iroot, ibranches[] xin
+icnt = 0
+while icnt < lenarray(ibranches) do
+    node_connect(iroot, ibranches[icnt])
+    icnt += 1
+od
+endop
+
+
+
+
 ;connects branch as Nth branch of root (zero indexed)
-;(overwriting exixting connections)
-;syntax: node_connect kRoot, kBranch, kN, 0
-;0 is to avoid accidentally setting local ksmps (because of overload)
-opcode node_connect, 0, kkk
+;(overwriting exixting root and branch parameters)
+;syntax: node_connect_at kRoot, kBranch, kN
+;N must be between 0 and available branch slots (gi_NodeLength - (gi_ValuesPerNode + 1))
+opcode node_connect_at, 0, kkk
 kroot, kbranch, kn xin
 iRootIndex = gi_ValuesPerNode
 kn += iRootIndex+1 ;offset so that kn=0 is first branch index
@@ -260,7 +285,7 @@ if kroot < gi_NumOfNodes && kbranch < gi_NumOfNodes &&
 endif
 endop
 ;i-pass version
-opcode node_connect, 0, iii
+opcode node_connect_at, 0, iii
 iroot, ibranch, ix xin ;variable called "in" is a no-go
 iRootIndex = gi_ValuesPerNode
 ix += iRootIndex+1 ;offset
@@ -275,9 +300,11 @@ endop
 
 
 ;todo:
-;connect root to array of branches overload?
 ;node_walk (recursive?) (tracks progress) (reset-node/all trig inputs)
 ;drunk_walk? walk_playing_root_after_every_branch?
+
+;you know what this needs? an additive voice with a bunch of inharmonic
+;partials. you know that sound? kinda like a handpan.. ooo mama! have mercy!
 
 instr 1
 printarray gk_Tree
