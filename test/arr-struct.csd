@@ -63,7 +63,7 @@ if knode < gi_NumOfNodes && kndx < gi_ValuesPerNode then
     gk_Tree[knode][kndx] = kin
 endif
 endop
-;init pass version (are those needed?)
+;init pass version (are those needed?) (can be useful for initing nodes)
 opcode node_set_value, 0, iii
 inode, indx, iin xin
 if inode < gi_NumOfNodes && indx < gi_ValuesPerNode then
@@ -108,11 +108,6 @@ if knode < gi_NumOfNodes && kndx < gi_ValuesPerNode then
 endif
 xout kout
 endop
-
-;i don't think an i-pass version is possible here?
-;is it even needed?
-;i(getrow(node), index)? that line looks like it's here to cause mischief
-
 ;array output of all values version
 ;syntax: kValues[] node_get_value kNode
 opcode node_get_value, k[], k
@@ -123,6 +118,8 @@ if knode < gi_NumOfNodes then
 endif
 xout kout
 endop
+;are i-pass versions needed?
+;i(getrow(node), index)? that line looks like it's here to cause mischief
 
 
 
@@ -164,7 +161,6 @@ endop
 
 
 
-
 ;copies node values and root (but not branches lol)
 ;syntax: node_copy kSrc, kDst
 opcode node_copy, 0, kk
@@ -178,8 +174,28 @@ if ksrc < gi_NumOfNodes && kdst < gi_NumOfNodes then
 endif
 endop
 
-;node_connect (take root and 1 branch) (array of branches overload?)
-;node_copy
+
+
+
+;AMBIGUOUS CALL TEST!!!!!!!!!11
+;array of branches overload?
+
+;connects branch node to root
+;(sets root index of branch and first empty branch index of root)
+;does nothing if all root's branch indices are used (positive) and overwrites branch's root
+;syntax: node_connect kRoot, kBranch
+opcode node_connect, 0, kk
+
+;i-pass version
+opcode node_connect, 0, ii
+
+;connects branch as nth branch of root (overwriting exixting connections)
+;syntax: node_connect kRoot, kBranch, kN
+opcode node_connect, 0, kkk
+
+
+
+
 ;node_walk (recursive?) (tracks progress) (reset-node/all trig inputs)
 ;drunk_walk? walk_playing_root_after_every_branch?
 
