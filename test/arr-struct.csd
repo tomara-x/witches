@@ -123,6 +123,27 @@ endop
 
 
 
+;sets root of node to given value
+;(does not error-check if the value is a valid node)
+;syntax: node_set_root kNode, kRoot
+opcode node_set_root, 0, kk
+knode, kroot xin
+iRootIndex = gi_ValuesPerNode
+if knode < gi_NumOfNodes then
+    gk_Tree[knode][iRootIndex] = kroot
+endif
+endop
+;i-pass version (i feel like those are gonna be a pain in the ass)
+opcode node_set_root, 0, ii
+inode, iroot xin
+iRootIndex = gi_ValuesPerNode
+if inode < gi_NumOfNodes then
+    gk_Tree[inode][iRootIndex] init iroot
+endif
+endop
+
+
+
 ;sets the root of input node to -1 (disconnected/no root node)
 ;syntax: node_clear_root kNode
 opcode node_clear_root, 0, k
@@ -198,13 +219,32 @@ endif
 endop
 ;i-pass version
 opcode node_connect, 0, ii
-
+iroot, ibranch xin
+iRootIndex = gi_ValuesPerNode
+if iroot < gi_NumOfNodes && ibranch < gi_NumOfNodes then
+    gk_Tree[ibranch][iRootIndex] init iroot
+    icnt = iRootIndex + 1 ;first branch
+    while icnt < gi_NodeLength do
+        if gk_Tree[iroot][icnt] == -1 then
+            gk_Tree[iroot][icnt] init ibranch
+            goto break
+        endif
+        icnt += 1
+    od
+    break:
+endif
 endop
 ;connects branch as nth branch of root (overwriting exixting connections)
 ;syntax: node_connect kRoot, kBranch, kN, 0
 ;0 is to avoid accidentally setting local ksmps (because of overload)
 opcode node_connect, 0, kkk
-
+kroot, kbranch, kn xin
+iRootIndex = gi_ValuesPerNode
+if kroot < gi_NumOfNodes && kbranch < gi_NumOfNodes &&
+         kn > iRootIndex && kn < gi_NodeLength then
+    gk_Tree[kbranch][iRootIndex] = kroot
+    gk_Tree[kroot][kn] = kbranch
+endif
 endop
 ;i-pass version
 opcode node_connect, 0, iii
