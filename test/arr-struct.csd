@@ -298,10 +298,23 @@ endop
 
 
 
+;climbs up a node, its branches one by one, passing by their branches, and so on
 
-;todo:
-;node_walk (recursive?) (tracks progress) (reset-node/all trig inputs)
-;drunk_walk? walk_playing_root_after_every_branch?
+;syntax:
+;kCurrentNode node_climb kTrig, kNode [,KResetNode] [,KResetAll]
+
+;kCurrentNode: output of the current node index (values can be accessed with node_get_value)
+;kTrig: trigger signal, we move to new node every k-cycle where this != 0
+;kNode: starting node (can be changed in performance for some fun)
+;kResetNode: when it != 0, resets the progress of the current node back to playing itself
+;kResetAll: when it != 0, resets all progress of all nodes
+opcode node_climb, k, kk
+    ;recursive?
+endop
+
+
+
+;drunk_climb? climb_playing_root_after_every_branch? (no branch hopping)
 
 ;you know what this needs? an additive voice with a bunch of inharmonic
 ;partials. you know that sound? kinda like a handpan.. ooo mama! have mercy!
