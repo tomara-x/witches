@@ -4,6 +4,28 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
+;this is an effort to try replicating some of the functionality of the
+;network sequencer by Mog [https://github.com/JustMog/Mog-VCV]
+;thank you so much!
+
+;branches -----------------------+-+-+
+;root node --------------------+ | | |
+;values -------+-+-+-+-+-+-+-+ | | | |
+;              | | | | | | | | | | | |
+;              V + + + + + + + R B B B
+;N#0-----------0,0,0,0,0,0,0,0,N,1,2,3               +--0--+
+;N#1-----------0,0,0,0,0,0,0,0,0,4,5,N               |  |  |
+;N#2-----------0,0,0,0,0,0,0,0,0,6,N,N            +--1  2  3
+;N#3-----------0,0,0,0,0,0,0,0,0,N,N,N     ->     |  |  |
+;N#4-----------0,0,0,0,0,0,0,0,1,N,N,N            4  5  6
+;N#5-----------0,0,0,0,0,0,0,0,1,N,N,N                  |
+;N#6-----------0,0,0,0,0,0,0,0,2,7,N,N                  7
+;N#7-----------0,0,0,0,0,0,0,0,6,N,N,N
+;this example:
+;gi_NumOfNodes = 8
+;gi_ValuesPerNode = 8
+;gi_NodeLength = 12
+
 ;jam responsibly
 <CsoundSynthesizer>
 <CsOptions>
@@ -15,25 +37,12 @@ ksmps   =   441
 nchnls  =   1
 0dbfs   =   1
 
+
+
 gi_NumOfNodes = 8
 gi_ValuesPerNode = 4 ;roots index
 gi_NodeLength = 8
 gk_Tree[][] init gi_NumOfNodes, gi_NodeLength
-
-
-;branches -----------------------+-+-+
-;root node --------------------+ | | |
-;values -------+-+-+-+-+-+-+-+ | | | |
-;              | | | | | | | | | | | |
-;              V + + + + + + + R B B ...
-;N#0-----------0,0,0,0,0,0,0,0,N,1,2,3               +--0--+
-;N#1-----------0,0,0,0,0,0,0,0,0,4,5,N               |  |  |
-;N#2-----------0,0,0,0,0,0,0,0,0,6,N,N            +--1  2  3
-;N#3-----------0,0,0,0,0,0,0,0,0,N,N,N     ->     |  |  |
-;N#4-----------0,0,0,0,0,0,0,0,1,N,N,N            4  5  6
-;N#5-----------0,0,0,0,0,0,0,0,1,N,N,N                  |
-;N#6-----------0,0,0,0,0,0,0,0,2,7,N,N                  7
-;N#7-----------0,0,0,0,0,0,0,0,6,N,N,N   
 
 
 
@@ -49,6 +58,8 @@ while ii < gi_NumOfNodes do
     ii += 1
 od
 endop
+
+
 
 tree_init ;init time only, so can be called from instr 0
 
@@ -234,12 +245,14 @@ if iroot < gi_NumOfNodes && ibranch < gi_NumOfNodes then
     break:
 endif
 endop
-;connects branch as nth branch of root (overwriting exixting connections)
+;connects branch as Nth branch of root (zero indexed)
+;(overwriting exixting connections)
 ;syntax: node_connect kRoot, kBranch, kN, 0
 ;0 is to avoid accidentally setting local ksmps (because of overload)
 opcode node_connect, 0, kkk
 kroot, kbranch, kn xin
 iRootIndex = gi_ValuesPerNode
+kn += iRootIndex+1 ;offset so that kn=0 is first branch index
 if kroot < gi_NumOfNodes && kbranch < gi_NumOfNodes &&
          kn > iRootIndex && kn < gi_NodeLength then
     gk_Tree[kbranch][iRootIndex] = kroot
@@ -248,14 +261,21 @@ endif
 endop
 ;i-pass version
 opcode node_connect, 0, iii
-
+iroot, ibranch, ix xin ;variable called "in" is a no-go
+iRootIndex = gi_ValuesPerNode
+ix += iRootIndex+1 ;offset
+if iroot < gi_NumOfNodes && ibranch < gi_NumOfNodes &&
+         ix > iRootIndex && ix < gi_NodeLength then
+    gk_Tree[ibranch][iRootIndex] = iroot
+    gk_Tree[iroot][ix] = ibranch
+endif
 endop
-;array of branches overload?
 
 
 
 
-
+;todo:
+;connect root to array of branches overload?
 ;node_walk (recursive?) (tracks progress) (reset-node/all trig inputs)
 ;drunk_walk? walk_playing_root_after_every_branch?
 
