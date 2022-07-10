@@ -297,6 +297,35 @@ endif
 endop
 
 
+;get Nth branch of node (zero indexed)
+;syntax: kBranch node_get_branch kNode, kN
+opcode node_get_branch, k, kk
+knode, kn xin
+iRootIndex = gi_ValuesPerNode
+iBranchOne = iRootIndex+1
+kn += iBranchOne ;maybe should call this branch zero
+kbranch init -1
+if knode < gi_NumOfNodes && kn > iRootIndex && kn < gi_NodeLength then
+    kbranch = gk_Tree[knode][kn]
+endif
+xout kbranch
+endop
+
+
+
+;get root of node
+;syntax: kRoot node_get_root kNode
+opcode node_get_root, k, k
+knode xin
+iRootIndex = gi_ValuesPerNode
+kroot init -1
+if knode < gi_NumOfNodes then
+    kroot = gk_Tree[knode][iRootIndex]
+endif
+xout kroot
+endop
+
+
 
 ;climbs up a node, its branches one by one, passing by their branches, and so on
 
@@ -310,21 +339,29 @@ endop
 ;kResetAll: when it != 0, resets all progress of all nodes
 opcode node_climb, k, kkOO
 ktrig, knode, kresetnode, kresetall xin
-kprogress init 0 ;array?
+kprogress[] init gi_NumOfNodes
+kprogress = -1
 kcurrentnode init knode
 iRootIndex = gi_ValuesPerNode
 iBranchOne = iRootIndex+1
 iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
 if knode < gi_NumOfNodes then
-    if ktrig != 0 && kprogress == /*?*/ then
-        kprogress += 1 ;wrap branches num
-    endif
-    if gk_Tree[knode] == 0 then
+    if ktrig != 0 && kprogress[kcurrentnode] == -1 then
         kcurrentnode = knode
-    else
-;need a base case for rootless and one for branchless
+        kprogress[kcurrentnode] += 1
+    elseif ktrig != 0 && gk_Tree[kcurrentnode][iBranchOne+kprogress[kcurrentnode]] == -1 then
+        
+    elseif ktrig != 0 && /*kprogress[kcurrentnode] > -1 &&*/
+            gk_Tree[kcurrentnode][iBranchOne+kprogress[kcurrentnode]] != -1 then ;please try to forgive me
+        kcurrentnode = gk_Tree[kcurrentnode][iBranchOne+kprogress[kcurrentnode]]
+    if kresetnode != 0 then
+        kprogress[kcurrentnode] = 0
+    endif
 endif
-xout kcurrentnode
+if kresetall != 0 then
+    kprogress = 0
+endif
+xout koutnode
 endop
 
 
