@@ -308,8 +308,23 @@ endop
 ;kNode: starting node (can be changed in performance for some fun)
 ;kResetNode: when it != 0, resets the progress of the current node back to playing itself
 ;kResetAll: when it != 0, resets all progress of all nodes
-opcode node_climb, k, kk
-    ;recursive?
+opcode node_climb, k, kkOO
+ktrig, knode, kresetnode, kresetall xin
+kprogress init 0 ;array?
+kcurrentnode init knode
+iRootIndex = gi_ValuesPerNode
+iBranchOne = iRootIndex+1
+iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
+if knode < gi_NumOfNodes then
+    if ktrig != 0 && kprogress == /*?*/ then
+        kprogress += 1 ;wrap branches num
+    endif
+    if gk_Tree[knode] == 0 then
+        kcurrentnode = knode
+    else
+;need a base case for rootless and one for branchless
+endif
+xout kcurrentnode
 endop
 
 
