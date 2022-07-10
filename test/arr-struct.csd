@@ -176,34 +176,44 @@ endop
 
 
 
-
-;array of branches overload?
-
 ;connects branch node to root
 ;(sets root index of branch and first empty branch index of root)
-;does nothing if all root's branch indices are used (positive) and overwrites branch's root
+;does nothing if all root's branch indices are used (> -1) and overwrites branch's root
 ;syntax: node_connect kRoot, kBranch
-//opcode node_connect, 0, kk
-
+opcode node_connect, 0, kk
+kroot, kbranch xin
+iRootIndex = gi_ValuesPerNode
+if kroot < gi_NumOfNodes && kbranch < gi_NumOfNodes then
+    gk_Tree[kbranch][iRootIndex] = kroot
+    kcnt = iRootIndex + 1 ;first branch
+    while kcnt < gi_NodeLength do
+        if gk_Tree[kroot][kcnt] == -1 then
+            gk_Tree[kroot][kcnt] = kbranch
+            goto break
+        endif
+        kcnt += 1
+    od
+    break:
+endif
+endop
 ;i-pass version
-//opcode node_connect, 0, ii
+opcode node_connect, 0, ii
 
+endop
 ;connects branch as nth branch of root (overwriting exixting connections)
-;syntax: node_connect kRoot, kBranch, kN
-//opcode node_connect, 0, kkk
+;syntax: node_connect kRoot, kBranch, kN, 0
+;0 is to avoid accidentally setting local ksmps (because of overload)
+opcode node_connect, 0, kkk
 
-opcode test, 0, i
-iin xin
-print iin
 endop
+;i-pass version
+opcode node_connect, 0, iii
 
-opcode test, 0, ii
-iin1, iin2 xin
-print iin1, iin2
 endop
+;array of branches overload?
 
-test 42
-test 0, 42
+
+
 
 
 ;node_walk (recursive?) (tracks progress) (reset-node/all trig inputs)
