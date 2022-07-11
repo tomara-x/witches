@@ -172,9 +172,9 @@ endop
 ;syntax: node_clear_branches kNode
 opcode node_clear_branches, 0, k
 knode xin
-iBranchOne = gi_ValuesPerNode+1 ;index after root
+iBranchZero = gi_ValuesPerNode+1 ;index after root
 if knode < gi_NumOfNodes then
-    kcnt = iBranchOne
+    kcnt = iBranchZero
     while kcnt < gi_NodeLength do
         gk_Tree[knode][kcnt] = -1
         kcnt += 1
@@ -269,7 +269,6 @@ endop
 
 
 
-
 ;connects branch as Nth branch of root (zero indexed)
 ;(overwriting exixting root and branch parameters)
 ;syntax: node_connect_at kRoot, kBranch, kN
@@ -297,13 +296,14 @@ endif
 endop
 
 
+
 ;get Nth branch of node (zero indexed)
 ;syntax: kBranch node_get_branch kNode, kN
 opcode node_get_branch, k, kk
 knode, kn xin
 iRootIndex = gi_ValuesPerNode
-iBranchOne = iRootIndex+1
-kn += iBranchOne ;maybe should call this branch zero
+iBranchZero = iRootIndex+1
+kn += iBranchZero
 kbranch init -1
 if knode < gi_NumOfNodes && kn > iRootIndex && kn < gi_NodeLength then
     kbranch = gk_Tree[knode][kn]
@@ -341,19 +341,25 @@ opcode node_climb, k, kkOO
 ktrig, knode, kresetnode, kresetall xin
 kprogress[] init gi_NumOfNodes
 kprogress = -1
-kcurrentnode init knode
 iRootIndex = gi_ValuesPerNode
-iBranchOne = iRootIndex+1
+iBranchZero = iRootIndex+1
 iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
-if knode < gi_NumOfNodes then
-    if ktrig != 0 && kprogress[kcurrentnode] == -1 then
-        kcurrentnode = knode
-        kprogress[kcurrentnode] += 1
-    elseif ktrig != 0 && gk_Tree[kcurrentnode][iBranchOne+kprogress[kcurrentnode]] == -1 then
-        
-    elseif ktrig != 0 && /*kprogress[kcurrentnode] > -1 &&*/
-            gk_Tree[kcurrentnode][iBranchOne+kprogress[kcurrentnode]] != -1 then ;please try to forgive me
-        kcurrentnode = gk_Tree[kcurrentnode][iBranchOne+kprogress[kcurrentnode]]
+if knode < gi_NumOfNodes && kcurrentnode < gi_NumOfNodes then
+    if ktrig != 0 then
+        if kprogress[knode] == -1 then ;play this node before branching
+            kcurrentnode = knode
+            kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches
+        elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) == -1 then ;no more branches
+            kprogress[kcurrentnode] = -1 ;reset progress of node
+            if node_get_root(kcurrentnode) != -1 then ;go to root if any
+                kcurrentnode = node_get_root(kcurrentnode)
+                kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches
+            endif
+        elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 then ;go to branch
+            kcurrentnode = node_get_branch(kcurrentnode, kprogress[kcurrentnode])
+            kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches
+        endif
+    endif
     if kresetnode != 0 then
         kprogress[kcurrentnode] = 0
     endif
