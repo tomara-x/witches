@@ -326,17 +326,18 @@ xout kroot
 endop
 
 
+/*
+climbs up a node, its branches one by one, passing by their branches, and so on
 
-;climbs up a node, its branches one by one, passing by their branches, and so on
+syntax:
+kCurrentNode node_climb kTrig, kNode [,KResetNode] [,KResetAll]
 
-;syntax:
-;kCurrentNode node_climb kTrig, kNode [,KResetNode] [,KResetAll]
-
-;kCurrentNode: output of the current node index (values can be accessed with node_get_value)
-;kTrig: trigger signal, we move to new node every k-cycle where this != 0
-;kNode: starting node (can be changed in performance for some fun)
-;kResetNode: when it != 0, resets the progress of the current node back to playing itself
-;kResetAll: when it != 0, resets all progress of all nodes
+kCurrentNode: output of the current node index (values can be accessed with node_get_value)
+kTrig: trigger signal, we move to new node every k-cycle where this != 0
+kNode: starting node (can be changed in performance for some fun)
+kResetNode: when it != 0, resets the progress of the current node back to playing itself
+kResetAll: when it != 0, reset all progress of all nodes and return to input node
+*/
 opcode node_climb, k, kkOO
 ktrig, knode, kresetnode, kresetall xin
 kprogress[] init gi_NumOfNodes
@@ -352,9 +353,14 @@ if knode < gi_NumOfNodes && kcurrentnode < gi_NumOfNodes then
             kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches
         elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) == -1 then ;no more branches
             kprogress[kcurrentnode] = -1 ;reset progress of node
-            if node_get_root(kcurrentnode) != -1 then ;go to root if any
-                kcurrentnode = node_get_root(kcurrentnode)
-                kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches
+            ;shouldn't this be a loop? to find the rootest root
+            if node_get_root(kcurrentnode) != -1 then ;if there's a root
+                kcurrentnode = node_get_root(kcurrentnode) ;go to it
+                kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches ;increment
+                if node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 then ;if there's branch ahead
+                    kcurrentnode = node_get_branch(kcurrentnode, kprogress[kcurrentnode]) ;go to it
+                    kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches ;increment
+                endif
             endif
         elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 then ;go to branch
             kcurrentnode = node_get_branch(kcurrentnode, kprogress[kcurrentnode])
@@ -362,11 +368,12 @@ if knode < gi_NumOfNodes && kcurrentnode < gi_NumOfNodes then
         endif
     endif
     if kresetnode != 0 then
-        kprogress[kcurrentnode] = 0
+        kprogress[kcurrentnode] = -1
     endif
 endif
 if kresetall != 0 then
-    kprogress = 0
+    kprogress = -1
+    kcurrentnode = knode
 endif
 xout kcurrentnode
 endop
@@ -379,6 +386,7 @@ endop
 ;partials. you know that sound? kinda like a handpan.. ooo mama! have mercy!
 
 instr 1
+node_connect(0, 3)
 printarray gk_Tree
 endin
 
