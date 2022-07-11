@@ -364,11 +364,13 @@ if knode < gi_NumOfNodes && kcurrentnode < gi_NumOfNodes then
                 ktmproot = node_get_root(kcurrentnode) ;update loop vars
                 ktmpprogress = kprogress[ktmproot]
             od
-            if node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 then ;if there's branch ahead
+            if node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 &&
+                kprogress[kcurrentnode] != iNumOfBranches-1 then ;if there's branch ahead
                 kcurrentnode = node_get_branch(kcurrentnode, kprogress[kcurrentnode]) ;go to it
                 kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches ;increment
             endif
-        elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 then ;go to branch
+        elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 &&
+            kprogress[kcurrentnode] != iNumOfBranches-1 then ;go to next branch
             kcurrentnode = node_get_branch(kcurrentnode, kprogress[kcurrentnode])
             kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches
         endif
@@ -383,10 +385,17 @@ if kresetall != 0 then
 endif
 xout kcurrentnode
 endop
+;i wanna rewrite this from scratch, i hate the mess
 
 
+;drunk_climb?
+;what kinda drunk do you want here?
+;up-down kind of random walk? or probability of brabches?
+;this can be a whole box of cookies!
 
-;drunk_climb? climb_playing_root_after_every_branch? (no branch hopping)
+;climb_playing_root_after_every_branch? (no branch hopping)
+;this would be just removing the jump-to-next-branch condition after the root loop
+;and also making that loop a condition
 
 ;you know what this needs? an additive voice with a bunch of inharmonic
 ;partials. you know that sound? kinda like a handpan.. ooo mama! have mercy!
