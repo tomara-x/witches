@@ -23,12 +23,15 @@ nchnls  =   2
 #include "../utils.orc"
 gay, gal, gar init 0
 
+
+
 instr Seq1
 kTrig    metro $FRQ*4
+kTrig2   metro $FRQ/4
 kCount[] fillarray 1, 1, 1, 1, 1, 1, 1, 1
 kGain[]  fillarray 0, 0, 0, 0, 0, 0, 0, 0
 ;p the range and root note
-iScale   ftgenonce 0,0,-7*3,-51, 7,2,cpspch(8),0,
+iScale   ftgenonce 0,0,-7*3,-51, 7,2,cpspch(6),0,
 1,2^(3/12),2^(4/12),2^(5/12),2^(6/12),2^(7/12),2^(10/12) ;7-tone blues
 kNote[]  fillarray 6, 2, 9, 1, 0, 7, 0, 4
 kTrans[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
@@ -72,10 +75,16 @@ endif
 ;p's for the parameters of the bleep?
 schedkwhen(kBT[kBS],0,0, "Bleep", 0, .4, -6, .5, kTP[kTS])
 schedkwhen(kBT[kBS],0,0, "Bleep", 0, .4, -0, .5, kTP[kTS]/2)
-;p this
+;p this ;NO! DRUMS OUTSIDE!
+;a seq3 instr for drums
 ;schedkwhen(kBT[0],0,0, "Drm1", 0, .5, -18, .5)
-;schedkwhen(kBT[4],0,0, "Snare", 0, 1, 2, 1)
+schedkwhen(kBT[4],0,0, "Snare", 0, 1, 2, 1, 1)
+
+schedkwhen(kTrig2,0,0, "Drm1", 0, .5, -18, .5)
+schedkwhen(kTrig2,0,0, "Snare", $BEAT*2, .8, 2, 2)
 endin
+
+
 
 instr Seq2 ;this'll need its own bleep
 ;LAYER THIS WITH AN UNMODULATED BASMA!
@@ -133,6 +142,8 @@ schedkwhen(kTrig2,0,0, "Drm1", 0, .5, -18, .5)
 schedkwhen(kTrig2,0,0, "Snare", $BEAT*2, .2, 2, 2)
 endin
 
+
+
 instr Bleep
 aEnv linseg 1, p3, 0
 aS1  vco2 1, 1*p6+(1-k(aEnv))*cpspch(lfo(0.005, 3)), 2, 0.5
@@ -153,6 +164,8 @@ gaVerbL += al*db(-12)
 gaVerbR += ar*db(-12)
 endin
 
+
+
 instr Drm1
 iTanh ftgenonce 0,0,1024,"tanh", -5, 5, 0
 iIFrq   = 230
@@ -171,6 +184,8 @@ gar += ar
 gaVerbL += al*db(-12)
 gaVerbR += ar*db(-12)
 endin
+
+
 
 instr Drm2
 iTanh ftgenonce 0,0,1024,"tanh", -5, 5, 0
@@ -192,6 +207,8 @@ gar += ar
 gaVerbL += al*db(-12)
 gaVerbR += ar*db(-12)
 endin
+
+
 
 ;edited version of a dseq instr [csoundjournal.com/issue8/dseq.html]
 ;AIM! STUDY THIS!
@@ -236,8 +253,13 @@ anoise =        anoise * ( kenv3 - 1 )
 
 amix = aoscmix + ashiftmix + anoise * 4
 amix = amix * iamp
+;if p6 == 1 then
+;    amix diode_ladder amix, limit(anoise*100000, 0, sr/2), 15, 1, 80
+;endif
 gay += amix
 endin
+
+
 
 instr Scream
 kTrig    metro $FRQ*8
@@ -284,15 +306,15 @@ kGain[5] = randomh(-4, 4, $FRQ)
 kGain[6] = randomh(-4, 4, $FRQ)
 kGain[7] = randomh(-4, 4, $FRQ)
 
-;scream
-fof2
-fofilter
-;aaaaaaaaaaaaaaaaaaaaaaaaaaaa!
+;fof2
+;fofilter
 
 ;gay += aSig
 ;gaVerbL += al*db(-12)
 ;gaVerbR += ar*db(-12)
 endin
+
+
 
 gaVerbL,gaVerbR init 0
 instr Verb
@@ -304,6 +326,8 @@ gal += aVerbL
 gar += aVerbR
 clear gaVerbL,gaVerbR
 endin
+
+
 
 instr Out
 kSM = 1
@@ -317,9 +341,9 @@ endin
 i"Verb"   0 -1
 t 0 136
 i"Out"    0 [8*64]
-;i"Seq1"   0 [2*64]
+i"Seq1"   0 [2*64]
 ;i"Seq2"   0 [2*64]
-i"Scream" 0 [2*64]
+;i"Scream" 0 [2*64]
 </CsScore>
 </CsoundSynthesizer>
 

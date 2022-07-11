@@ -401,13 +401,17 @@ endop
 ;partials. you know that sound? kinda like a handpan.. ooo mama! have mercy!
 
 instr 1
-node_connect(0, 3)
+node_connect(0, 3) ;k-time version
+endin
+
+instr 2
 printarray gk_Tree
 endin
 
 </CsInstruments>
 <CsScore>
-i1 0 0.05
+i1 0 0.02
+i2 1 0.05
 e
 </CsScore>
 </CsoundSynthesizer>
