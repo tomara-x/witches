@@ -341,6 +341,7 @@ opcode node_climb, k, kkOO
 ktrig, knode, kresetnode, kresetall xin
 kprogress[] init gi_NumOfNodes
 kprogress = -1
+kcurrentnode init 0
 iRootIndex = gi_ValuesPerNode
 iBranchZero = iRootIndex+1
 iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
@@ -367,7 +368,7 @@ endif
 if kresetall != 0 then
     kprogress = 0
 endif
-xout koutnode
+xout kcurrentnode
 endop
 
 
