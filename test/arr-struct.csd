@@ -353,14 +353,20 @@ if knode < gi_NumOfNodes && kcurrentnode < gi_NumOfNodes then
             kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches
         elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) == -1 then ;no more branches
             kprogress[kcurrentnode] = -1 ;reset progress of node
-            ;shouldn't this be a loop? to find the rootest root
-            if node_get_root(kcurrentnode) != -1 then ;if there's a root
-                kcurrentnode = node_get_root(kcurrentnode) ;go to it
+            ktmproot = node_get_root(kcurrentnode)
+            ktmpprogress = kprogress[ktmproot]
+            ;there is a root, and it has no more branch connections, or we reached the last one
+            while ktmproot != -1 &&
+                (node_get_branch(ktmproot, ktmpprogress) != -1 ||
+                ktmpprogress == iNumOfBranches-1) do
+                kcurrentnode = ktmproot ;jump to root
                 kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches ;increment
-                if node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 then ;if there's branch ahead
-                    kcurrentnode = node_get_branch(kcurrentnode, kprogress[kcurrentnode]) ;go to it
-                    kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches ;increment
-                endif
+                ktmproot = node_get_root(kcurrentnode) ;update loop vars
+                ktmpprogress = kprogress[ktmproot]
+            od
+            if node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 then ;if there's branch ahead
+                kcurrentnode = node_get_branch(kcurrentnode, kprogress[kcurrentnode]) ;go to it
+                kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches ;increment
             endif
         elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 then ;go to branch
             kcurrentnode = node_get_branch(kcurrentnode, kprogress[kcurrentnode])
