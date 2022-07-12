@@ -213,22 +213,6 @@ endop
 ;(sets root index of branch, and first empty branch index of root)
 ;overwrites branch's root. does nothing if all root's branch indices are used (> -1)
 ;syntax: node_connect kRoot, kBranch
-opcode node_connect, 0, kk
-kroot, kbranch xin
-iRootIndex = gi_ValuesPerNode
-if kroot < gi_NumOfNodes && kbranch < gi_NumOfNodes then
-    kcnt = iRootIndex + 1 ;first branch
-    while kcnt < gi_NodeLength do
-        if gk_Tree[kroot][kcnt] == -1 then ;empty branch slot in root node
-            gk_Tree[kbranch][iRootIndex] = kroot ;set root of branch
-            gk_Tree[kroot][kcnt] = kbranch ;set branch of root
-            goto break
-        endif
-        kcnt += 1
-    od
-    break:
-endif
-endop
 ;i-pass version
 opcode node_connect, 0, ii
 iroot, ibranch xin
@@ -242,6 +226,23 @@ if iroot < gi_NumOfNodes && ibranch < gi_NumOfNodes then
             goto break
         endif
         icnt += 1
+    od
+    break:
+endif
+endop
+;k-time
+opcode node_connect, 0, kk
+kroot, kbranch xin
+iRootIndex = gi_ValuesPerNode
+if kroot < gi_NumOfNodes && kbranch < gi_NumOfNodes then
+    kcnt = iRootIndex + 1 ;first branch
+    while kcnt < gi_NodeLength do
+        if gk_Tree[kroot][kcnt] == -1 then ;empty branch slot in root node
+            gk_Tree[kbranch][iRootIndex] = kroot ;set root of branch
+            gk_Tree[kroot][kcnt] = kbranch ;set branch of root
+            goto break
+        endif
+        kcnt += 1
     od
     break:
 endif
@@ -400,8 +401,26 @@ endop
 ;you know what this needs? an additive voice with a bunch of inharmonic
 ;partials. you know that sound? kinda like a handpan.. ooo mama! have mercy!
 
+
+
+
+;TRY SWITCHING THE ORDER OF K-RATE AND I-PASS VERSIONS
+;motherfucker! it does make it prefer the i-time ones... hmmm...
+
+;i mean it makes sense, the "engine" or whatever is going through definitions and it picks
+;the first thing that matches the input and output parameters (the opcode entry)
+
+;nah, i won't waste time, adding triggers is as simple as running the opcode in an
+;if conditional in the instr. i want them to run at every cycle (think of the fun mistakes)
+
+;so i-pass ones take priority because most time i think i'll use those with constants
+;for initial setting, but for self-patching (the witches live!) it's gonna be k inputs.
+;that, and forcing k-time running is simple if it's needed (k() an arg)
+
+
+
 instr 1
-node_connect(0, 3) ;k-time version
+node_connect(0, 3)
 endin
 
 instr 2
@@ -410,7 +429,7 @@ endin
 
 </CsInstruments>
 <CsScore>
-i1 0 0.02
+i1 0 0.00
 i2 1 0.05
 e
 </CsScore>
