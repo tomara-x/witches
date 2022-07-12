@@ -166,7 +166,7 @@ endop
 
 
 
-;sets the root of input node to -1 (disconnected/no root node)
+;sets the root of input node to -1 (disconnected/no-root node)
 ;syntax: node_clear_root kNode
 opcode node_clear_root, 0, k
 knode xin
@@ -204,13 +204,17 @@ endop
 
 
 
-;copies node values and root (but not branches lol)
+;copies node values, root, and branches (k-time)
+;a node having the same branch/root nodes as another doean't cause any problems.
+;this doesn't cause a connection, only a node with parameters.
+;if you wanna connect those branches to this new root you'd still have to do connect.
+;also this can be used to make different nodes mirror each other.
 ;syntax: node_copy kSrc, kDst
 opcode node_copy, 0, kk
 ksrc, kdst xin
 if ksrc < gi_NumOfNodes && kdst < gi_NumOfNodes then
     kcnt = 0
-    while kcnt <= gi_ValuesPerNode do ;copy vals and root
+    while kcnt < gi_NodeLength do
         gk_Tree[kdst][kcnt] = gk_Tree[ksrc][kcnt]
         kcnt += 1
     od
