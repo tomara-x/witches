@@ -423,31 +423,32 @@ endop
 
 
 ;play root after every branch (no branch-2-branch hopping)
-opcode node_climb2, k, kkOO
-ktrig, knode, kresetnode, kresetall xin
-kt[] init gi_NumOfNodes ;track progress of each node here
-kt = -1 ;initial progress
-koutnode init -1
-iRootIndex = gi_ValuesPerNode
-iBranchZero = iRootIndex+1
+opcode node_climb2, k, kkO
+ktrig, knode, kreset xin
+kp[] init gi_NumOfNodes ;progress of each node
+icnt = 0
+while icnt < gi_NumOfNodes do
+    kp[icnt] = -1
+    icnt += 1
+od
+koutnode init i(knode)
 iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
-if knode < gi_NumOfNodes then
-    if ktrig != 0 then
-        if kt[knode] == -1 then
-            kcurrentnode = knode
-            kt[koutnode] = (kt[koutnode] + 1) % iNumOfBranches
+if ktrig != 0 then
+    if knode < gi_NumOfNodes then
+        if kp[koutnode] == -1 then
+            kp[koutnode] = kp[koutnode] + 1
+        elseif node_get_branch(koutnode, kp[koutnode]) != -1 then
+            koutnode = node_get_branch(koutnode, kp[koutnode])
+            ;kp[koutnode] = kp[koutnode] + 1
+        else
+            if node_get_root(koutnode) != -1 then
+                koutnode = node_get_root(koutnode)
+            endif
         endif
-        ;you were here!
-        kt[koutnode] = (kt[koutnode] + 1) % iNumOfBranches
-        koutnode = node_get_branch(koutnode, kt[koutnode])
+        if kp[koutnode] == iNumOfBranches then
+            kp[koutnode] = -1
+        endif
     endif
-    if kresetnode != 0 then
-        kt[koutnode] = -1 ;maybe reset the input?
-    endif
-endif
-if kresetall != 0 then
-    kt = -1
-    koutnode = knode
 endif
 xout koutnode
 endop
@@ -486,21 +487,19 @@ instr 1
 node_connect(0, 1)
 node_connect(0, 2)
 node_connect(0, 3)
-node_connect(1, 4)
-node_connect(1, 5)
-node_connect(2, 6)
+node_connect(0, 4)
 endin
 
 instr 2
 kn = node_climb2(1, 0)
 printk2(kn) 
-printarray gk_Tree
+;printarray gk_Tree
 endin
 
 </CsInstruments>
 <CsScore>
-i1 0 0.00
-i2 1 0.05
+i1 0 0.0
+i2 1 0.1
 e
 </CsScore>
 </CsoundSynthesizer>
