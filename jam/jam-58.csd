@@ -78,6 +78,9 @@ schedkwhen(kBT[kBS],0,0, "Bleep", 0, .4, -0, .5, kTP[kTS]/2)
 ;p this ;NO! DRUMS OUTSIDE!
 ;a seq3 instr for drums
 ;schedkwhen(kBT[0],0,0, "Drm1", 0, .5, -18, .5)
+
+;it's supposed to be the doll breathing
+;it shouldn't sound human, nor should it have a steady rhythm
 schedkwhen(kBT[4],0,0, "Snare", 0, 1, 2, 1, 1)
 
 schedkwhen(kTrig2,0,0, "Drm1", 0, .5, -18, .5)
