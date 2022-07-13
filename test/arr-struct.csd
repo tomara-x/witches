@@ -65,6 +65,7 @@ while ii < gi_NumOfNodes do
     ii += 1
 od
 endop
+;do you wanna k-rate one?
 
 
 
@@ -140,6 +141,7 @@ xout kout
 endop
 ;are i-pass versions needed?
 ;i(getrow(node), index)? that line looks like it's here to cause mischief
+;actually, we are saved! use: `i(tree, node,index)` to access tree[node][index] at i time
 
 
 
@@ -163,6 +165,7 @@ if knode < gi_NumOfNodes then
     gk_Tree[knode][iRootIndex] = kroot
 endif
 endop
+;want an array of nodes version?
 
 
 
@@ -234,7 +237,7 @@ iRootIndex = gi_ValuesPerNode
 if iroot < gi_NumOfNodes && ibranch < gi_NumOfNodes then
     icnt = iRootIndex + 1 ;first branch
     while icnt < gi_NodeLength do
-        if gk_Tree[iroot][icnt] == -1 then
+        if i(gk_Tree, iroot, icnt) == -1 then ;holy fuck! i() works with multi-arrs! = i(tree[root][cnt])
             gk_Tree[ibranch][iRootIndex] init iroot
             gk_Tree[iroot][icnt] init ibranch
             goto break
@@ -346,6 +349,17 @@ endop
 /*
 climbs up a node, its branches one by one, passing by their branches, and so on
 
+                       +--0--+
+                       |  |  |
+                    +--1  2  3
+                    |  |  |
+                    4  5  6
+                          |
+                          7
+
+with 0 as input, with every trigger the progress will be as follows:
+0, 1, 4, 5, 2, 6, 7, 3, 0, 1,...
+
 syntax:
 kCurrentNode node_climb kTrig, kNode [,KResetNode] [,KResetAll]
 
@@ -363,7 +377,7 @@ kcurrentnode init 0
 iRootIndex = gi_ValuesPerNode
 iBranchZero = iRootIndex+1
 iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
-if knode < gi_NumOfNodes && kcurrentnode < gi_NumOfNodes then
+if knode < gi_NumOfNodes && kcurrentnode < gi_NumOfNodes then ;what if node branches to < -1 || > #nodes?
     if ktrig != 0 then
         if kprogress[knode] == -1 then ;play this node before branching
             kcurrentnode = knode
@@ -373,20 +387,20 @@ if knode < gi_NumOfNodes && kcurrentnode < gi_NumOfNodes then
             ktmproot = node_get_root(kcurrentnode)
             ktmpprogress = kprogress[ktmproot]
             ;there is a root, and it has no more branch connections, or we reached the last one
-            while ktmproot != -1 &&
-                (node_get_branch(ktmproot, ktmpprogress) != -1 ||
+            while ktmproot != -1 &&                                 \
+                (node_get_branch(ktmproot, ktmpprogress) != -1 ||   \
                 ktmpprogress == iNumOfBranches-1) do
                 kcurrentnode = ktmproot ;jump to root
                 kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches ;increment
                 ktmproot = node_get_root(kcurrentnode) ;update loop vars
                 ktmpprogress = kprogress[ktmproot]
             od
-            if node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 &&
+            if node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 &&  \
                 kprogress[kcurrentnode] != iNumOfBranches-1 then ;if there's branch ahead
                 kcurrentnode = node_get_branch(kcurrentnode, kprogress[kcurrentnode]) ;go to it
                 kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches ;increment
             endif
-        elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 &&
+        elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 &&  \
             kprogress[kcurrentnode] != iNumOfBranches-1 then ;go to next branch
             kcurrentnode = node_get_branch(kcurrentnode, kprogress[kcurrentnode])
             kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches
@@ -400,6 +414,7 @@ if kresetall != 0 then
     kprogress = -1
     kcurrentnode = knode
 endif
+;printarray kprogress ;debug
 xout kcurrentnode
 endop
 ;i wanna rewrite this from scratch, i hate the mess
@@ -436,10 +451,17 @@ endop
 
 
 instr 1
-node_connect(0, 3)
+node_connect(0, 1)
+node_connect(0, 5)
+node_connect(0, 5)
+node_connect(1, 5)
+node_connect(2, 5)
+node_connect(0, 5)
 endin
 
 instr 2
+kn = node_climb(1, 0)
+printk2(kn) 
 printarray gk_Tree
 endin
 
