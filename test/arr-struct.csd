@@ -48,6 +48,7 @@ nchnls  =   1
 
 gi_NumOfNodes = 8
 gi_ValuesPerNode = 4 ;roots index
+;branchesPerNode & nodelenght = branches+values+1
 gi_NodeLength = 8
 gk_Tree[][] init gi_NumOfNodes, gi_NodeLength
 
@@ -420,18 +421,18 @@ endop
 ;i wanna rewrite this from scratch, i hate the mess
 
 
-;drunk_climb?
-;what kinda drunk do you want here?
-;up-down kind of random walk? or probability of brabches?
-;this can be a whole box of cookies!
 
 ;climb_playing_root_after_every_branch? (no branch hopping)
 ;this would be just removing the jump-to-next-branch condition after the root loop
 ;and also making that loop a condition
+;DO THIS FIRST!!!!!!!!!!!!!!!!!!!!:wq
 
-;you know what this needs? an additive voice with a bunch of inharmonic
-;partials. you know that sound? kinda like a handpan.. ooo mama! have mercy!
 
+
+;drunk_climb?
+;what kinda drunk do you want here?
+;up-down kind of random walk? or probability of brabches?
+;this can be a whole box of cookies!
 
 
 
@@ -447,6 +448,11 @@ endop
 ;so i-pass ones take priority because most time i think i'll use those with constants
 ;for initial setting, but for self-patching (the witches live!) it's gonna be k inputs.
 ;that, and forcing k-time running is simple if it's needed (k() an arg)
+
+
+
+;you know what this needs? an additive voice with a bunch of inharmonic
+;partials. you know that sound? kinda like a handpan.. ooo mama! have mercy!
 
 
 
