@@ -431,31 +431,36 @@ endop
 
 
 ;play root after every branch (no branch-2-branch hopping)
-;0141510267620301
+;from above example, progress should be: 0141510267620301...
+
+;okay now gotta figure out the refresh rate of the input node,
+;do you just have a set-node-triggere for it?
+;also need the resets
 opcode node_climb2, k, kkO
 ktrig, knode, kreset xin
 kp[] init gi_NumOfNodes ;progress of each node
+;init array to -1 
 icnt = 0
 while icnt < gi_NumOfNodes do
     kp[icnt] init -1
     icnt += 1
 od
-koutnode init i(knode)
+koutnode init i(knode) ;initial input node
 iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
 if ktrig != 0 then
-    if knode < gi_NumOfNodes then
-        if kp[koutnode] == -1 then
+    if knode < gi_NumOfNodes then ;valid node
+        if kp[koutnode] == -1 then ;node itself to play
             kp[koutnode] = kp[koutnode] + 1
-        elseif node_get_branch(koutnode, kp[koutnode]) != -1 then
-            koutnode = node_get_branch(koutnode, kp[koutnode])
-            ;kp[koutnode] = kp[koutnode] + 1
+        elseif node_get_branch(koutnode, kp[koutnode]) != -1 then ;there's a branch
+            koutnode = node_get_branch(koutnode, kp[koutnode]) ;go to it
         else
-            kp[koutnode] = -1
-            if node_get_root(koutnode) != -1 then
-                koutnode = node_get_root(koutnode)
+            kp[koutnode] = -1 ;reset node progress
+            if node_get_root(koutnode) != -1 then ;if there's a root
+                koutnode = node_get_root(koutnode) ;go to it
+                kp[koutnode] = kp[koutnode] + 1 ;increment progress
             endif
         endif
-        if kp[koutnode] == iNumOfBranches then
+        if kp[koutnode] == iNumOfBranches then ;wrap progress around
             kp[koutnode] = -1
         endif
     endif
