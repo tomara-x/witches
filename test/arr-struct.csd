@@ -44,7 +44,10 @@ nchnls  =   1
 ;-description for the global vars
 ;-keep the jam responsibly but have it at the end
 ;-add a moved-to note here
-;-link to this file there
+;-link to this file there (for commit history)
+;-link to ft-struct.csd too (origin)
+
+
 
 gi_NumOfNodes = 8
 gi_ValuesPerNode = 4 ;roots index
@@ -373,42 +376,47 @@ kResetAll: when it != 0, reset all progress of all nodes and return to input nod
 opcode node_climb, k, kkOO
 ktrig, knode, kresetnode, kresetall xin
 kprogress[] init gi_NumOfNodes
-kprogress = -1
+if timeinstk() == 1 then ;i-pass loop and init
+    kprogress = -1
+endif
 kcurrentnode init i(knode)
 iRootIndex = gi_ValuesPerNode
 iBranchZero = iRootIndex+1
 iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
-if knode < gi_NumOfNodes && kcurrentnode < gi_NumOfNodes then ;what if node branches to < -1 || > #nodes?
-    if ktrig != 0 then
+if ktrig != 0 then
+    if knode < gi_NumOfNodes && kcurrentnode < gi_NumOfNodes then ;what if node branches to < -1 || > #nodes?
         if kprogress[kcurrentnode] == -1 then ;play this node before branching
             ;kcurrentnode = knode
-            kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches
-        elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 &&  \
-            kprogress[kcurrentnode] != iNumOfBranches-1 then ;go to next branch
+            kprogress[kcurrentnode] = kprogress[kcurrentnode] + 1
+        elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 &&
+            kprogress[kcurrentnode] != iNumOfBranches then ;go to next branch
             kcurrentnode = node_get_branch(kcurrentnode, kprogress[kcurrentnode])
-            kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches
+            kprogress[kcurrentnode] = kprogress[kcurrentnode] + 1
         elseif node_get_branch(kcurrentnode, kprogress[kcurrentnode]) == -1 then ;no more branches
             kprogress[kcurrentnode] = -1 ;reset progress of node
             ktmproot = node_get_root(kcurrentnode)
             ktmpprogress = kprogress[ktmproot]
             ;there is a root, and it has no more branch connections, or we reached the last one
-            while ktmproot != -1 &&                                 \
-                (node_get_branch(ktmproot, ktmpprogress) != -1 ||   \
+            while ktmproot != -1 &&
+                (node_get_branch(ktmproot, ktmpprogress) != -1 ||
                 ktmpprogress == iNumOfBranches-1) do
                 kcurrentnode = ktmproot ;jump to root
-                kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches ;increment
+                kprogress[kcurrentnode] = kprogress[kcurrentnode] + 1
                 ktmproot = node_get_root(kcurrentnode) ;update loop vars
                 ktmpprogress = kprogress[ktmproot]
             od
-            if node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 &&  \
+            if node_get_branch(kcurrentnode, kprogress[kcurrentnode]) != -1 &&
                 kprogress[kcurrentnode] != iNumOfBranches-1 then ;if there's branch ahead
                 kcurrentnode = node_get_branch(kcurrentnode, kprogress[kcurrentnode]) ;go to it
-                kprogress[kcurrentnode] = (kprogress[kcurrentnode] + 1) % iNumOfBranches ;increment
+                kprogress[kcurrentnode] = kprogress[kcurrentnode] + 1
             endif
         endif
-    endif
-    if kresetnode != 0 then
-        kprogress[kcurrentnode] = -1
+        if kprogress[kcurrentnode] == iNumOfBranches then
+            kprogress[kcurrentnode] = -1
+        endif
+        if kresetnode != 0 then
+            kprogress[kcurrentnode] = -1
+        endif
     endif
 endif
 if kresetall != 0 then
@@ -423,12 +431,13 @@ endop
 
 
 ;play root after every branch (no branch-2-branch hopping)
+;0141510267620301
 opcode node_climb2, k, kkO
 ktrig, knode, kreset xin
 kp[] init gi_NumOfNodes ;progress of each node
 icnt = 0
 while icnt < gi_NumOfNodes do
-    kp[icnt] = -1
+    kp[icnt] init -1
     icnt += 1
 od
 koutnode init i(knode)
@@ -441,6 +450,7 @@ if ktrig != 0 then
             koutnode = node_get_branch(koutnode, kp[koutnode])
             ;kp[koutnode] = kp[koutnode] + 1
         else
+            kp[koutnode] = -1
             if node_get_root(koutnode) != -1 then
                 koutnode = node_get_root(koutnode)
             endif
@@ -453,6 +463,29 @@ endif
 xout koutnode
 endop
 
+
+
+instr 1
+node_connect(0, 1)
+node_connect(0, 2)
+node_connect(0, 3)
+node_connect(1, 4)
+node_connect(1, 5)
+node_connect(2, 6)
+endin
+instr 2
+kn = node_climb2(1, 0)
+printk2(kn) 
+;printarray gk_Tree
+endin
+
+</CsInstruments>
+<CsScore>
+i1 0 0.0
+i2 1 0.2
+e
+</CsScore>
+</CsoundSynthesizer>
 
 
 
@@ -477,30 +510,10 @@ endop
 ;that, and forcing k-time running is simple if it's needed (k() an arg)
 
 
-
 ;you know what this needs? an additive voice with a bunch of inharmonic
 ;partials. you know that sound? kinda like a handpan.. ooo mama! have mercy!
 
 
+;can you make a tree_draw opcode? it'd be nice
 
-instr 1
-node_connect(0, 1)
-node_connect(0, 2)
-node_connect(0, 3)
-node_connect(0, 4)
-endin
-
-instr 2
-kn = node_climb2(1, 0)
-printk2(kn) 
-;printarray gk_Tree
-endin
-
-</CsInstruments>
-<CsScore>
-i1 0 0.0
-i2 1 0.1
-e
-</CsScore>
-</CsoundSynthesizer>
 
