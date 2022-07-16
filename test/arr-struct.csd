@@ -432,10 +432,11 @@ endop
 
 ;play root after every branch (no branch-2-branch hopping)
 ;from above example, progress should be: 0141510267620301...
+;syntax kCurrentNode node_climb2 kTrig, kNode [kRese]
 
-;okay now gotta figure out the refresh rate of the input node,
-;do you just have a set-node-triggere for it?
-;also need the resets
+;kTrig: progress to the next node with every cycle where this is non-zero
+;knode: node to climb. this is k-rate, but will only update if reset is triggered
+;kReset: will reset all progress and use new kNode if changed
 opcode node_climb2, k, kkO
 ktrig, knode, kreset xin
 kp[] init gi_NumOfNodes ;progress of each node
@@ -447,12 +448,20 @@ while icnt < gi_NumOfNodes do
 od
 koutnode init i(knode) ;initial input node
 iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
+
+;reset
+if kreset != 0 then
+    koutnode = knode ;set working node
+    kp = -1 ;reset progress
+endif
+;trigger
 if ktrig != 0 then
-    if knode < gi_NumOfNodes then ;valid node
-        if kp[koutnode] == -1 then ;node itself to play
-            kp[koutnode] = kp[koutnode] + 1
+    if koutnode < gi_NumOfNodes then ;valid node
+        if kp[knode] == -1 then ;at root (input) node
+            kp[koutnode] = kp[koutnode] + 1 ;increment progress
         elseif node_get_branch(koutnode, kp[koutnode]) != -1 then ;there's a branch
             koutnode = node_get_branch(koutnode, kp[koutnode]) ;go to it
+            kp[koutnode] = kp[koutnode] + 1 ;increment progress
         else
             kp[koutnode] = -1 ;reset node progress
             if node_get_root(koutnode) != -1 then ;if there's a root
@@ -462,6 +471,9 @@ if ktrig != 0 then
         endif
         if kp[koutnode] == iNumOfBranches then ;wrap progress around
             kp[koutnode] = -1
+            if koutnode == knode then ;wrap root node differently
+                kp[koutnode] = 0
+            endif
         endif
     endif
 endif
@@ -477,17 +489,18 @@ node_connect(0, 3)
 node_connect(1, 4)
 node_connect(1, 5)
 node_connect(2, 6)
+node_connect(6, 7)
 endin
 instr 2
 kn = node_climb2(1, 0)
-printk2(kn) 
+printk 0, kn
 ;printarray gk_Tree
 endin
 
 </CsInstruments>
 <CsScore>
 i1 0 0.0
-i2 1 0.2
+i2 1 0.4
 e
 </CsScore>
 </CsoundSynthesizer>
