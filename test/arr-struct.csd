@@ -214,6 +214,7 @@ endop
 ;copies node values, root, and branches (k-time)
 ;a node having the same branch/root nodes as another doean't cause any problems.
 ;this doesn't cause a connection, only a node with parameters.
+;(dst will have src's branches, but those branches still have src as their root)
 ;if you wanna connect those branches to this new root you'd still have to do connect.
 ;also this can be used to make different nodes mirror each other.
 ;syntax: node_copy kSrc, kDst
@@ -365,12 +366,11 @@ with 0 as input, with every trigger the progress will be as follows:
 0, 1, 4, 5, 2, 6, 7, 3, 0, 1,...
 
 syntax:
-kCurrentNode node_climb kTrig, kNode [,KResetNode] [,KResetAll]
+kCurrentNode node_climb kTrig, kNode [, KRese]
 
 kCurrentNode: output of the current node index (values can be accessed with node_get_value)
 kTrig: trigger signal, we move to new node every k-cycle where this != 0
 kNode: starting node (can be changed in performance for some fun)
-kResetNode: when it != 0, resets the progress of the current node back to playing itself
 kResetAll: when it != 0, reset all progress of all nodes and return to input node
 */
 opcode node_climb, k, kkOO
@@ -426,17 +426,22 @@ endif
 ;printarray kprogress ;debug
 xout kcurrentnode
 endop
-;i wanna rewrite this from scratch, i hate the mess
 
 
+/*
+play root after every branch (no branch-to-branch hopping)
+from above example, progress is: 014151026762030...
+syntax:
+kCurrentNode node_climb2 kTrig, kNode [, kRese]
 
-;play root after every branch (no branch-2-branch hopping)
-;from above example, progress should be: 0141510267620301...
-;syntax kCurrentNode node_climb2 kTrig, kNode [kRese]
-
-;kTrig: progress to the next node with every cycle where this is non-zero
-;knode: node to climb. this is k-rate, but will only update if reset is triggered
-;kReset: will reset all progress and use new kNode if changed
+kCurrentNode: index of the active node
+   (accesse values stored in nodes with node_get_value)
+kTrig: progress to the next node with every cycle where this is non-zero
+knode: node to climb. this is k-rate, but will only update if reset is triggered
+    make sure i-pass value is a valid node 'cause that's when it's read.
+    or if not, just be sure to send a reset on the first k-cycle to force reread
+kReset: will reset all progress and use new kNode if changed
+*/
 opcode node_climb2, k, kkO
 ktrig, knode, kreset xin
 kp[] init gi_NumOfNodes ;progress of each node
@@ -461,16 +466,16 @@ if ktrig != 0 then
             kp[koutnode] = kp[koutnode] + 1 ;increment progress
         elseif node_get_branch(koutnode, kp[koutnode]) != -1 then ;there's a branch
             koutnode = node_get_branch(koutnode, kp[koutnode]) ;go to it
-            kp[koutnode] = kp[koutnode] + 1 ;increment progress
-        else
+            kp[koutnode] = kp[koutnode] + 1 ;increment its progress
+        else ;there ain't no more branches
             kp[koutnode] = -1 ;reset node progress
             if node_get_root(koutnode) != -1 then ;if there's a root
                 koutnode = node_get_root(koutnode) ;go to it
-                kp[koutnode] = kp[koutnode] + 1 ;increment progress
+                kp[koutnode] = kp[koutnode] + 1 ;increment its progress
             endif
         endif
-        if kp[koutnode] == iNumOfBranches then ;wrap progress around
-            kp[koutnode] = -1
+        if kp[koutnode] == iNumOfBranches then ;after last branch position
+            kp[koutnode] = -1 ;wrap progress around
             if koutnode == knode then ;wrap root node differently
                 kp[koutnode] = 0
             endif
@@ -533,5 +538,11 @@ e
 
 
 ;can you make a tree_draw opcode? it'd be nice
+
+
+
+;storing the repetition value in each node, with some patching to the trigger
+;pass the trigger directly, but pass a divided version to the sequencer (on the 0)
+;don't need a reset-node to do this.
 
 
