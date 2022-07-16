@@ -3,9 +3,6 @@
 //This work is free. You can redistribute it and/or modify it under the
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
-
-;mkay, i like this point here
-;work on the scream, then bounce to another file
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m227 ;-m231
@@ -81,6 +78,7 @@ schedkwhen(kBT[kBS],0,0, "Bleep", 0, .4, -0, .5, kTP[kTS]/2)
 
 ;it's supposed to be the doll breathing
 ;it shouldn't sound human, nor should it have a steady rhythm
+;maybe a new instr for this sound
 schedkwhen(kBT[4],0,0, "Snare", 0, 1, 2, 1, 1)
 
 schedkwhen(kTrig2,0,0, "Drm1", 0, .5, -18, .5)
@@ -256,9 +254,6 @@ anoise =        anoise * ( kenv3 - 1 )
 
 amix = aoscmix + ashiftmix + anoise * 4
 amix = amix * iamp
-;if p6 == 1 then
-;    amix diode_ladder amix, limit(anoise*100000, 0, sr/2), 15, 1, 80
-;endif
 gay += amix
 endin
 
@@ -311,6 +306,7 @@ kGain[7] = randomh(-4, 4, $FRQ)
 
 ;fof2
 ;fofilter
+;polymelody?
 
 ;gay += aSig
 ;gaVerbL += al*db(-12)
@@ -344,9 +340,9 @@ endin
 i"Verb"   0 -1
 t 0 136
 i"Out"    0 [8*64]
-i"Seq1"   0 [2*64]
+;i"Seq1"   0 [2*64]
 ;i"Seq2"   0 [2*64]
-;i"Scream" 0 [2*64]
+i"Scream" 0 [2*64]
 </CsScore>
 </CsoundSynthesizer>
 
