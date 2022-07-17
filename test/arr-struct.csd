@@ -51,8 +51,8 @@ nchnls  =   1
 
 gi_NumOfNodes = 8
 gi_ValuesPerNode = 4 ;roots index
-;branchesPerNode & nodelenght = branches+values+1
 gi_NodeLength = 8
+;BranchesPerNode = gi_NodeLength - (gi_ValuesPerNode + 1)
 gk_Tree[][] init gi_NumOfNodes, gi_NodeLength
 
 
@@ -70,8 +70,6 @@ while ii < gi_NumOfNodes do
 od
 endop
 ;do you wanna k-rate one?
-
-
 
 
 
@@ -372,11 +370,10 @@ endop
 
 
 
-
 ;progress ops-------------------------------------
 
 ;progress of each node in the tree
-;-1 = play node itself, 0 = play branch 0,...
+;-1 = play node itself, 0 = play branch 0, and so on
 gk_NodeProgress[] init gi_NumOfNodes
 
 ;initialize to -1 (i-pass)
@@ -442,11 +439,15 @@ while kn < gi_NumOfNodes do
 od
 endop
 
+;thinking bout extending the wrap to extra 1 and using that for a
+;progress_past_last_branch opcode? lmao the name
+;;holup! why tho? just check before the wrap call? it'd still be = #ofbranches
+
 ;----------------------------------------------
 
 
 
-
+;lmao those babies down there will be obliterated!
 /*
 climbs up a node, its branches one by one, passing by their branches, and so on
 
