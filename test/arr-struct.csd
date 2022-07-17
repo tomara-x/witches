@@ -73,8 +73,6 @@ endop
 
 
 
-tree_init ;init time only, so can be called from instr 0
-
 
 
 ;write input value to node at index (in k-time)
@@ -336,8 +334,6 @@ endif
 xout kbranch
 endop
 
-
-
 ;get root of node
 ;syntax: kRoot node_get_root kNode
 opcode node_get_root, k, k
@@ -373,6 +369,81 @@ if node_get_root(knode) != -1 then
 endif
 xout kflag
 endop
+
+
+
+
+;progress ops-------------------------------------
+
+;progress of each node in the tree
+;-1 = play node itself, 0 = play branch 0,...
+gk_NodeProgress[] init gi_NumOfNodes
+
+;initialize to -1 (i-pass)
+opcode progress_init, 0, 0
+ii = 0
+while ii < gi_NumOfNodes do
+    gk_NodeProgress[ii] init -1
+    ii += 1
+od
+endop
+
+;reset node's progress to -1
+;syntax: progress_reset kNode
+opcode progress_reset, 0, k
+knode xin
+if knode < gi_NumOfNodes then
+    gk_NodeProgress[knode] = -1
+endif
+endop
+
+;reset entire array
+;syntax: progress_reset_all
+opcode progress_reset_all, 0, 0
+gk_NodeProgress = -1
+endop
+
+;get progress of node
+;syntax: kProgress progress_get kNode
+opcode progress_get, k, k
+knode xin
+kout init -1
+if knode < gi_NumOfNodes then
+    kout = gk_NodeProgress[knode]
+endif
+xout kout
+endop
+
+;set progress of node to n
+;syntax: progress_set kNode, kN
+opcode progress_set, 0, kk
+knode, kn xin
+if knode < gi_NumOfNodes then
+    gk_NodeProgress[knode] = kn
+endif
+endop
+
+;add 1 to progress of node (every k-cycle)
+opcode progress_add1, 0, k
+knode xin
+if knode < gi_NumOfNodes then
+    gk_NodeProgress[knode] = gk_NodeProgress[knode] + 1
+endif
+endop
+
+;wraps around the progress of any node > number of branches
+;syntax: progress_wrap
+opcode progress_wrap, 0, 0
+iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
+kn = 0
+while kn < gi_NumOfNodes do
+    gk_NodeProgress[kn] = gk_NodeProgress[kn] % iNumOfBranches
+    kn += 1
+od
+endop
+
+;----------------------------------------------
+
 
 
 
@@ -431,7 +502,7 @@ if ktrig != 0 then
             if koutnode == knode then
                 kp[koutnode] = 0
             endif
-            if node_has_root(koutnode) == 1 then ;DE WE FOLLOW ROOT OF INPUT?
+            if node_has_root(koutnode) == 1 && koutnode != knode then
                 koutnode = node_get_root(koutnode) ;go to it
                 kp[koutnode] = kp[koutnode] + 1 ;increment its progress
             endif
@@ -510,6 +581,9 @@ endop
 
 
 instr 1
+tree_init() ;init time only, can be called from instr 0
+progress_init()
+
 node_connect(0, 1)
 node_connect(0, 2)
 node_connect(0, 3)
@@ -519,7 +593,7 @@ node_connect(2, 6)
 node_connect(6, 7)
 endin
 instr 2
-kn = node_climb(1, 1)
+kn = node_climb(1, 2)
 printk 0, kn
 ;printarray gk_Tree
 endin
@@ -527,7 +601,7 @@ endin
 </CsInstruments>
 <CsScore>
 i1 0 0.0
-i2 1 1.0
+i2 1 0.2
 e
 </CsScore>
 </CsoundSynthesizer>
@@ -568,3 +642,5 @@ e
 ;don't need a reset-node to do this.
 
 
+;print(-1%4) ;= -1
+;print(wrap:i(-1, 0, 4)) ;= 3
