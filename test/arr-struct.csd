@@ -428,7 +428,12 @@ if knode < gi_NumOfNodes then
 endif
 endop
 
+//dumb idea
+/*
 ;wraps around the progress of any node > number of branches
+;note: in csound:
+; -1 % 4 = -1
+; wrap(-1, 0, 4) = 3
 ;syntax: progress_wrap
 opcode progress_wrap, 0, 0
 iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
@@ -438,7 +443,7 @@ while kn < gi_NumOfNodes do
     kn += 1
 od
 endop
-
+*/
 ;thinking bout extending the wrap to extra 1 and using that for a
 ;progress_past_last_branch opcode? lmao the name
 ;;holup! why tho? just check before the wrap call? it'd still be = #ofbranches
@@ -447,133 +452,33 @@ endop
 
 
 
-;lmao those babies down there will be obliterated!
-/*
-climbs up a node, its branches one by one, passing by their branches, and so on
+;climbs a node, its branches one by one, passing by their branches, and so on
+;from the example at the top, with 0 as input, every k-cycle the progress will be:
+;0, 1, 4, 5, 2, 6, 7, 3, 0,...
+;syntax: kCurrentNode node_climb kNode [, kReset]
 
-                       +--0--+
-                       |  |  |
-                    +--1  2  3
-                    |  |  |
-                    4  5  6
-                          |
-                          7
-
-with 0 as input, with every trigger the progress will be as follows:
-0, 1, 4, 5, 2, 6, 7, 3, 0,...
-
-syntax:
-kCurrentNode node_climb kTrig, kNode [, kRese]
-
-kCurrentNode: index of the active node
-   (accesse values stored in nodes with node_get_value)
-kTrig: progress to the next node with every cycle where this is non-zero
-knode: node to climb. this is k-rate, but will only update if reset is triggered
-    make sure i-pass value is a valid node 'cause that's when it's read.
-    or if not, just be sure to send a reset on the first k-cycle to force reread
-kReset: will reset all progress and use new kNode if changed
-*/
-opcode node_climb, k, kkO
-ktrig, knode, kreset xin
-kp[] init gi_NumOfNodes ;progress of each node
-;init array to -1 
-icnt = 0
-while icnt < gi_NumOfNodes do
-    kp[icnt] init -1
-    icnt += 1
-od
-koutnode init i(knode) ;initial input node
+;play root after every branch (no branch-to-branch hopping)
+;from same example, progress is: 014151026762030...
+;syntax: kCurrentNode node_climb2 kNode [, kRese]
+opcode node_climb, k, kO
+knode, kreset xin
 iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
-
-;reset
-if kreset != 0 then
-    koutnode = knode ;set working node
-    kp = -1 ;reset progress
-endif
-;trigger
-if ktrig != 0 then
-    if koutnode < gi_NumOfNodes then ;valid node
-        if kp[knode] == -1 then ;at root (input) node
-            kp[koutnode] = kp[koutnode] + 1 ;increment progress
-        elseif node_has_branch(koutnode, kp[koutnode]) == 1 then
-            koutnode = node_get_branch(koutnode, kp[koutnode]) ;go to it
-            kp[koutnode] = kp[koutnode] + 1 ;increment its progress
-        else ;there ain't no more branches
-            kp[koutnode] = -1 ;reset node progress
-            if koutnode == knode then
-                kp[koutnode] = 0
-            endif
-            if node_has_root(koutnode) == 1 && koutnode != knode then
-                koutnode = node_get_root(koutnode) ;go to it
-                kp[koutnode] = kp[koutnode] + 1 ;increment its progress
-            endif
-        endif
-        if kp[koutnode] == iNumOfBranches then ;after last branch position
-            kp[koutnode] = -1 ;wrap progress around
-            if koutnode == knode then ;wrap root node differently
-                kp[koutnode] = 0
-            endif
+koutnode init i(knode)
+if koutnode < gi_NumOfNodes then
+    kp = progress_get(koutnode)
+    if kp == -1 then
+        progress_add1(koutnode)
+    elseif node_has_branch(koutnode, kp) == 1 then
+        progress_add1(koutnode)
+        koutnode = node_get_branch(koutnode, kp)
+    else
+        progress_reset(koutnode)
+        if node_has_root(koutnode) == 1 && koutnode != knode then
+            koutnode = node_get_root(koutnode)
         endif
     endif
-endif
-xout koutnode
-endop
-
-/*
-play root after every branch (no branch-to-branch hopping)
-from above example, progress is: 014151026762030...
-syntax:
-kCurrentNode node_climb2 kTrig, kNode [, kRese]
-
-kCurrentNode: index of the active node
-   (accesse values stored in nodes with node_get_value)
-kTrig: progress to the next node with every cycle where this is non-zero
-knode: node to climb. this is k-rate, but will only update if reset is triggered
-    make sure i-pass value is a valid node 'cause that's when it's read.
-    or if not, just be sure to send a reset on the first k-cycle to force reread
-kReset: will reset all progress and use new kNode if changed
-
-for now, DON'T run it on a rooted node
-that's so rude in australian
-*/
-opcode node_climb2, k, kkO
-ktrig, knode, kreset xin
-kp[] init gi_NumOfNodes ;progress of each node
-;init array to -1 
-icnt = 0
-while icnt < gi_NumOfNodes do
-    kp[icnt] init -1
-    icnt += 1
-od
-koutnode init i(knode) ;initial input node
-iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
-
-;reset
-if kreset != 0 then
-    koutnode = knode ;set working node
-    kp = -1 ;reset progress
-endif
-;trigger
-if ktrig != 0 then
-    if koutnode < gi_NumOfNodes then ;valid node
-        if kp[knode] == -1 then ;at root (input) node
-            kp[koutnode] = kp[koutnode] + 1 ;increment progress
-        elseif node_get_branch(koutnode, kp[koutnode]) != -1 then ;there's a branch
-            koutnode = node_get_branch(koutnode, kp[koutnode]) ;go to it
-            kp[koutnode] = kp[koutnode] + 1 ;increment its progress
-        else ;there ain't no more branches
-            kp[koutnode] = -1 ;reset node progress
-            if node_get_root(koutnode) != -1 then ;if there's a root
-                koutnode = node_get_root(koutnode) ;go to it
-                kp[koutnode] = kp[koutnode] + 1 ;increment its progress
-            endif
-        endif
-        if kp[koutnode] == iNumOfBranches then ;after last branch position
-            kp[koutnode] = -1 ;wrap progress around
-            if koutnode == knode then ;wrap root node differently
-                kp[koutnode] = 0
-            endif
-        endif
+    if kp == iNumOfBranches then
+        progress_reset(koutnode)
     endif
 endif
 xout koutnode
@@ -584,7 +489,6 @@ endop
 instr 1
 tree_init() ;init time only, can be called from instr 0
 progress_init()
-
 node_connect(0, 1)
 node_connect(0, 2)
 node_connect(0, 3)
@@ -594,15 +498,14 @@ node_connect(2, 6)
 node_connect(6, 7)
 endin
 instr 2
-kn = node_climb(1, 2)
+kn = node_climb(0)
 printk 0, kn
-;printarray gk_Tree
 endin
 
 </CsInstruments>
 <CsScore>
 i1 0 0.0
-i2 1 0.2
+i2 1 0.5
 e
 </CsScore>
 </CsoundSynthesizer>
@@ -636,12 +539,17 @@ e
 
 ;can you make a tree_draw opcode? it'd be nice
 
+;also maybe a tree_create and abstract away the global vars?
+;(tree init inside it too?)
 
 
 ;storing the repetition value in each node, with some patching to the trigger
 ;pass the trigger directly, but pass a divided version to the sequencer (on the 0)
 ;don't need a reset-node to do this.
 
+;a node can have multiple values, you can store chord progressions
+;in one tree (bunch of connected nodes) and climb that, and store melodies
+;in another tree, and climb that separately
 
-;print(-1%4) ;= -1
-;print(wrap:i(-1, 0, 4)) ;= 3
+
+
