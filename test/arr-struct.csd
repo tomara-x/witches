@@ -53,6 +53,7 @@ nchnls  =   1
 ;-add a moved-to note here
 ;-link to this file there (for commit history)
 ;-link to ft-struct.csd too (origin)
+;-include the orc and leave the instrs
 
 
 ;create and initialize the tree arrays
@@ -453,17 +454,12 @@ iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
 koutnode init i(knode)
 if koutnode < gi_NumOfNodes then
     kp = progress_get(koutnode)
-    if kp == -1 then
-        progress_add1(koutnode)
-    elseif node_has_branch(koutnode, kp) == 1 then
-        progress_add1(koutnode)
+    if node_has_branch(koutnode, kp) == 1 then
         koutnode = node_get_branch(koutnode, kp)
-    else
-        progress_reset(koutnode)
-        if node_has_root(koutnode) == 1 && koutnode != knode then
-            koutnode = node_get_root(koutnode)
-        endif
+    elseif node_has_root(koutnode) == 1 && koutnode != knode then
+        koutnode = node_get_root(koutnode)
     endif
+    progress_add1(koutnode)
     if kp == iNumOfBranches then
         progress_reset(koutnode)
     endif
@@ -474,7 +470,7 @@ endop
 
 
 instr 1
-tree_init(8, 4, 4) ;init time only
+tree_init(8, 4, 3) ;init time only
 node_connect(0, 1)
 node_connect(0, 2)
 node_connect(0, 3)
