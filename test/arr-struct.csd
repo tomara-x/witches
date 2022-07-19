@@ -450,20 +450,16 @@ endop
 ;syntax: kCurrentNode node_climb2 kNode [, kRese]
 opcode node_climb, k, kO
 knode, kreset xin
-iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
 koutnode init i(knode)
-if koutnode < gi_NumOfNodes then
-    kp = progress_get(koutnode)
-    if node_has_branch(koutnode, kp) == 1 then
-        koutnode = node_get_branch(koutnode, kp)
-    elseif node_has_root(koutnode) == 1 && koutnode != knode then
+if node_has_branch(koutnode, progress_get(koutnode)) == 1 then
+    koutnode = node_get_branch(koutnode, progress_get(koutnode))
+else
+    progress_reset(koutnode)
+    if koutnode != knode then
         koutnode = node_get_root(koutnode)
     endif
-    progress_add1(koutnode)
-    if kp == iNumOfBranches then
-        progress_reset(koutnode)
-    endif
 endif
+progress_add1(koutnode)
 xout koutnode
 endop
 
