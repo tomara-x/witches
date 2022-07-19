@@ -41,24 +41,31 @@ nchnls  =   1
 
 ;when you move those to an orc file:
 ;-have a list of opcodes and a syntax line for each up top
-;-description for the global vars
+;-description for the global vars (still not a bad idea)
 ;-keep the jam responsibly but have it at the end
 ;-add a moved-to note here
 ;-link to this file there (for commit history)
 ;-link to ft-struct.csd too (origin)
 
 
-
-gi_NumOfNodes = 8
-gi_ValuesPerNode = 4 ;roots index
-gi_NodeLength = 8
-;BranchesPerNode = gi_NodeLength - (gi_ValuesPerNode + 1)
+;create and initialize the tree arrays
+;syntax: tree_init iNumberOfNodes, iValusePerNode, iBranchesPerNode
+;iNumberOfNodes: how many nodes the tree will have throughout performance
+;iValusePerNode: number of variables available in each node for storing
+;                note parameters (frequency, intensity, repetitions, etc)
+;iBranchesPerNode: how many branches can a node have
+opcode tree_init, 0, iii
+inodes, ivals, ibranches xin
+gi_NumOfNodes = inodes
+gi_ValuesPerNode = ivals ;roots index
+gi_NodeLength = ivals+ibranches+1 ;the node stores values,root, and branches
 gk_Tree[][] init gi_NumOfNodes, gi_NodeLength
 
+;progress of each node in the tree
+;-1 = play node itself, 0 = play branch 0, and so on
+gk_NodeProgress[] init gi_NumOfNodes
 
-
-;initialize entire array to -1
-opcode tree_init, 0, 0
+;initialize tree 2d array to -1
 ii = 0
 while ii < gi_NumOfNodes do
     ij = 0
@@ -68,8 +75,14 @@ while ii < gi_NumOfNodes do
     od
     ii += 1
 od
+
+;initialize progress array to -1
+ii = 0
+while ii < gi_NumOfNodes do
+    gk_NodeProgress[ii] init -1
+    ii += 1
+od
 endop
-;do you wanna k-rate one?
 
 
 
@@ -372,19 +385,6 @@ endop
 
 ;progress ops-------------------------------------
 
-;progress of each node in the tree
-;-1 = play node itself, 0 = play branch 0, and so on
-gk_NodeProgress[] init gi_NumOfNodes
-
-;initialize to -1 (i-pass)
-opcode progress_init, 0, 0
-ii = 0
-while ii < gi_NumOfNodes do
-    gk_NodeProgress[ii] init -1
-    ii += 1
-od
-endop
-
 ;reset node's progress to -1
 ;syntax: progress_reset kNode
 opcode progress_reset, 0, k
@@ -428,26 +428,6 @@ if knode < gi_NumOfNodes then
 endif
 endop
 
-//dumb idea
-/*
-;wraps around the progress of any node > number of branches
-;note: in csound:
-; -1 % 4 = -1
-; wrap(-1, 0, 4) = 3
-;syntax: progress_wrap
-opcode progress_wrap, 0, 0
-iNumOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
-kn = 0
-while kn < gi_NumOfNodes do
-    gk_NodeProgress[kn] = gk_NodeProgress[kn] % iNumOfBranches
-    kn += 1
-od
-endop
-*/
-;thinking bout extending the wrap to extra 1 and using that for a
-;progress_past_last_branch opcode? lmao the name
-;;holup! why tho? just check before the wrap call? it'd still be = #ofbranches
-
 ;----------------------------------------------
 
 
@@ -487,8 +467,7 @@ endop
 
 
 instr 1
-tree_init() ;init time only, can be called from instr 0
-progress_init()
+tree_init(8, 4, 4) ;init time only
 node_connect(0, 1)
 node_connect(0, 2)
 node_connect(0, 3)
@@ -500,6 +479,7 @@ endin
 instr 2
 kn = node_climb(0)
 printk 0, kn
+;printarray gk_Tree
 endin
 
 </CsInstruments>
@@ -539,8 +519,8 @@ e
 
 ;can you make a tree_draw opcode? it'd be nice
 
-;also maybe a tree_create and abstract away the global vars?
-;(tree init inside it too?)
+;do you wanna k-rate nuke-tree kinda opcode?
+;kinda like the progress_reset_all
 
 
 ;storing the repetition value in each node, with some patching to the trigger
