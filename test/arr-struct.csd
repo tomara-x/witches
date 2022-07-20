@@ -450,23 +450,22 @@ koutnode init i(knode)
 if node_has_branch(koutnode, progress_get(koutnode)) == 1 then
     koutnode = node_get_branch(koutnode, progress_get(koutnode))
 elseif progress_get(koutnode) > -1 then
-    while node_has_root(koutnode) == 1 &&
-             node_has_branch(koutnode, progress_get(koutnode)) == 0 do
+    until node_has_branch(koutnode, progress_get(koutnode)) == 1 do
         koutnode = node_get_root(koutnode)
+        if node_has_branch(koutnode, progress_get(koutnode)+1) == 0 &&
+            koutnode == knode then ;at last branch of input node
+            progress_reset_all
+        endif
         progress_add1(koutnode)
     od
     koutnode = node_get_branch(koutnode, progress_get(koutnode))
-endif
-if node_has_branch(koutnode, progress_get(koutnode)+1) == 0 &&
-    koutnode == knode then ;at last branch of input node
-    progress_reset(koutnode)
 endif
 progress_add1(koutnode)
 xout koutnode
 endop
 
 ;play root after every branch (no branch-to-branch hopping)
-;from same example, progress is: 014151026762030...
+;from same example, progress is: 0,1,4,1,5,1,0,2,6,7,6,2,0,3,0...
 ;syntax: kCurrentNode node_climb2 kNode [, kRese]
 opcode node_climb2, k, kO
 knode, kreset xin
@@ -490,7 +489,7 @@ endop
 
 
 instr 1
-tree_init(8, 4, 3) ;init time only
+tree_init(8, 4, 5) ;init time only
 node_connect(0, 1)
 node_connect(0, 2)
 node_connect(0, 3)
