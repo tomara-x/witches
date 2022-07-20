@@ -447,18 +447,17 @@ endop
 opcode node_climb, k, kO
 knode, kreset xin
 koutnode init i(knode)
-iNumberOfBranches = gi_NodeLength - (gi_ValuesPerNode + 1)
 if node_has_branch(koutnode, progress_get(koutnode)) == 1 then
     koutnode = node_get_branch(koutnode, progress_get(koutnode))
-else
-    until node_has_branch(koutnode, progress_get(koutnode)) == 1 do
+elseif progress_get(koutnode) > -1 then
+    while node_has_root(koutnode) == 1 &&
+             node_has_branch(koutnode, progress_get(koutnode)) == 0 do
         koutnode = node_get_root(koutnode)
         progress_add1(koutnode)
     od
     koutnode = node_get_branch(koutnode, progress_get(koutnode))
 endif
-if (node_has_branch(koutnode, progress_get(koutnode)) == 0 ||
-    progress_get(koutnode) == iNumberOfBranches) &&
+if node_has_branch(koutnode, progress_get(koutnode)+1) == 0 &&
     koutnode == knode then ;at last branch of input node
     progress_reset(koutnode)
 endif
