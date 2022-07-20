@@ -137,3 +137,10 @@ if kTrig != 0 then
 endif
 xout kArr
 endop
+
+;xor
+;opcode Xor, i, ii
+;ip, iq xin
+;xout (ip || iq) && !(ip && iq)
+;endop
+
