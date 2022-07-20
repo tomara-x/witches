@@ -444,11 +444,30 @@ endop
 ;from the example at the top, with 0 as input, every k-cycle the progress will be:
 ;0, 1, 4, 5, 2, 6, 7, 3, 0,...
 ;syntax: kCurrentNode node_climb kNode [, kReset]
+opcode node_climb, k, kO
+knode, kreset xin
+koutnode init i(knode)
+if node_has_branch(koutnode, progress_get(koutnode)) == 1 then
+    koutnode = node_get_branch(koutnode, progress_get(koutnode))
+else
+    until node_has_branch(koutnode, progress_get(koutnode)) == 1 do
+        koutnode = node_get_root(koutnode)
+        progress_add1(koutnode)
+    od
+    koutnode = node_get_branch(koutnode, progress_get(koutnode))
+endif
+if node_has_branch(koutnode, progress_get(koutnode)+1) == 0 &&
+    koutnode == knode then ;at last branch of input node
+    progress_reset(koutnode)
+endif
+progress_add1(koutnode)
+xout koutnode
+endop
 
 ;play root after every branch (no branch-to-branch hopping)
 ;from same example, progress is: 014151026762030...
 ;syntax: kCurrentNode node_climb2 kNode [, kRese]
-opcode node_climb, k, kO
+opcode node_climb2, k, kO
 knode, kreset xin
 koutnode init i(knode)
 if node_has_branch(koutnode, progress_get(koutnode)) == 1 then
@@ -458,6 +477,10 @@ else
     if koutnode != knode then
         koutnode = node_get_root(koutnode)
     endif
+endif
+if node_has_branch(koutnode, progress_get(koutnode)+1) == 0 &&
+    koutnode == knode then ;at last branch of input node
+    progress_reset(koutnode)
 endif
 progress_add1(koutnode)
 xout koutnode
