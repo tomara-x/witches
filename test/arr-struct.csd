@@ -49,6 +49,7 @@ nchnls  =   1
 ;when you move those to an orc file:
 ;-have a list of opcodes and a syntax line for each up top
 ;-description for the global vars (still not a bad idea)
+;   -maybe even branchzero and the like?
 ;-keep the jam responsibly but have it at the end
 ;-add a moved-to note here
 ;-link to this file there (for commit history)
@@ -64,6 +65,9 @@ nchnls  =   1
 ;iValusePerNode: number of variables available in each node for storing
 ;                note parameters (frequency, intensity, repetitions, etc)
 ;iBranchesPerNode: how many branches can a node have
+;note: it's possible to reshape the tree at any point in time through an i-pass
+;      instrument (p3=0) for example. keep in mind however that the tree is global,
+;      so any change will affect any running instruments
 opcode tree_init, 0, iii
 inodes, ivals, ibranches xin
 gi_NumOfNodes = inodes
@@ -671,6 +675,8 @@ endop
 ;----------------------------------------------
 
 
+;FIX: error-check node exists
+;implement the reset (set node only)
 
 ;climbs a node, its branches one by one, passing by their branches, and so on
 ;from the example at the top, with 0 as input, every k-cycle the progress will be:
@@ -726,8 +732,16 @@ endop
 
 
 
+;recursive?
+opcode node_climb3, k, kO
+knode, kreset xin
+xout knode
+endop
+
+
+
 instr 1
-tree_init(8, 4, 5) ;init time only
+tree_init(8, 4, 5)
 node_connect_i(0, 1)
 node_connect_i(0, 2)
 node_connect_i(0, 3)
@@ -745,7 +759,7 @@ endin
 </CsInstruments>
 <CsScore>
 i1 0 0.0
-i2 1 0.5
+i2 1 0.3
 e
 </CsScore>
 </CsoundSynthesizer>
@@ -773,11 +787,4 @@ e
 ;in another tree, and climb that separately
 
 ;values can be instr numbers and p-fields
-
-;test different i-time settings (tree_init) in different sequential instrs
-
-;test fracral connections
-
-;error-check node exists on the climbs
-
 
