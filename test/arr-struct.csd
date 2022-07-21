@@ -751,9 +751,13 @@ if koutnode >= -1 && koutnode < gi_NumOfNodes then
             endif
             progress_add1(koutnode)
         od
-        koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
+        if !(koutnode == knode && progress_get(knode) == 0) then
+            koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
+        endif
     endif
-    progress_add1(koutnode)
+    if !(koutnode == knode && progress_get(knode) == 0) then
+        progress_add1(koutnode)
+    endif
 endif
 xout koutnode
 endop
@@ -811,7 +815,7 @@ node_connect_i(1, 4)
 node_connect_i(1, 5)
 node_connect_i(2, 6)
 node_connect_i(6, 7)
-node_set_branch_i(3, 0, 0)
+;node_set_branch_i(3, 0, 0)
 endin
 instr 2
 kn = node_climb(0)
