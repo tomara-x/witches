@@ -96,6 +96,36 @@ endop
 
 
 
+//TREE_RESET
+;reset connections and node values (doesn't reset progress)
+;syntax: tree_reset_i/k
+;i-pass
+opcode tree_reset_i, 0, 0
+ii = 0
+while ii < gi_NumOfNodes do
+    ij = 0
+    while ij < gi_NodeLength do
+        gk_Tree[ii][ij] init -1
+        ij += 1
+    od
+    ii += 1
+od
+endop
+;k-time
+opcode tree_reset_k, 0, 0
+ki = 0
+while ki < gi_NumOfNodes do
+    kj = 0
+    while kj < gi_NodeLength do
+        gk_Tree[ki][kj] = -1
+        kj += 1
+    od
+    ki += 1
+od
+endop
+
+
+
 //NODE_SET_VALUE
 ;write input value to node at index (in k-time)
 ;will write only to node values, never changing connections
@@ -325,7 +355,7 @@ isrc, idst xin
 if isrc < gi_NumOfNodes && idst < gi_NumOfNodes then
     icnt = 0
     while icnt < gi_NodeLength do
-        gk_Tree[idst][icnt] init i(gk_Tree, ksrc, kcnt)
+        gk_Tree[idst][icnt] init i(gk_Tree, isrc, icnt)
         icnt += 1
     od
 endif
@@ -499,7 +529,7 @@ endop
 opcode node_has_branch, k, kk
 knode, kndx xin
 kflag = 0
-if node_get_branch(knode, kndx) != -1 then
+if node_get_branch_k(knode, kndx) != -1 then
     kflag = 1
 endif
 xout kflag
@@ -510,7 +540,7 @@ endop
 opcode node_has_root, k, k
 knode xin
 kflag = 0
-if node_get_root(knode) != -1 then
+if node_get_root_k(knode) != -1 then
     kflag = 1
 endif
 xout kflag
@@ -576,10 +606,10 @@ knode, kreset xin
 koutnode init i(knode)
 kflag = 0
 if node_has_branch(koutnode, progress_get(koutnode)) == 1 then
-    koutnode = node_get_branch(koutnode, progress_get(koutnode))
+    koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
 elseif progress_get(koutnode) > -1 then
     until node_has_branch(koutnode, progress_get(koutnode)) == 1 do
-        koutnode = node_get_root(koutnode)
+        koutnode = node_get_root_k(koutnode)
         if node_has_branch(koutnode, progress_get(koutnode)+1) == 0 &&
             koutnode == knode then ;at last branch of input node
             progress_reset_all
@@ -588,7 +618,7 @@ elseif progress_get(koutnode) > -1 then
         progress_add1(koutnode)
     od
     if kflag == 0 then
-        koutnode = node_get_branch(koutnode, progress_get(koutnode))
+        koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
     endif
 endif
 if kflag == 0 then
@@ -604,11 +634,11 @@ opcode node_climb2, k, kO
 knode, kreset xin
 koutnode init i(knode)
 if node_has_branch(koutnode, progress_get(koutnode)) == 1 then
-    koutnode = node_get_branch(koutnode, progress_get(koutnode))
+    koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
 else
     progress_reset(koutnode)
     if koutnode != knode then
-        koutnode = node_get_root(koutnode)
+        koutnode = node_get_root_k(koutnode)
     endif
 endif
 if node_has_branch(koutnode, progress_get(koutnode)+1) == 0 &&
@@ -623,13 +653,13 @@ endop
 
 instr 1
 tree_init(8, 4, 5) ;init time only
-node_connect(0, 1)
-node_connect(0, 2)
-node_connect(0, 3)
-node_connect(1, 4)
-node_connect(1, 5)
-node_connect(2, 6)
-node_connect(6, 7)
+node_connect_i(0, 1)
+node_connect_i(0, 2)
+node_connect_i(0, 3)
+node_connect_i(1, 4)
+node_connect_i(1, 5)
+node_connect_i(2, 6)
+node_connect_i(6, 7)
 endin
 instr 2
 kn = node_climb(0)
@@ -653,30 +683,11 @@ e
 ;this can be a whole box of cookies!
 
 
-
-;TRY SWITCHING THE ORDER OF K-RATE AND I-PASS VERSIONS
-;motherfucker! it does make it prefer the i-time ones... hmmm...
-
-;i mean it makes sense, the "engine" or whatever is going through definitions and it picks
-;the first thing that matches the input and output parameters (the opcode entry)
-
-;nah, i won't waste time, adding triggers is as simple as running the opcode in an
-;if conditional in the instr. i want them to run at every cycle (think of the fun mistakes)
-
-;so i-pass ones take priority because most time i think i'll use those with constants
-;for initial setting, but for self-patching (the witches live!) it's gonna be k inputs.
-;that, and forcing k-time running is simple if it's needed (k() an arg)
-
-
 ;you know what this needs? an additive voice with a bunch of inharmonic
 ;partials. you know that sound? kinda like a handpan.. ooo mama! have mercy!
 
 
 ;can you make a tree_draw opcode? it'd be nice
-
-;do you wanna k-rate nuke-tree kinda opcode?
-;kinda like the progress_reset_all
-
 
 ;storing the repetition value in each node, with some patching to the trigger
 ;pass the trigger directly, but pass a divided version to the sequencer (on the 0)
@@ -686,7 +697,9 @@ e
 ;in one tree (bunch of connected nodes) and climb that, and store melodies
 ;in another tree, and climb that separately
 
+;values can be instr numbers abd p-fields
 
-;IMPORTANTE: add a distinguishing i and k to opcode names?
-;also for quality's sake let's write i-versions of all those k-only cuties
+;i-time progress ops?
+
+;test different i-time settings (tree_init) in different sequential instrs
 
