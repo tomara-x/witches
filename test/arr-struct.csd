@@ -523,10 +523,21 @@ xout kroot
 endop
 
 
-//BOOLS
+
+//NODE_HAS_BRANCH
 ;returns 1 when input node has a branch at index, 0 otherwise
-;syntax: kFlag node_has_branch kNode, kNdx
-opcode node_has_branch, k, kk
+;syntax: i/kFlag node_has_branch_i/k i/kNode, i/kNdx
+;i-pass
+opcode node_has_branch_i, i, ii
+inode, indx xin
+iflag = 0
+if node_get_branch_i(inode, indx) != -1 then
+    iflag = 1
+endif
+xout iflag
+endop
+;k-time
+opcode node_has_branch_k, k, kk
 knode, kndx xin
 kflag = 0
 if node_get_branch_k(knode, kndx) != -1 then
@@ -535,9 +546,22 @@ endif
 xout kflag
 endop
 
+
+
+//NODE_HAS_ROOT
 ;returns 1 when input node has a root, 0 otherwise
-;syntax: kFlag node_has_root kNode
-opcode node_has_root, k, k
+;syntax: i/kFlag node_has_root_i/k i/kNode
+;i-pass
+opcode node_has_root_i, i, i
+inode xin
+iflag = 0
+if node_get_root_i(inode) != -1 then
+    iflag = 1
+endif
+xout iflag
+endop
+;k-time
+opcode node_has_root_k, k, k
 knode xin
 kflag = 0
 if node_get_root_k(knode) != -1 then
@@ -550,6 +574,56 @@ endop
 
 ;progress ops-------------------------------------
 
+;i-pass
+;reset node's progress to -1
+;syntax: progress_reset_i iNode
+opcode progress_reset_i, 0, i
+inode xin
+if inode < gi_NumOfNodes then
+    gk_NodeProgress[inode] init -1
+endif
+endop
+
+;reset entire array
+;syntax: progress_reset_all_i
+opcode progress_reset_all_i, 0, 0
+icnt = 0
+while icnt < lenarray(gk_NodeProgress) do
+    gk_NodeProgress[icnt] init -1
+od
+endop
+
+;get progress of node
+;syntax: iProgress progress_get_i kNode
+opcode progress_get_i, i, i
+inode xin
+iout init -1
+if inode < gi_NumOfNodes then
+    iout = i(gk_NodeProgress, inode)
+endif
+xout iout
+endop
+
+;set progress of node to n
+;syntax: progress_set_i iNode, iN
+opcode progress_set_i, 0, ii
+inode, ix xin
+if inode < gi_NumOfNodes then
+    gk_NodeProgress[inode] init ix
+endif
+endop
+
+;add 1 to progress of node
+;syntax: progress_add1_i iNode
+opcode progress_add1_i, 0, i
+inode xin
+if inode < gi_NumOfNodes then
+    gk_NodeProgress[inode] init i(gk_NodeProgress, inode) + 1
+endif
+endop
+
+
+;k-time
 ;reset node's progress to -1
 ;syntax: progress_reset kNode
 opcode progress_reset, 0, k
@@ -586,6 +660,7 @@ endif
 endop
 
 ;add 1 to progress of node (every k-cycle)
+;syntax: progress_add1 kNode
 opcode progress_add1, 0, k
 knode xin
 if knode < gi_NumOfNodes then
@@ -605,12 +680,12 @@ opcode node_climb, k, kO
 knode, kreset xin
 koutnode init i(knode)
 kflag = 0
-if node_has_branch(koutnode, progress_get(koutnode)) == 1 then
+if node_has_branch_k(koutnode, progress_get(koutnode)) == 1 then
     koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
 elseif progress_get(koutnode) > -1 then
-    until node_has_branch(koutnode, progress_get(koutnode)) == 1 do
+    until node_has_branch_k(koutnode, progress_get(koutnode)) == 1 do
         koutnode = node_get_root_k(koutnode)
-        if node_has_branch(koutnode, progress_get(koutnode)+1) == 0 &&
+        if node_has_branch_k(koutnode, progress_get(koutnode)+1) == 0 &&
             koutnode == knode then ;at last branch of input node
             progress_reset_all
             kflag = 1
@@ -633,7 +708,7 @@ endop
 opcode node_climb2, k, kO
 knode, kreset xin
 koutnode init i(knode)
-if node_has_branch(koutnode, progress_get(koutnode)) == 1 then
+if node_has_branch_k(koutnode, progress_get(koutnode)) == 1 then
     koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
 else
     progress_reset(koutnode)
@@ -641,7 +716,7 @@ else
         koutnode = node_get_root_k(koutnode)
     endif
 endif
-if node_has_branch(koutnode, progress_get(koutnode)+1) == 0 &&
+if node_has_branch_k(koutnode, progress_get(koutnode)+1) == 0 &&
     koutnode == knode then ;at last branch of input node
     progress_reset(koutnode)
 endif
@@ -697,9 +772,12 @@ e
 ;in one tree (bunch of connected nodes) and climb that, and store melodies
 ;in another tree, and climb that separately
 
-;values can be instr numbers abd p-fields
-
-;i-time progress ops?
+;values can be instr numbers and p-fields
 
 ;test different i-time settings (tree_init) in different sequential instrs
+
+;test fracral connections
+
+;error-check node exists on the climbs
+
 
