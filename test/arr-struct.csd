@@ -296,6 +296,36 @@ if knode < gi_NumOfNodes && kn > iRootIndex && kn < gi_NodeLength then
     gk_Tree[knode][kn] = kbranch
 endif
 endop
+;array of input branches
+;writes elements of input array or number of branches in a node (whichever's shorter)
+;(doesn't check if branches are valid nodes)
+;syntax: node_set_branch_i/k i/kNode, i/kBranches[]
+;i-pass
+opcode node_set_branch_i, 0, ii[]
+inode, iin[] xin
+iBranchesPerNode = gi_NodeLength - (gi_ValuesPerNode + 1)
+ioffset = gi_ValuesPerNode+1
+if inode < gi_NumOfNodes then
+    icnt = 0
+    while icnt < min(lenarray(iin), iBranchesPerNode) do
+        gk_Tree[inode][icnt+ioffset] init iin[icnt]
+        icnt += 1
+    od
+endif
+endop
+;k-time
+opcode node_set_branch_k, 0, kk[]
+knode, kin[] xin
+iBranchesPerNode = gi_NodeLength - (gi_ValuesPerNode + 1)
+ioffset = gi_ValuesPerNode+1
+if knode < gi_NumOfNodes then
+    kcnt = 0
+    while kcnt < min(lenarray(kin), iBranchesPerNode) do
+        gk_Tree[knode][kcnt+ioffset] = kin[kcnt]
+        kcnt += 1
+    od
+endif
+endop
 
 
 
