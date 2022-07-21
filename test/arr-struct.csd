@@ -275,6 +275,30 @@ endop
 
 
 
+//NODE_SET_BRANCH
+;sets nth branch of node to given value (doesn't check if branch is valid node)
+;syntax: node_set_branch_i/k i/kNode, i/kBranch, i/kN
+;i-pass
+opcode node_set_branch_i, 0, iii
+inode, ibranch, ix xin
+iRootIndex = gi_ValuesPerNode
+ix += iRootIndex+1
+if inode < gi_NumOfNodes && ix > iRootIndex && ix < gi_NodeLength then
+    gk_Tree[inode][ix] init ibranch
+endif
+endop
+;k-time
+opcode node_set_branch_k, 0, kkk
+knode, kbranch, kn xin
+iRootIndex = gi_ValuesPerNode
+kn += iRootIndex+1
+if knode < gi_NumOfNodes && kn > iRootIndex && kn < gi_NodeLength then
+    gk_Tree[knode][kn] = kbranch
+endif
+endop
+
+
+
 //NODE_CLEAR_ROOT
 ;sets the root of input node to -1 (disconnected/no-root node)
 ;syntax: node_clear_root_i/k i/kNode
@@ -678,6 +702,8 @@ endop
 ;FIX: error-check node exists
 ;implement the reset (set node only)
 
+
+
 ;climbs a node, its branches one by one, passing by their branches, and so on
 ;from the example at the top, with 0 as input, every k-cycle the progress will be:
 ;0, 1, 4, 5, 2, 6, 7, 3, 0,...
@@ -708,6 +734,8 @@ endif
 xout koutnode
 endop
 
+
+
 ;play root after every branch (no branch-to-branch hopping)
 ;from same example, progress is: 0,1,4,1,5,1,0,2,6,7,6,2,0,3,0...
 ;syntax: kCurrentNode node_climb2 kNode [, kRese]
@@ -732,9 +760,14 @@ endop
 
 
 
-;recursive?
 opcode node_climb3, k, kO
 knode, kreset xin
+if node_has_branch_k(knode, progress_get(knode)) == 1 then
+    knode = node_climb3(node_get_branch_k(knode, progress_get(knode)))
+elseif progress_get(knode) != -1 then
+    progress_reset(knode)
+endif
+progress_add1(knode)
 xout knode
 endop
 
@@ -751,7 +784,7 @@ node_connect_i(2, 6)
 node_connect_i(6, 7)
 endin
 instr 2
-kn = node_climb(0)
+kn = node_climb3(0)
 printk 0, kn
 ;printarray gk_Tree
 endin
