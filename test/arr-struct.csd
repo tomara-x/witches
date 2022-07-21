@@ -56,6 +56,8 @@ nchnls  =   1
 ;-include the orc and leave the instrs
 
 
+
+//TREE_INIT
 ;create and initialize the tree arrays
 ;syntax: tree_init iNumberOfNodes, iValusePerNode, iBranchesPerNode
 ;iNumberOfNodes: how many nodes the tree will have throughout performance
@@ -94,18 +96,19 @@ endop
 
 
 
+//NODE_SET_VALUE
 ;write input value to node at index (in k-time)
 ;will write only to node values, never changing connections
-;syntax: node_set_value kNode, kNdx, kInput
+;syntax: node_set_value_i/k i/kNode, i/kNdx, i/kInput
 ;init pass version
-opcode node_set_value, 0, iii
+opcode node_set_value_i, 0, iii
 inode, indx, iin xin
 if inode < gi_NumOfNodes && indx < gi_ValuesPerNode then
     gk_Tree[inode][indx] init iin
 endif
 endop
 ;k-time
-opcode node_set_value, 0, kkk
+opcode node_set_value_k, 0, kkk
 knode, kndx, kin xin
 if knode < gi_NumOfNodes && kndx < gi_ValuesPerNode then
     gk_Tree[knode][kndx] = kin
@@ -113,9 +116,9 @@ endif
 endop
 ;array of input values
 ;writes elements of input array or number of value slots in a node (whichever's shorter)
-;syntax: node_set_value kNode, kValues[]
+;syntax: node_set_value_i/k i/kNode, i/kValues[]
 ;init pass version
-opcode node_set_value, 0, ii[]
+opcode node_set_value_i, 0, ii[]
 inode, iin[] xin
 if inode < gi_NumOfNodes then
     icnt = 0
@@ -126,7 +129,7 @@ if inode < gi_NumOfNodes then
 endif
 endop
 ;k-time
-opcode node_set_value, 0, kk[]
+opcode node_set_value_k, 0, kk[]
 knode, kin[] xin
 if knode < gi_NumOfNodes then
     kcnt = 0
@@ -139,10 +142,21 @@ endop
 
 
 
+//NODE_GET_VALUE
 ;outputs value from index of node (in k-time)
 ;will output only from a valid node and a value index (0 otherwise)
-;syntax: kOut node_get_value kNode, kNdx
-opcode node_get_value, k, kk
+;syntax: i/kOut node_get_value_i/k i/kNode, i/kNdx
+;i-pass
+opcode node_get_value_i, i, ii
+inode, indx xin
+iout = 0
+if inode < gi_NumOfNodes && indx < gi_ValuesPerNode then
+    iout = i(gk_Tree, inode, indx)
+endif
+xout iout
+endop
+;k-time
+opcode node_get_value_k, k, kk
 knode, kndx xin
 kout = 0
 if knode < gi_NumOfNodes && kndx < gi_ValuesPerNode then
@@ -152,7 +166,21 @@ xout kout
 endop
 ;array output of all values version
 ;syntax: kValues[] node_get_value kNode
-opcode node_get_value, k[], k
+;i-pass
+opcode node_get_value_i, i[], i
+inode xin
+iout[] init gi_ValuesPerNode
+if inode < gi_NumOfNodes then
+    icnt = 0
+    while icnt < gi_ValuesPerNode do
+        iout[icnt] = i(gk_Tree, inode, icnt)
+        icnt += 1
+    od
+endif
+xout iout
+endop
+;k-time
+opcode node_get_value_k, k[], k
 knode xin
 kout[] init gi_ValuesPerNode
 if knode < gi_NumOfNodes then
@@ -160,18 +188,16 @@ if knode < gi_NumOfNodes then
 endif
 xout kout
 endop
-;are i-pass versions needed?
-;i(getrow(node), index)? that line looks like it's here to cause mischief
-;actually, we are saved! use: `i(tree, node,index)` to access tree[node][index] at i time
 
 
 
+//NODE_SET_ROOT
 ;sets root of node to given value
 ;(it doesn't set branches, but can be useful for root switching)
 ;(does not error-check if the value is a valid node)
-;syntax: node_set_root kNode, kRoot
+;syntax: node_set_root_i/k i/kNode, i/kRoot
 ;i-pass version
-opcode node_set_root, 0, ii
+opcode node_set_root_i, 0, ii
 inode, iroot xin
 iRootIndex = gi_ValuesPerNode
 if inode < gi_NumOfNodes then
@@ -179,20 +205,55 @@ if inode < gi_NumOfNodes then
 endif
 endop
 ;k-time
-opcode node_set_root, 0, kk
+opcode node_set_root_k, 0, kk
 knode, kroot xin
 iRootIndex = gi_ValuesPerNode
 if knode < gi_NumOfNodes then
     gk_Tree[knode][iRootIndex] = kroot
 endif
 endop
-;want an array of nodes version?
+;set an array of nodes to a single root
+;syntax node_set_root_i/k i/kNode[], i/kRoot
+;i-pass
+opcode node_set_root_i, 0, i[]i
+inode[], iroot xin
+iRootIndex = gi_ValuesPerNode
+icnt = 0
+while icnt < lenarray(inode) do
+    if inode[icnt] < gi_NumOfNodes then
+        gk_Tree[inode[icnt]][iRootIndex] init iroot ;set_root(node[cnt], root)
+    endif
+    icnt += 1
+od
+endop
+;k-time
+opcode node_set_root_k, 0, k[]k
+knode[], kroot xin
+iRootIndex = gi_ValuesPerNode
+kcnt = 0
+while kcnt < lenarray(knode) do
+    if knode[kcnt] < gi_NumOfNodes then
+        gk_Tree[knode[kcnt]][iRootIndex] = kroot
+    endif
+    kcnt += 1
+od
+endop
 
 
 
+//NODE_CLEAR_ROOT
 ;sets the root of input node to -1 (disconnected/no-root node)
-;syntax: node_clear_root kNode
-opcode node_clear_root, 0, k
+;syntax: node_clear_root_i/k i/kNode
+;i-pass
+opcode node_clear_root_i, 0, i
+inode xin
+iRootIndex = gi_ValuesPerNode
+if inode < gi_NumOfNodes then
+    gk_Tree[inode][iRootIndex] init -1
+endif
+endop
+;k-time
+opcode node_clear_root_k, 0, k
 knode xin
 iRootIndex = gi_ValuesPerNode
 if knode < gi_NumOfNodes then
@@ -202,9 +263,23 @@ endop
 
 
 
+//NODE_CLEAR_BRANCHES
 ;sets all branches of input node to -1 (no branches) (k-time)
-;syntax: node_clear_branches kNode
-opcode node_clear_branches, 0, k
+;syntax: node_clear_branches_i/k i/kNode
+;i-pass
+opcode node_clear_branches_i, 0, i
+inode xin
+iBranchZero = gi_ValuesPerNode+1 ;index after root
+if inode < gi_NumOfNodes then
+    icnt = iBranchZero
+    while icnt < gi_NodeLength do
+        gk_Tree[inode][icnt] init -1
+        icnt += 1
+    od
+endif
+endop
+;k-time
+opcode node_clear_branches_k, 0, k
 knode xin
 iBranchZero = gi_ValuesPerNode+1 ;index after root
 if knode < gi_NumOfNodes then
@@ -218,24 +293,45 @@ endop
 
 
 
+//NODE_ISOLATE
 ;sets all connections of node to -1
-;syntax: node_isolate kNode
-opcode node_isolate, 0, k
+;syntax: node_isolate_i/k i/kNode
+;i-pass
+opcode node_isolate_i, 0, i
+inode xin
+node_clear_root_i(inode)
+node_clear_branches_i(inode)
+endop
+;k-time
+opcode node_isolate_k, 0, k
 knode xin
-node_clear_root(knode)
-node_clear_branches(knode)
+node_clear_root_k(knode)
+node_clear_branches_k(knode)
 endop
 
 
 
+//NODE_COPY
 ;copies node values, root, and branches (k-time)
 ;a node having the same branch/root nodes as another doean't cause any problems.
 ;this doesn't cause a connection, only a node with parameters.
 ;(dst will have src's branches, but those branches still have src as their root)
 ;if you wanna connect those branches to this new root you'd still have to do connect.
 ;also this can be used to make different nodes mirror each other.
-;syntax: node_copy kSrc, kDst
-opcode node_copy, 0, kk
+;syntax: node_copy_i/k i/kSrc, i/kDst
+;i-pass
+opcode node_copy_i, 0, ii
+isrc, idst xin
+if isrc < gi_NumOfNodes && idst < gi_NumOfNodes then
+    icnt = 0
+    while icnt < gi_NodeLength do
+        gk_Tree[idst][icnt] init i(gk_Tree, ksrc, kcnt)
+        icnt += 1
+    od
+endif
+endop
+;k-time
+opcode node_copy_k, 0, kk
 ksrc, kdst xin
 if ksrc < gi_NumOfNodes && kdst < gi_NumOfNodes then
     kcnt = 0
@@ -248,12 +344,13 @@ endop
 
 
 
+//NODE_CONNECT
 ;connects branch node to root node
 ;(sets root index of branch, and first empty branch index of root)
 ;overwrites branch's root. does nothing if all root's branch indices are used (> -1)
-;syntax: node_connect kRoot, kBranch
+;syntax: node_connect_i/k i/kRoot, i/kBranch
 ;i-pass version
-opcode node_connect, 0, ii
+opcode node_connect_i, 0, ii
 iroot, ibranch xin
 iRootIndex = gi_ValuesPerNode
 if iroot < gi_NumOfNodes && ibranch < gi_NumOfNodes then
@@ -270,7 +367,7 @@ if iroot < gi_NumOfNodes && ibranch < gi_NumOfNodes then
 endif
 endop
 ;k-time
-opcode node_connect, 0, kk
+opcode node_connect_k, 0, kk
 kroot, kbranch xin
 iRootIndex = gi_ValuesPerNode
 if kroot < gi_NumOfNodes && kbranch < gi_NumOfNodes then
@@ -288,45 +385,47 @@ endif
 endop
 ;take array of branches to connect to root
 ;connects as many branches as possible ((empty spaces))
-;syntax: node_connect kRoot, kBranches[]
+;syntax: node_connect_i/k i/kRoot, i/kBranches[]
 ;i-pass version
-opcode node_connect, 0, ii[]
+opcode node_connect_i, 0, ii[]
 iroot, ibranches[] xin
 icnt = 0
 while icnt < lenarray(ibranches) do
-    node_connect(iroot, ibranches[icnt])
+    node_connect_i(iroot, ibranches[icnt])
     icnt += 1
 od
 endop
 ;k-time
-opcode node_connect, 0, kk[]
+opcode node_connect_k, 0, kk[]
 kroot, kbranches[] xin
 kcnt = 0
 while kcnt < lenarray(kbranches) do
-    node_connect(kroot, kbranches[kcnt])
+    node_connect_k(kroot, kbranches[kcnt])
     kcnt += 1
 od
 endop
 
 
 
+//NODE_CONNECT_AT
 ;connects branch as Nth branch of root (zero indexed)
 ;(overwriting exixting root and branch parameters)
-;syntax: node_connect_at kRoot, kBranch, kN
-;N must be between 0 and available branch slots (gi_NodeLength - (gi_ValuesPerNode + 1))
+;syntax: node_connect_at_i/k i/kRoot, i/kBranch, i/kN
+;N must be between 0 and available branch slots
+;(gi_NodeLength - (gi_ValuesPerNode + 1)) otherwise nothing is done
 ;i-pass version
-opcode node_connect_at, 0, iii
+opcode node_connect_at_i, 0, iii
 iroot, ibranch, ix xin ;variable called "in" is a no-go
 iRootIndex = gi_ValuesPerNode
 ix += iRootIndex+1 ;offset
 if iroot < gi_NumOfNodes && ibranch < gi_NumOfNodes &&
          ix > iRootIndex && ix < gi_NodeLength then
-    gk_Tree[ibranch][iRootIndex] = iroot
-    gk_Tree[iroot][ix] = ibranch
+    gk_Tree[ibranch][iRootIndex] init iroot
+    gk_Tree[iroot][ix] init ibranch
 endif
 endop
 ;k-time
-opcode node_connect_at, 0, kkk
+opcode node_connect_at_k, 0, kkk
 kroot, kbranch, kn xin
 iRootIndex = gi_ValuesPerNode
 kn += iRootIndex+1 ;offset so that kn=0 is first branch index
@@ -339,9 +438,23 @@ endop
 
 
 
+//NODE_GET_BRANCH
 ;get Nth branch of node (zero indexed)
-;syntax: kBranch node_get_branch kNode, kN
-opcode node_get_branch, k, kk
+;syntax: i/kBranch node_get_branch_i/k i/kNode, i/kN
+;i-pass
+opcode node_get_branch_i, i, ii
+inode, ix xin
+iRootIndex = gi_ValuesPerNode
+iBranchZero = iRootIndex+1
+ix += iBranchZero
+ibranch init -1
+if inode < gi_NumOfNodes && ix > iRootIndex && ix < gi_NodeLength then
+    ibranch = i(gk_Tree, inode, ix)
+endif
+xout ibranch
+endop
+;k-time
+opcode node_get_branch_k, k, kk
 knode, kn xin
 iRootIndex = gi_ValuesPerNode
 iBranchZero = iRootIndex+1
@@ -353,9 +466,23 @@ endif
 xout kbranch
 endop
 
+
+
+//NODE_GET_ROOT
 ;get root of node
-;syntax: kRoot node_get_root kNode
-opcode node_get_root, k, k
+;syntax: i/kRoot node_get_root_i/k i/kNode
+;i-pass
+opcode node_get_root_i, i, i
+inode xin
+iRootIndex = gi_ValuesPerNode
+iroot init -1
+if inode < gi_NumOfNodes then
+    iroot = i(gk_Tree, inode, iRootIndex)
+endif
+xout iroot
+endop
+;k-time
+opcode node_get_root_k, k, k
 knode xin
 iRootIndex = gi_ValuesPerNode
 kroot init -1
@@ -366,7 +493,7 @@ xout kroot
 endop
 
 
-
+//BOOLS
 ;returns 1 when input node has a branch at index, 0 otherwise
 ;syntax: kFlag node_has_branch kNode, kNdx
 opcode node_has_branch, k, kk
@@ -447,6 +574,7 @@ endop
 opcode node_climb, k, kO
 knode, kreset xin
 koutnode init i(knode)
+kflag = 0
 if node_has_branch(koutnode, progress_get(koutnode)) == 1 then
     koutnode = node_get_branch(koutnode, progress_get(koutnode))
 elseif progress_get(koutnode) > -1 then
@@ -455,12 +583,17 @@ elseif progress_get(koutnode) > -1 then
         if node_has_branch(koutnode, progress_get(koutnode)+1) == 0 &&
             koutnode == knode then ;at last branch of input node
             progress_reset_all
+            kflag = 1
         endif
         progress_add1(koutnode)
     od
-    koutnode = node_get_branch(koutnode, progress_get(koutnode))
+    if kflag == 0 then
+        koutnode = node_get_branch(koutnode, progress_get(koutnode))
+    endif
 endif
-progress_add1(koutnode)
+if kflag == 0 then
+    progress_add1(koutnode)
+endif
 xout koutnode
 endop
 
@@ -555,4 +688,5 @@ e
 
 
 ;IMPORTANTE: add a distinguishing i and k to opcode names?
+;also for quality's sake let's write i-versions of all those k-only cuties
 
