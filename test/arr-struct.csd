@@ -746,6 +746,7 @@ if koutnode >= -1 && koutnode < gi_NumOfNodes then
         koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
     elseif progress_get(koutnode) > -1 then
         until node_has_branch_k(koutnode, progress_get(koutnode)) == 1 do
+            progress_reset(koutnode)
             koutnode = node_get_root_k(koutnode)
             if node_has_branch_k(koutnode, progress_get(koutnode)+1) == 0 &&
                 koutnode == knode then ;at last branch of input node
