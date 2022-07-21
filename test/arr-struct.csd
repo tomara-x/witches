@@ -741,31 +741,22 @@ if kreset != 0 then
     koutnode = knode
 endif
 if koutnode >= -1 && koutnode < gi_NumOfNodes then
-    kflag = 0
     if node_has_branch_k(koutnode, progress_get(koutnode)) == 1 then
         koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
     elseif progress_get(koutnode) > -1 then
         until node_has_branch_k(koutnode, progress_get(koutnode)) == 1 do
             progress_reset(koutnode)
-            koutnode = node_get_root_k(koutnode)
-            if node_has_branch_k(koutnode, progress_get(koutnode)+1) == 0 &&
-                koutnode == knode then ;at last branch of input node
-                progress_reset_all
-                kflag = 1
+            if node_has_root_k(koutnode) == 1 && koutnode != knode then
+                koutnode = node_get_root_k(koutnode)
             endif
             progress_add1(koutnode)
         od
-        if kflag == 0 then
-            koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
-        endif
+        koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
     endif
-    if kflag == 0 then
-        progress_add1(koutnode)
-    endif
+    progress_add1(koutnode)
 endif
 xout koutnode
 endop
-;seg fault with node_set_branch_i(3, 0, 0)
 
 
 
@@ -820,11 +811,11 @@ node_connect_i(1, 4)
 node_connect_i(1, 5)
 node_connect_i(2, 6)
 node_connect_i(6, 7)
+node_set_branch_i(3, 0, 0)
 endin
 instr 2
 kn = node_climb(0)
 printk 0, kn
-;printarray gk_Tree
 endin
 
 </CsInstruments>
