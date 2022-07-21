@@ -400,7 +400,7 @@ endop
 
 
 //NODE_COPY
-;copies node values, root, and branches (k-time)
+;copies node values, root, and branches
 ;a node having the same branch/root nodes as another doean't cause any problems.
 ;this doesn't cause a connection, only a node with parameters.
 ;(dst will have src's branches, but those branches still have src as their root)
@@ -729,10 +729,6 @@ endop
 ;----------------------------------------------
 
 
-;FIX: error-check node exists
-;implement the reset (set node only)
-
-
 
 ;climbs a node, its branches one by one, passing by their branches, and so on
 ;from the example at the top, with 0 as input, every k-cycle the progress will be:
@@ -741,50 +737,61 @@ endop
 opcode node_climb, k, kO
 knode, kreset xin
 koutnode init i(knode)
-kflag = 0
-if node_has_branch_k(koutnode, progress_get(koutnode)) == 1 then
-    koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
-elseif progress_get(koutnode) > -1 then
-    until node_has_branch_k(koutnode, progress_get(koutnode)) == 1 do
-        koutnode = node_get_root_k(koutnode)
-        if node_has_branch_k(koutnode, progress_get(koutnode)+1) == 0 &&
-            koutnode == knode then ;at last branch of input node
-            progress_reset_all
-            kflag = 1
-        endif
-        progress_add1(koutnode)
-    od
-    if kflag == 0 then
-        koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
-    endif
+if kreset != 0 then
+    koutnode = knode
 endif
-if kflag == 0 then
-    progress_add1(koutnode)
+if koutnode >= -1 && koutnode < gi_NumOfNodes then
+    kflag = 0
+    if node_has_branch_k(koutnode, progress_get(koutnode)) == 1 then
+        koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
+    elseif progress_get(koutnode) > -1 then
+        until node_has_branch_k(koutnode, progress_get(koutnode)) == 1 do
+            koutnode = node_get_root_k(koutnode)
+            if node_has_branch_k(koutnode, progress_get(koutnode)+1) == 0 &&
+                koutnode == knode then ;at last branch of input node
+                progress_reset_all
+                kflag = 1
+            endif
+            progress_add1(koutnode)
+        od
+        if kflag == 0 then
+            koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
+        endif
+    endif
+    if kflag == 0 then
+        progress_add1(koutnode)
+    endif
 endif
 xout koutnode
 endop
+;seg fault with node_set_branch_i(3, 0, 0)
 
 
 
 ;play root after every branch (no branch-to-branch hopping)
 ;from same example, progress is: 0,1,4,1,5,1,0,2,6,7,6,2,0,3,0...
-;syntax: kCurrentNode node_climb2 kNode [, kRese]
+;syntax: kCurrentNode node_climb2 kNode [, kReset]
 opcode node_climb2, k, kO
 knode, kreset xin
 koutnode init i(knode)
-if node_has_branch_k(koutnode, progress_get(koutnode)) == 1 then
-    koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
-else
-    progress_reset(koutnode)
-    if koutnode != knode then
-        koutnode = node_get_root_k(koutnode)
+if kreset != 0 then
+    koutnode = knode
+endif
+if koutnode >= -1 && koutnode < gi_NumOfNodes then
+    if node_has_branch_k(koutnode, progress_get(koutnode)) == 1 then
+        koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
+    else
+        progress_reset(koutnode)
+        if koutnode != knode then
+            koutnode = node_get_root_k(koutnode)
+        endif
     endif
+    if node_has_branch_k(koutnode, progress_get(koutnode)+1) == 0 &&
+        koutnode == knode then ;at last branch of input node
+        progress_reset(koutnode)
+    endif
+    progress_add1(koutnode)
 endif
-if node_has_branch_k(koutnode, progress_get(koutnode)+1) == 0 &&
-    koutnode == knode then ;at last branch of input node
-    progress_reset(koutnode)
-endif
-progress_add1(koutnode)
 xout koutnode
 endop
 
@@ -814,7 +821,7 @@ node_connect_i(2, 6)
 node_connect_i(6, 7)
 endin
 instr 2
-kn = node_climb3(0)
+kn = node_climb(0)
 printk 0, kn
 ;printarray gk_Tree
 endin
