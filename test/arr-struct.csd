@@ -130,6 +130,36 @@ endop
 
 
 
+//TREE_RESET_CONNECTIONS
+;reset connections only, without changing node values or progress
+;syntax: tree_reset_connections_i/k
+;i-pass
+opcode tree_reset_connections_i, 0, 0
+ii = 0
+while ii < gi_NumOfNodes do
+    ij = gi_ValuesPerNode
+    while ij < gi_NodeLength do
+        gk_Tree[ii][ij] init -1
+        ij += 1
+    od
+    ii += 1
+od
+endop
+;k-time
+opcode tree_reset_connections_k, 0, 0
+ki = 0
+while ki < gi_NumOfNodes do
+    kj = gi_ValuesPerNode
+    while kj < gi_NodeLength do
+        gk_Tree[ki][kj] = -1
+        kj += 1
+    od
+    ki += 1
+od
+endop
+
+
+
 //NODE_SET_VALUE
 ;write input value to node at index (in k-time)
 ;will write only to node values, never changing connections
@@ -730,6 +760,10 @@ endop
 
 
 
+//CLIMB OPS
+
+//FIX: stuck after tree_reset or tree_reset_connections
+
 ;climbs a node, its branches one by one, passing by their branches, and so on
 ;from the example at the top, with 0 as input, every k-cycle the progress will be:
 ;0, 1, 4, 5, 2, 6, 7, 3, 0,...
@@ -793,6 +827,7 @@ endop
 
 
 
+;testing
 opcode node_climb3, k, kO
 knode, kreset xin
 if node_has_branch_k(knode, progress_get(knode)) == 1 then
@@ -807,12 +842,14 @@ endop
 
 
 instr 1
-tree_init(8, 4, 5)
+tree_init(8, 8, 8)
 ;i can do some lazy programming and make
 ;tree_init always alloc an extra branch
 ;AMY! that's terrible! i love it!
-iarr[] = fillarray(1, 2, 3, 3, 0) ;stucky
-iarr[] = fillarray(1, 2, 3, 0)    ;no stucky
+
+;okay maybe not fuck up the correctness of a function because another ones' is
+;messed up. i think for now just ensure you have more branches than needed?
+iarr[] = fillarray(1, 2, 3, 3, 0)
 node_connect_i(0, iarr)
 iarr[] = fillarray(4, 5)
 node_connect_i(1, iarr)
