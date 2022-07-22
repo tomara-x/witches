@@ -808,11 +808,11 @@ endop
 
 instr 1
 tree_init(8, 4, 5)
-node_connect_i(0, 1)
-node_connect_i(0, 2)
-node_connect_i(0, 3)
-node_connect_i(1, 4)
-node_connect_i(1, 5)
+iarr[] = fillarray(1, 2, 3, 3, 0) ;stucky
+iarr[] = fillarray(1, 2, 3, 0)    ;no stucky
+node_connect_i(0, iarr)
+iarr[] = fillarray(4, 5)
+node_connect_i(1, iarr)
 node_connect_i(2, 6)
 node_connect_i(6, 7)
 ;node_set_branch_i(3, 0, 0)
@@ -820,6 +820,7 @@ endin
 instr 2
 kn = node_climb(0)
 printk 0, kn
+;printarray gk_Tree
 endin
 
 </CsInstruments>
