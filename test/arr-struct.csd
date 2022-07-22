@@ -808,6 +808,9 @@ endop
 
 instr 1
 tree_init(8, 4, 5)
+;i can do some lazy programming and make
+;tree_init always alloc an extra branch
+;AMY! that's terrible! i love it!
 iarr[] = fillarray(1, 2, 3, 3, 0) ;stucky
 iarr[] = fillarray(1, 2, 3, 0)    ;no stucky
 node_connect_i(0, iarr)
