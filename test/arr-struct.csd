@@ -160,6 +160,30 @@ endop
 
 
 
+//NODE_VALID
+;returns 1 if input number is a node in the allocated tree, 0 otherwise
+;syntax: i/kFlag node_valid_i/k i/kNode
+;i-pass
+opcode node_valid_i, i, i
+inode xin
+iflag = 0
+if inode > -1 && inode < gi_NumOfNodes then
+    iflag = 1
+endif
+xout iflag
+endop
+;k-time
+opcode node_valid_k, k, k
+knode xin
+kflag = 0
+if knode > -1 && knode < gi_NumOfNodes then
+    kflag = 1
+endif
+xout kflag
+endop
+
+
+
 //NODE_SET_VALUE
 ;write input value to node at index (in k-time)
 ;will write only to node values, never changing connections
@@ -167,14 +191,14 @@ endop
 ;init pass version
 opcode node_set_value_i, 0, iii
 inode, indx, iin xin
-if inode < gi_NumOfNodes && indx < gi_ValuesPerNode then
+if node_valid_i(inode) == 1 && indx < gi_ValuesPerNode then
     gk_Tree[inode][indx] init iin
 endif
 endop
 ;k-time
 opcode node_set_value_k, 0, kkk
 knode, kndx, kin xin
-if knode < gi_NumOfNodes && kndx < gi_ValuesPerNode then
+if node_valid_k(knode) == 1 && kndx < gi_ValuesPerNode then
     gk_Tree[knode][kndx] = kin
 endif
 endop
@@ -184,7 +208,7 @@ endop
 ;init pass version
 opcode node_set_value_i, 0, ii[]
 inode, iin[] xin
-if inode < gi_NumOfNodes then
+if node_valid_i(inode) == 1 then
     icnt = 0
     while icnt < min(lenarray(iin), gi_ValuesPerNode) do
         gk_Tree[inode][icnt] init iin[icnt]
@@ -195,7 +219,7 @@ endop
 ;k-time
 opcode node_set_value_k, 0, kk[]
 knode, kin[] xin
-if knode < gi_NumOfNodes then
+if node_valid_k(knode) == 1 then
     kcnt = 0
     while kcnt < min(lenarray(kin), gi_ValuesPerNode) do
         gk_Tree[knode][kcnt] = kin[kcnt]
@@ -214,7 +238,7 @@ endop
 opcode node_get_value_i, i, ii
 inode, indx xin
 iout = 0
-if inode < gi_NumOfNodes && indx < gi_ValuesPerNode then
+if node_valid_i(inode) == 1 && indx < gi_ValuesPerNode then
     iout = i(gk_Tree, inode, indx)
 endif
 xout iout
@@ -223,7 +247,7 @@ endop
 opcode node_get_value_k, k, kk
 knode, kndx xin
 kout = 0
-if knode < gi_NumOfNodes && kndx < gi_ValuesPerNode then
+if node_valid_k(knode) == 1 && kndx < gi_ValuesPerNode then
     kout = gk_Tree[knode][kndx]
 endif
 xout kout
@@ -234,7 +258,7 @@ endop
 opcode node_get_value_i, i[], i
 inode xin
 iout[] init gi_ValuesPerNode
-if inode < gi_NumOfNodes then
+if node_valid_i(inode) == 1 then
     icnt = 0
     while icnt < gi_ValuesPerNode do
         iout[icnt] = i(gk_Tree, inode, icnt)
@@ -247,7 +271,7 @@ endop
 opcode node_get_value_k, k[], k
 knode xin
 kout[] init gi_ValuesPerNode
-if knode < gi_NumOfNodes then
+if node_valid_k(knode) == 1 then
     kout = slicearray(getrow(gk_Tree, knode), 0, gi_ValuesPerNode-1)
 endif
 xout kout
@@ -264,7 +288,7 @@ endop
 opcode node_set_root_i, 0, ii
 inode, iroot xin
 iRootIndex = gi_ValuesPerNode
-if inode < gi_NumOfNodes then
+if node_valid_i(inode) == 1 then
     gk_Tree[inode][iRootIndex] init iroot
 endif
 endop
@@ -272,7 +296,7 @@ endop
 opcode node_set_root_k, 0, kk
 knode, kroot xin
 iRootIndex = gi_ValuesPerNode
-if knode < gi_NumOfNodes then
+if node_valid_k(knode) == 1 then
     gk_Tree[knode][iRootIndex] = kroot
 endif
 endop
@@ -284,7 +308,7 @@ inode[], iroot xin
 iRootIndex = gi_ValuesPerNode
 icnt = 0
 while icnt < lenarray(inode) do
-    if inode[icnt] < gi_NumOfNodes then
+    if node_valid_i(inode[icnt]) == 1 then
         gk_Tree[inode[icnt]][iRootIndex] init iroot ;set_root(node[cnt], root)
     endif
     icnt += 1
@@ -296,7 +320,7 @@ knode[], kroot xin
 iRootIndex = gi_ValuesPerNode
 kcnt = 0
 while kcnt < lenarray(knode) do
-    if knode[kcnt] < gi_NumOfNodes then
+    if node_valid_k(knode[kcnt]) == 1 then
         gk_Tree[knode[kcnt]][iRootIndex] = kroot
     endif
     kcnt += 1
@@ -313,7 +337,7 @@ opcode node_set_branch_i, 0, iii
 inode, ibranch, ix xin
 iRootIndex = gi_ValuesPerNode
 ix += iRootIndex+1
-if inode < gi_NumOfNodes && ix > iRootIndex && ix < gi_NodeLength then
+if node_valid_i(inode) == 1 && ix > iRootIndex && ix < gi_NodeLength then
     gk_Tree[inode][ix] init ibranch
 endif
 endop
@@ -322,7 +346,7 @@ opcode node_set_branch_k, 0, kkk
 knode, kbranch, kn xin
 iRootIndex = gi_ValuesPerNode
 kn += iRootIndex+1
-if knode < gi_NumOfNodes && kn > iRootIndex && kn < gi_NodeLength then
+if node_valid_k(knode) == 1 && kn > iRootIndex && kn < gi_NodeLength then
     gk_Tree[knode][kn] = kbranch
 endif
 endop
@@ -335,7 +359,7 @@ opcode node_set_branch_i, 0, ii[]
 inode, iin[] xin
 iBranchesPerNode = gi_NodeLength - (gi_ValuesPerNode + 1)
 ioffset = gi_ValuesPerNode+1
-if inode < gi_NumOfNodes then
+if node_valid_i(inode) == 1 then
     icnt = 0
     while icnt < min(lenarray(iin), iBranchesPerNode) do
         gk_Tree[inode][icnt+ioffset] init iin[icnt]
@@ -348,7 +372,7 @@ opcode node_set_branch_k, 0, kk[]
 knode, kin[] xin
 iBranchesPerNode = gi_NodeLength - (gi_ValuesPerNode + 1)
 ioffset = gi_ValuesPerNode+1
-if knode < gi_NumOfNodes then
+if node_valid_k(knode) == 1 then
     kcnt = 0
     while kcnt < min(lenarray(kin), iBranchesPerNode) do
         gk_Tree[knode][kcnt+ioffset] = kin[kcnt]
@@ -366,7 +390,7 @@ endop
 opcode node_clear_root_i, 0, i
 inode xin
 iRootIndex = gi_ValuesPerNode
-if inode < gi_NumOfNodes then
+if node_valid_i(inode) == 1 then
     gk_Tree[inode][iRootIndex] init -1
 endif
 endop
@@ -374,7 +398,7 @@ endop
 opcode node_clear_root_k, 0, k
 knode xin
 iRootIndex = gi_ValuesPerNode
-if knode < gi_NumOfNodes then
+if node_valid_k(knode) == 1 then
     gk_Tree[knode][iRootIndex] = -1
 endif
 endop
@@ -388,7 +412,7 @@ endop
 opcode node_clear_branches_i, 0, i
 inode xin
 iBranchZero = gi_ValuesPerNode+1 ;index after root
-if inode < gi_NumOfNodes then
+if node_valid_i(inode) == 1 then
     icnt = iBranchZero
     while icnt < gi_NodeLength do
         gk_Tree[inode][icnt] init -1
@@ -400,7 +424,7 @@ endop
 opcode node_clear_branches_k, 0, k
 knode xin
 iBranchZero = gi_ValuesPerNode+1 ;index after root
-if knode < gi_NumOfNodes then
+if node_valid_k(knode) == 1 then
     kcnt = iBranchZero
     while kcnt < gi_NodeLength do
         gk_Tree[knode][kcnt] = -1
@@ -440,7 +464,7 @@ endop
 ;i-pass
 opcode node_copy_i, 0, ii
 isrc, idst xin
-if isrc < gi_NumOfNodes && idst < gi_NumOfNodes then
+if node_valid_i(isrc) == 1 && node_valid_i(idst) == 1 then
     icnt = 0
     while icnt < gi_NodeLength do
         gk_Tree[idst][icnt] init i(gk_Tree, isrc, icnt)
@@ -451,7 +475,7 @@ endop
 ;k-time
 opcode node_copy_k, 0, kk
 ksrc, kdst xin
-if ksrc < gi_NumOfNodes && kdst < gi_NumOfNodes then
+if node_valid_k(ksrc) == 1 && node_valid_k(kdst) == 1 then
     kcnt = 0
     while kcnt < gi_NodeLength do
         gk_Tree[kdst][kcnt] = gk_Tree[ksrc][kcnt]
@@ -471,7 +495,7 @@ endop
 opcode node_connect_i, 0, ii
 iroot, ibranch xin
 iRootIndex = gi_ValuesPerNode
-if iroot < gi_NumOfNodes && ibranch < gi_NumOfNodes then
+if node_valid_i(iroot) == 1 && node_valid_i(ibranch) == 1 then
     icnt = iRootIndex + 1 ;first branch
     while icnt < gi_NodeLength do
         if i(gk_Tree, iroot, icnt) == -1 then ;holy fuck! i() works with multi-arrs! = i(tree[root][cnt])
@@ -488,7 +512,7 @@ endop
 opcode node_connect_k, 0, kk
 kroot, kbranch xin
 iRootIndex = gi_ValuesPerNode
-if kroot < gi_NumOfNodes && kbranch < gi_NumOfNodes then
+if node_valid_k(kroot) == 1 && node_valid_k(kbranch) == 1 then
     kcnt = iRootIndex + 1 ;first branch
     while kcnt < gi_NodeLength do
         if gk_Tree[kroot][kcnt] == -1 then ;empty branch slot in root node
@@ -502,7 +526,7 @@ if kroot < gi_NumOfNodes && kbranch < gi_NumOfNodes then
 endif
 endop
 ;take array of branches to connect to root
-;connects as many branches as possible ((empty spaces))
+;connects as many branches as there are  empty  spaces
 ;syntax: node_connect_i/k i/kRoot, i/kBranches[]
 ;i-pass version
 opcode node_connect_i, 0, ii[]
@@ -536,8 +560,8 @@ opcode node_connect_at_i, 0, iii
 iroot, ibranch, ix xin ;variable called "in" is a no-go
 iRootIndex = gi_ValuesPerNode
 ix += iRootIndex+1 ;offset
-if iroot < gi_NumOfNodes && ibranch < gi_NumOfNodes &&
-         ix > iRootIndex && ix < gi_NodeLength then
+if node_valid_i(iroot) == 1 && node_valid_i(ibranch) == 1 &&
+            ix > iRootIndex && ix < gi_NodeLength then
     gk_Tree[ibranch][iRootIndex] init iroot
     gk_Tree[iroot][ix] init ibranch
 endif
@@ -547,8 +571,8 @@ opcode node_connect_at_k, 0, kkk
 kroot, kbranch, kn xin
 iRootIndex = gi_ValuesPerNode
 kn += iRootIndex+1 ;offset so that kn=0 is first branch index
-if kroot < gi_NumOfNodes && kbranch < gi_NumOfNodes &&
-         kn > iRootIndex && kn < gi_NodeLength then
+if node_valid_k(kroot) == 1 && node_valid_k(kbranch) == 1 &&
+            kn > iRootIndex && kn < gi_NodeLength then
     gk_Tree[kbranch][iRootIndex] = kroot
     gk_Tree[kroot][kn] = kbranch
 endif
@@ -566,7 +590,7 @@ iRootIndex = gi_ValuesPerNode
 iBranchZero = iRootIndex+1
 ix += iBranchZero
 ibranch init -1
-if inode < gi_NumOfNodes && ix > iRootIndex && ix < gi_NodeLength then
+if node_valid_i(inode) == 1 && ix > iRootIndex && ix < gi_NodeLength then
     ibranch = i(gk_Tree, inode, ix)
 endif
 xout ibranch
@@ -578,7 +602,7 @@ iRootIndex = gi_ValuesPerNode
 iBranchZero = iRootIndex+1
 kn += iBranchZero
 kbranch init -1
-if knode < gi_NumOfNodes && kn > iRootIndex && kn < gi_NodeLength then
+if node_valid_k(knode) == 1 && kn > iRootIndex && kn < gi_NodeLength then
     kbranch = gk_Tree[knode][kn]
 endif
 xout kbranch
@@ -594,7 +618,7 @@ opcode node_get_root_i, i, i
 inode xin
 iRootIndex = gi_ValuesPerNode
 iroot init -1
-if inode < gi_NumOfNodes then
+if node_valid_i(inode) == 1 then
     iroot = i(gk_Tree, inode, iRootIndex)
 endif
 xout iroot
@@ -604,7 +628,7 @@ opcode node_get_root_k, k, k
 knode xin
 iRootIndex = gi_ValuesPerNode
 kroot init -1
-if knode < gi_NumOfNodes then
+if node_valid_k(knode) == 1 then
     kroot = gk_Tree[knode][iRootIndex]
 endif
 xout kroot
@@ -667,7 +691,7 @@ endop
 opcode node_isolated_i, i, i
 inode xin
 iflag = 1
-if inode < gi_NumOfNodes then
+if node_valid_i(inode) == 1 then
     icnt = gi_ValuesPerNode
     while icnt < gi_NodeLength do
         if i(gk_Tree, inode, icnt) != -1 then
@@ -684,7 +708,7 @@ endop
 opcode node_isolated_k, k, k
 knode xin
 kflag = 1
-if knode < gi_NumOfNodes then
+if node_valid_k(knode) == 1 then
     kcnt = gi_ValuesPerNode
     while kcnt < gi_NodeLength do
         if gk_Tree[knode][kcnt] != -1 then
@@ -707,7 +731,7 @@ endop
 ;syntax: progress_reset_i iNode
 opcode progress_reset_i, 0, i
 inode xin
-if inode < gi_NumOfNodes then
+if node_valid_i(inode) == 1 then
     gk_NodeProgress[inode] init -1
 endif
 endop
@@ -726,7 +750,7 @@ endop
 opcode progress_get_i, i, i
 inode xin
 iout init -1
-if inode < gi_NumOfNodes then
+if node_valid_i(inode) == 1 then
     iout = i(gk_NodeProgress, inode)
 endif
 xout iout
@@ -736,7 +760,7 @@ endop
 ;syntax: progress_set_i iNode, iN
 opcode progress_set_i, 0, ii
 inode, ix xin
-if inode < gi_NumOfNodes then
+if node_valid_i(inode) == 1 then
     gk_NodeProgress[inode] init ix
 endif
 endop
@@ -745,7 +769,7 @@ endop
 ;syntax: progress_add1_i iNode
 opcode progress_add1_i, 0, i
 inode xin
-if inode < gi_NumOfNodes then
+if node_valid_i(inode) == 1 then
     gk_NodeProgress[inode] init i(gk_NodeProgress, inode) + 1
 endif
 endop
@@ -756,7 +780,7 @@ endop
 ;syntax: progress_reset kNode
 opcode progress_reset, 0, k
 knode xin
-if knode < gi_NumOfNodes then
+if node_valid_k(knode) == 1 then
     gk_NodeProgress[knode] = -1
 endif
 endop
@@ -772,7 +796,7 @@ endop
 opcode progress_get, k, k
 knode xin
 kout init -1
-if knode < gi_NumOfNodes then
+if node_valid_k(knode) == 1 then
     kout = gk_NodeProgress[knode]
 endif
 xout kout
@@ -782,7 +806,7 @@ endop
 ;syntax: progress_set kNode, kN
 opcode progress_set, 0, kk
 knode, kn xin
-if knode < gi_NumOfNodes then
+if node_valid_k(knode) == 1 then
     gk_NodeProgress[knode] = kn
 endif
 endop
@@ -791,7 +815,7 @@ endop
 ;syntax: progress_add1 kNode
 opcode progress_add1, 0, k
 knode xin
-if knode < gi_NumOfNodes then
+if node_valid_k(knode) == 1 then
     gk_NodeProgress[knode] = gk_NodeProgress[knode] + 1
 endif
 endop
@@ -812,7 +836,7 @@ koutnode init i(knode)
 if kreset != 0 then
     koutnode = knode
 endif
-if koutnode >= -1 && koutnode < gi_NumOfNodes && node_isolated_k(koutnode) == 0 then
+if node_valid_k(koutnode) == 1 && node_isolated_k(koutnode) == 0 then
     if node_has_branch_k(koutnode, progress_get(koutnode)) == 1 then
         koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
     elseif progress_get(koutnode) > -1 then
@@ -845,7 +869,7 @@ koutnode init i(knode)
 if kreset != 0 then
     koutnode = knode
 endif
-if koutnode >= -1 && koutnode < gi_NumOfNodes && node_isolated_k(koutnode) == 0 then
+if node_valid_k(koutnode) == 1 && node_isolated_k(koutnode) == 0 then
     if node_has_branch_k(koutnode, progress_get(koutnode)) == 1 then
         koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
     else
@@ -938,24 +962,4 @@ e
 
 ;okay maybe not fuck up the correctness of a function because another ones' is
 ;messed up. i think for now just ensure you have more branches than needed?
-
-
-
-;FIX: stuck after tree_reset or tree_reset_connections
-;climb will freez, while climb2 will segfault or hold the node
-;depending on where it is in the tree when tree_reset happens
-
-;i mean, do you have to? really? it's like expecting to find your keys in
-;the bowl after a hurricane trashed the entire town!
-;after a tree reset, you'll need to do a climb reset trig and a progress reset
-
-;actually it's about something more, we freeze on the climb of an empty node..
-;i think if i add that to the error chacking so it only functions on
-;node that exists AND has connections (root or branches) it should be possible to
-;bring it back to life with a reset trigger after the tree_reset?
-
-;YUS! poyfect!
-
-
-;okay maybe a node_valid would be nice
 
