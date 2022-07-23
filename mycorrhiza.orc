@@ -26,8 +26,43 @@
 ;node_connect(2, 6)    N#6-----------0,0,0,0,2,7,N,N          7
 ;node_connect(6, 7)    N#7-----------0,0,0,0,6,N,N,N
 
+/*
+list of opcodes:
+(there's an i and k version of most opcodes)
+
+tree_init
+tree_reset_i/k
+tree_reset_connections_i/k
+
+node_set_value_i/k
+node_get_value_i/k
+node_set_root_i/k
+node_set_branch_i/k
+node_isolate_i/k
+node_clear_root_i/k
+node_clear_branches_i/k
+node_copy_i/k
+node_connect_i/k
+node_connect_at_i/k
+node_has_root_i/k
+node_has_branch_i/k
+node_get_root_i/k
+node_get_branch_i/k
+node_valid_i/k
+node_isolated_i/k
+node_climb
+node_climb2
+
+(i-pass versions of the following have an extra "_i" to the name)
+progress_set
+progress_get
+progress_add1
+progress_reset
+progress_reset_all
+*/
+
+
 ;TODO:
-;-have a list of opcodes and a syntax line for each up top
 ;-description for the global vars (still not a bad idea)
 ;-maybe even branchzero and the like?
 
@@ -205,7 +240,7 @@ endop
 
 
 //NODE_GET_VALUE
-;outputs value from index of node (in k-time)
+;outputs value from index of node
 ;will output only from a valid node and a value index (0 otherwise)
 ;syntax: i/kOut node_get_value_i/k i/kNode, i/kNdx
 ;i-pass
@@ -227,7 +262,7 @@ endif
 xout kout
 endop
 ;array output of all values version
-;syntax: kValues[] node_get_value kNode
+;syntax: i/kValues[] node_get_value_i/k i/kNode
 ;i-pass
 opcode node_get_value_i, i[], i
 inode xin
