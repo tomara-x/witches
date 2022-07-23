@@ -63,6 +63,8 @@ e
 </CsScore>
 </CsoundSynthesizer>
 
+;test the half-time extra trig adding thing
+
 ;you know what this needs? an additive voice with a bunch of inharmonic
 ;partials. you know that sound? kinda like a handpan.. ooo mama! have mercy!
 

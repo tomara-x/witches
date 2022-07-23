@@ -65,6 +65,7 @@ progress_reset_all
 ;TODO:
 ;-description for the global vars (still not a bad idea)
 ;-maybe even branchzero and the like?
+;JAM!
 
 
 //TREE_INIT
@@ -393,7 +394,7 @@ endop
 
 
 //NODE_CLEAR_ROOT
-;sets the root of input node to -1 (disconnected/no-root node)
+;sets the root of input node to -1 (no root node)
 ;syntax: node_clear_root_i/k i/kNode
 ;i-pass
 opcode node_clear_root_i, 0, i
@@ -415,7 +416,7 @@ endop
 
 
 //NODE_CLEAR_BRANCHES
-;sets all branches of input node to -1 (no branches) (k-time)
+;sets all branches of input node to -1 (no branches)
 ;syntax: node_clear_branches_i/k i/kNode
 ;i-pass
 opcode node_clear_branches_i, 0, i
