@@ -660,6 +660,46 @@ endop
 
 
 
+//NODE_ISOLATED
+;returns 1 when input node has no connections (branches or root), 0 otherwise
+;syntax: i/kFlag node_isolated_i/k i/kNode
+;i-pass
+opcode node_isolated_i, i, i
+inode xin
+iflag = 1
+if inode < gi_NumOfNodes then
+    icnt = gi_ValuesPerNode
+    while icnt < gi_NodeLength do
+        if i(gk_Tree, inode, icnt) != -1 then
+            iflag = 0
+            goto break
+        endif
+        icnt += 1
+    od
+    break:
+endif
+xout iflag
+endop
+;k-time
+opcode node_isolated_k, k, k
+knode xin
+kflag = 1
+if knode < gi_NumOfNodes then
+    kcnt = gi_ValuesPerNode
+    while kcnt < gi_NodeLength do
+        if gk_Tree[knode][kcnt] != -1 then
+            kflag = 0
+            goto break
+        endif
+        kcnt += 1
+    od
+    break:
+endif
+xout kflag
+endop
+
+
+
 ;progress ops-------------------------------------
 
 ;i-pass
@@ -772,7 +812,7 @@ koutnode init i(knode)
 if kreset != 0 then
     koutnode = knode
 endif
-if koutnode >= -1 && koutnode < gi_NumOfNodes then
+if koutnode >= -1 && koutnode < gi_NumOfNodes && node_isolated_k(koutnode) == 0 then
     if node_has_branch_k(koutnode, progress_get(koutnode)) == 1 then
         koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
     elseif progress_get(koutnode) > -1 then
@@ -805,7 +845,7 @@ koutnode init i(knode)
 if kreset != 0 then
     koutnode = knode
 endif
-if koutnode >= -1 && koutnode < gi_NumOfNodes then
+if koutnode >= -1 && koutnode < gi_NumOfNodes && node_isolated_k(koutnode) == 0 then
     if node_has_branch_k(koutnode, progress_get(koutnode)) == 1 then
         koutnode = node_get_branch_k(koutnode, progress_get(koutnode))
     else
@@ -841,10 +881,20 @@ endop
 
 instr 1
 tree_init(8, 8, 8)
+node_connect_i(0, 1)
+node_connect_i(0, 2)
+node_connect_i(0, 3)
+node_connect_i(1, 4)
+node_connect_i(1, 5)
+node_connect_i(2, 6)
+node_connect_i(6, 7)
 endin
 instr 2
 kn = node_climb(0)
 printk 0, kn
+if timeinstk() == 5 then
+    tree_reset_connections_k
+endif
 ;printarray gk_Tree
 endin
 
@@ -903,3 +953,9 @@ e
 ;i think if i add that to the error chacking so it only functions on
 ;node that exists AND has connections (root or branches) it should be possible to
 ;bring it back to life with a reset trigger after the tree_reset?
+
+;YUS! poyfect!
+
+
+;okay maybe a node_valid would be nice
+
