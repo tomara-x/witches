@@ -65,7 +65,8 @@ progress_reset_all
 ;TODO:
 ;-description for the global vars (still not a bad idea)
 ;-maybe even branchzero and the like?
-;JAM!
+;-node_get_branch array output overload (out all branches)
+;-JAM!
 
 
 //TREE_INIT
