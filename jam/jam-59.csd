@@ -63,20 +63,39 @@ if kTrig == 1 then
     kN = node_climb(0)
     schedulek("Flower", 0, $BEAT/4, kN)  ;pass current node to instrument as p4
 endif
+
+kTrig metro $FRQ*8
+if kTrig == 1 then
+    kN = node_climb(3) ;beware when reusing nodes! the progress is global!
+    schedulek("Leaf", 0, $BEAT/8, kN)
+endif
 endin
 schedule("Water", 0, 60)
 
 
 
+instr Leaf
+aEnv = linseg(1,p3,0)
+kFrq = node_get_value_k(p4, 0)    ;get value stored at index 0 of node p4
+aSig = oscili(1, kFrq*8)
+aSig = limit(aSig*8, -1, 1)
+aSig *= aEnv^4
+aSig *= db(-12)
+aSig = diode_ladder(aSig, kFrq*16, 16, 1, 180)
+sbus_mix(0, aSig) 
+endin
+
+
+
 instr Flower
 aEnv = linseg(0,p3*.03,1, p3*.6,0)
-kFrq = node_get_value_k(p4, 0)    ;get value stored at index 0 of node p4
+kFrq = node_get_value_k(p4, 0)
 aSig = oscili(1, kFrq)
 aSig = mirror(aSig*8, -1, 1)
-aSig *= aEnv
+aSig *= aEnv^2
 aSig *= db(-12)
 aSig = diode_ladder(aSig, kFrq*8, 16, 1, 180)
-sbus_mix(0, aSig) 
+sbus_mix(1, aSig) 
 endin
 
 
