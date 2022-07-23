@@ -916,9 +916,6 @@ endin
 instr 2
 kn = node_climb(0)
 printk 0, kn
-if timeinstk() == 5 then
-    tree_reset_connections_k
-endif
 ;printarray gk_Tree
 endin
 
