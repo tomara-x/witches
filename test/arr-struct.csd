@@ -762,8 +762,6 @@ endop
 
 //CLIMB OPS
 
-//FIX: stuck after tree_reset or tree_reset_connections
-
 ;climbs a node, its branches one by one, passing by their branches, and so on
 ;from the example at the top, with 0 as input, every k-cycle the progress will be:
 ;0, 1, 4, 5, 2, 6, 7, 3, 0,...
@@ -843,19 +841,6 @@ endop
 
 instr 1
 tree_init(8, 8, 8)
-;i can do some lazy programming and make
-;tree_init always alloc an extra branch
-;AMY! that's terrible! i love it!
-
-;okay maybe not fuck up the correctness of a function because another ones' is
-;messed up. i think for now just ensure you have more branches than needed?
-iarr[] = fillarray(1, 2, 3, 3, 0)
-node_connect_i(0, iarr)
-iarr[] = fillarray(4, 5)
-node_connect_i(1, iarr)
-node_connect_i(2, 6)
-node_connect_i(6, 7)
-;node_set_branch_i(3, 0, 0)
 endin
 instr 2
 kn = node_climb(0)
@@ -895,3 +880,26 @@ e
 
 ;values can be instr numbers and p-fields
 
+
+
+;i can do some lazy programming and make
+;tree_init always alloc an extra branch
+;AMY! that's terrible! i love it!
+
+;okay maybe not fuck up the correctness of a function because another ones' is
+;messed up. i think for now just ensure you have more branches than needed?
+
+
+
+;FIX: stuck after tree_reset or tree_reset_connections
+;climb will freez, while climb2 will segfault or hold the node
+;depending on where it is in the tree when tree_reset happens
+
+;i mean, do you have to? really? it's like expecting to find your keys in
+;the bowl after a hurricane trashed the entire town!
+;after a tree reset, you'll need to do a climb reset trig and a progress reset
+
+;actually it's about something more, we freeze on the climb of an empty node..
+;i think if i add that to the error chacking so it only functions on
+;node that exists AND has connections (root or branches) it should be possible to
+;bring it back to life with a reset trigger after the tree_reset?
