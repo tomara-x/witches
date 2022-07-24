@@ -8,25 +8,25 @@
 //network sequencer by Mog [https://github.com/JustMog/Mog-VCV]
 //thank you so much!
 
-
-//please refer to test/arr-struct.csd and test/ft-struct.csd for
-//the early commit history
-
-;                      branches ---------------+-+-+
-;                      root node ------------+ | | |
-;                      values -------+-+-+-+ | | | |
-;                                    | | | | | | | |
-;                                    V + + + R B B B
-;tree_init(8, 4, 3)    N#0-----------0,0,0,0,N,1,2,3       +--0--+
-;node_connect(0, 1)    N#1-----------0,0,0,0,0,4,5,N       |  |  |
-;node_connect(0, 2)    N#2-----------0,0,0,0,0,6,N,N    +--1  2  3
-;node_connect(0, 3) -> N#3-----------0,0,0,0,0,N,N,N -> |  |  |
-;node_connect(1, 4)    N#4-----------0,0,0,0,1,N,N,N    4  5  6
-;node_connect(1, 5)    N#5-----------0,0,0,0,1,N,N,N          |
-;node_connect(2, 6)    N#6-----------0,0,0,0,2,7,N,N          7
-;node_connect(6, 7)    N#7-----------0,0,0,0,6,N,N,N
+//see test/arr-struct.csd and test/ft-struct.csd for early commit history
 
 /*
+                        branches ---------------+-+-+
+                        root node ------------+ | | |
+                        values -------+-+-+-+ | | | |
+                                      | | | | | | | |
+                                      V + + + R B B B
+tree_init(8, 4, 3)      N#0-----------0,0,0,0,N,1,2,3       +--0--+
+node_connect_i(0, 1)    N#1-----------0,0,0,0,0,4,5,N       |  |  |
+node_connect_i(0, 2)    N#2-----------0,0,0,0,0,6,N,N    +--1  2  3
+node_connect_i(0, 3) -> N#3-----------0,0,0,0,0,N,N,N -> |  |  |
+node_connect_i(1, 4)    N#4-----------0,0,0,0,1,N,N,N    4  5  6
+node_connect_i(1, 5)    N#5-----------0,0,0,0,1,N,N,N          |
+node_connect_i(2, 6)    N#6-----------0,0,0,0,2,7,N,N          7
+node_connect_i(6, 7)    N#7-----------0,0,0,0,6,N,N,N
+
+
+
 list of opcodes:
 (there's an i and k version of most opcodes)
 
@@ -59,9 +59,9 @@ progress_get
 progress_add1
 progress_reset
 progress_reset_all
-*/
 
-/*
+
+
 globals:
 those are all set by the tree_init opcode (you don't need to deal with this)
 
@@ -960,7 +960,7 @@ endop
 ;up-down kind of random walk? or probability of brabches?
 ;this can be a whole box of cookies!
 
-;can you make a tree_draw opcode? it'd be nice
+;can you make a tree draw opcode? it'd be nice
 
 ;storing the repetition value in each node, with some patching to the trigger
 ;pass the trigger directly, but pass a divided version to the sequencer (on the 0)

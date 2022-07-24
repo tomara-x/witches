@@ -151,6 +151,7 @@ endin
 
 
 ;pluck env instr
+;test the half-time extra trig adding thing
 
 
 
