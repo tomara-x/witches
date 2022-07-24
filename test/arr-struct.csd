@@ -39,7 +39,7 @@ nchnls  =   1
 #include "mycorrhiza.orc"
 
 instr 1
-tree_init(8, 8, 8)
+tree_init(8, 2, 4)
 node_connect_i(0, 1)
 node_connect_i(0, 2)
 node_connect_i(0, 3)
@@ -50,9 +50,13 @@ node_connect_i(6, 7)
 endin
 
 instr 2
-kn = node_climb(0)
-printk 0, kn
+;kn = node_climb(0)
+;printk 0, kn
 ;printarray gk_Tree
+kn init 0
+karr[] = node_get_branch_k(kn)
+printarray karr
+kn += 1
 endin
 
 </CsInstruments>

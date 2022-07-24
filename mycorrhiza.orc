@@ -634,13 +634,14 @@ endop
 ;i-pass
 opcode node_get_branch_i, i[], i
 inode xin
+iRootIndex = gi_ValuesPerNode
 iBranchesPerNode = gi_NodeLength - (gi_ValuesPerNode + 1)
 iBranchZero = iRootIndex+1
 iout[] init iBranchesPerNode
 if node_valid_i(inode) == 1 then
-    icnt = iBranchZero
-    while icnt < gi_NodeLength do
-        iout[icnt] = i(gk_Tree, inode, icnt)
+    icnt = 0
+    while icnt < iBranchesPerNode do
+        iout[icnt] = i(gk_Tree, inode, icnt+iBranchZero)
         icnt += 1
     od
 endif
@@ -649,6 +650,7 @@ endop
 ;k-time
 opcode node_get_branch_k, k[], k
 knode xin
+iRootIndex = gi_ValuesPerNode
 iBranchesPerNode = gi_NodeLength - (gi_ValuesPerNode + 1)
 iBranchZero = iRootIndex+1
 kout[] init iBranchesPerNode

@@ -100,7 +100,7 @@ sbus_mix(1, aSig)
 endin
 
 
-
+/*
 instr Grain
 seed 113
 kGFrq = kP[kS]
@@ -117,7 +117,7 @@ aSig grain3 kGFrq,kGPhs, kFMD,kPMD, kGDur,kGDens, iMaxOvr,
             iWav, iWin, kFRPow,kPRPow, getseed(), 16
 al, ar pan2 aSig*db(p4), p5
 endin
-
+*/
 
 
 instr Pdhalf
