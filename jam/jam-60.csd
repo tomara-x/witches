@@ -73,17 +73,36 @@ schedule("Soil", 0, 0)
 
 
 instr Water
-;gates for multiple triggers?
-kTrig metro $FRQ*4
-if kTrig == 1 then
-    kN = node_climb(16)
-    schedulek("Leaf", 0, $BEAT/16, kN)  ;pass current node to instrument as p4
+kN init 0
+kSwitch init 0
+
+kT1 metro $FRQ*1
+kT2 metro $FRQ*4
+kT3 metro $FRQ*2
+
+if kN == 1 then
+    kSwitch = 1
+elseif kN == 2 then
+    kSwitch = 2
+elseif kN == 3 then
+    kSwitch = 0
 endif
 
-kTrig metro $FRQ*4
-if kTrig == 1 then
-    kN = node_climb(0) ;beware when reusing nodes! the progress is global!
-    schedulek("Leaf", 0, $BEAT/2, kN)
+kTrig = kT1
+if kSwitch == 1 then
+    kTrig = kT2
+elseif kSwitch == 2 then
+    kTrig = kT3
+endif
+
+if kT3 != 0 then
+    kN = node_climb(16)
+    schedulek("Leaf", 0, $BEAT/4, kN, 2)
+endif
+
+if kTrig != 0 then
+    kN = node_climb(0)
+    schedulek("Leaf", 0, $BEAT/4, kN, 1)
 endif
 endin
 schedule("Water", 0, 60)
@@ -93,6 +112,7 @@ schedule("Water", 0, 60)
 instr Leaf
 aEnv  = linseg(1,p3,0)
 kFrq  = node_get_value_k(p4, 0)    ;get value stored at index 0 of node p4
+kFrq  *= 2^p5
 aSig  = vco2(1, kFrq/2, 10)
 aSig  += vco2(1, kFrq/4, 10)
 aSig  = chebyshevpoly(aSig, 3,2,9,0,3,8,4,4)
@@ -101,7 +121,8 @@ aSig  *= aNois
 aSig  *= aEnv^4
 aSig  = powershape(aSig, 17)
 aSig  *= db(-3)
-aSig  = diode_ladder(aSig, limit(kFrq*16*aEnv, 0, sr/2), 18*aEnv, 1, 280)
+aEnv  = aEnv^4
+aSig  = diode_ladder(aSig, limit(kFrq*32*aEnv, 0, sr/2), 17*aEnv, 1, 40)
 sbus_mix(0, aSig) 
 endin
 
@@ -169,7 +190,6 @@ endin
 
 
 ;pluck env instr
-;test the half-time extra trig adding thing
 
 
 
