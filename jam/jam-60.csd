@@ -4,7 +4,7 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-//thank you, mog! this is so pretty!
+//thank you, mog
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m227 ;-m231
@@ -60,37 +60,30 @@ schedule("Soil", 0, 0)
 
 
 instr Water
+;gates for multiple triggers?
 kTrig metro $FRQ*4
 if kTrig == 1 then
-    kN = node_climb(0)
+    kN = node_climb(1)
     schedulek("Flower", 0, $BEAT/4, kN)  ;pass current node to instrument as p4
 endif
 
-kTrig metro $FRQ*8
+kTrig metro $FRQ*1
 if kTrig == 1 then
     kN = node_climb(3) ;beware when reusing nodes! the progress is global!
-    schedulek("Leaf", 0, $BEAT/8, kN)
+    schedulek("Leaf", 0, $BEAT, kN)
 endif
 endin
 schedule("Water", 0, 60)
-;what's happenin is that each climb opcode is modifying the progress as it goes
-;through nodes, problem is they're using a common part of the tree,
-;that's node 3 and it branches. so this interaction causes this chaos
-;it's like 2 lizards tryna eat the same fly!
-;i'm so happy right now it's such a cute little accident!
-;i'll introduce a third lizzard and see what happens!
-;of course this can be avoided by using different nodes for different tasks
 
 
 
 instr Leaf
 aEnv = linseg(1,p3,0)
 kFrq = node_get_value_k(p4, 0)    ;get value stored at index 0 of node p4
-aSig = oscili(1, kFrq*8)
-aSig = limit(aSig*8, -1, 1)
+aSig = vco2(1, kFrq, 10)
 aSig *= aEnv^4
-aSig *= db(-12)
-aSig = diode_ladder(aSig, kFrq*16, 16, 1, 180)
+aSig *= db(-3)
+aSig = diode_ladder(aSig, kFrq*8, 10, 1, 40)
 sbus_mix(0, aSig) 
 endin
 
@@ -99,11 +92,10 @@ endin
 instr Flower
 aEnv = linseg(0,p3*.03,1, p3*.6,0)
 kFrq = node_get_value_k(p4, 0)
-aSig = oscili(1, kFrq)
-aSig = mirror(aSig*8, -1, 1)
+aSig = vco2(1, kFrq*8, 10)
 aSig *= aEnv^2
 aSig *= db(-12)
-aSig = diode_ladder(aSig, kFrq*8, 16, 1, 180)
+aSig = diode_ladder(aSig, kFrq*16, 16, 1, 180)
 sbus_mix(1, aSig) 
 endin
 
