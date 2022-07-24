@@ -157,6 +157,7 @@ endin
 instr Out
 aL, aR sbus_out
 kSM = 1
+;hrtf?
 aL limit aL, -kSM, kSM
 aR limit aR, -kSM, kSM
 outs aL, aR

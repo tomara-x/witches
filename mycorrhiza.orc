@@ -61,12 +61,23 @@ progress_reset
 progress_reset_all
 */
 
+/*
+globals:
+those are all set by the tree_init opcode (you don't need to deal with this)
 
-;TODO:
-;-description for the global vars (still not a bad idea)
-;-maybe even branchzero and the like?
-;-node_get_branch array output overload (out all branches)
-;-JAM!
+gi_NumOfNodes      number of nodes (2d array rows) in the current tree
+gi_ValuesPerNode   number of variables for storing info in a node (pitch, amp, etc)
+gi_NodeLength      length of the entire node (values + 1 root index + branches)
+gk_Tree[][]        2d array that is the representation of the tree
+gk_NodeProgress[]  1d array where the progress of each node is stored (for node_climb)
+
+the opcodes use those variables (and others derived from them) to work
+
+iBranchesPerNode   = gi_NodeLength - (gi_ValuesPerNode + 1)
+iRootIndex         = gi_ValuesPerNode
+iBranchZero        = gi_ValuesPerNode + 1
+*/
+
 
 
 //TREE_INIT
@@ -617,6 +628,34 @@ if node_valid_k(knode) == 1 && kn > iRootIndex && kn < gi_NodeLength then
     kbranch = gk_Tree[knode][kn]
 endif
 xout kbranch
+endop
+;array output of all branches of a node
+;syntax: i/kBranches[] node_get_branch_i/k i/kNode
+;i-pass
+opcode node_get_branch_i, i[], i
+inode xin
+iBranchesPerNode = gi_NodeLength - (gi_ValuesPerNode + 1)
+iBranchZero = iRootIndex+1
+iout[] init iBranchesPerNode
+if node_valid_i(inode) == 1 then
+    icnt = iBranchZero
+    while icnt < gi_NodeLength do
+        iout[icnt] = i(gk_Tree, inode, icnt)
+        icnt += 1
+    od
+endif
+xout iout
+endop
+;k-time
+opcode node_get_branch_k, k[], k
+knode xin
+iBranchesPerNode = gi_NodeLength - (gi_ValuesPerNode + 1)
+iBranchZero = iRootIndex+1
+kout[] init iBranchesPerNode
+if node_valid_k(knode) == 1 then
+    kout = slicearray(getrow(gk_Tree, knode), iBranchZero, gi_NodeLength-1)
+endif
+xout kout
 endop
 
 
