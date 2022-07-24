@@ -47,11 +47,11 @@ schedule("Seed", 0, 0)              ;run instr for i-pass only
 instr Soil
 ;generate 32 notes of a scale
 iScale ftgenonce 0,0,-32,-51, 7,2,cpspch(6),0,
-1,2^(3/12),2^(4/12),2^(5/12),2^(6/12),2^(7/12),2^(10/12) ;7-tone blues
+1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(11/12) ;harmonic minor
 icnt = 0
 while icnt < 32 do
     ;set first value of each node to frequency of each note in the scale
-    node_set_value_i(icnt, 0, table(icnt, iScale))
+    node_set_value_i(icnt, 0, table(random:i(0,31), iScale))
     icnt += 1
 od
 endin
@@ -63,13 +63,13 @@ instr Water
 ;gates for multiple triggers?
 kTrig metro $FRQ*4
 if kTrig == 1 then
-    kN = node_climb(1)
-    schedulek("Flower", 0, $BEAT/4, kN)  ;pass current node to instrument as p4
+    ;kN = node_climb(1)
+    ;schedulek("Flower", 0, $BEAT/4, kN)  ;pass current node to instrument as p4
 endif
 
 kTrig metro $FRQ*1
 if kTrig == 1 then
-    kN = node_climb(3) ;beware when reusing nodes! the progress is global!
+    kN = node_climb(0) ;beware when reusing nodes! the progress is global!
     schedulek("Leaf", 0, $BEAT, kN)
 endif
 endin
@@ -78,12 +78,15 @@ schedule("Water", 0, 60)
 
 
 instr Leaf
-aEnv = linseg(1,p3,0)
-kFrq = node_get_value_k(p4, 0)    ;get value stored at index 0 of node p4
-aSig = vco2(1, kFrq, 10)
-aSig *= aEnv^4
-aSig *= db(-3)
-aSig = diode_ladder(aSig, kFrq*8, 10, 1, 40)
+aEnv  = linseg(1,p3,0)
+kFrq  = node_get_value_k(p4, 0)    ;get value stored at index 0 of node p4
+aSig  = vco2(1, kFrq, 10)
+aSig  = chebyshevpoly(aSig, 3,2,9,0,3,8,4,4)
+;aNois = random:a(-1, 1)
+;aSig  *= aNois+.8
+aSig  *= aEnv^2
+aSig  *= db(-3)
+aSig  = diode_ladder(aSig, kFrq*32, 4, 1, 280)
 sbus_mix(0, aSig) 
 endin
 
