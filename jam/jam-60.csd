@@ -39,19 +39,32 @@ iarr[] = fillarray(9, 10, 11)
 node_connect_i(3, 12)               ;connect node 12 as branch of 3)
 iarr[] = fillarray(13, 14, 15)
 node_connect_i(12, iarr)            ;connect 13,14,15 as branches of 12
+
+iarr[] = fillarray(17, 18, 19, 20)
+node_connect_i(16, iarr)
+iarr[] = fillarray(21, 22, 23)
+node_connect_i(18, iarr)
+iarr[] = fillarray(24, 25, 26)
+node_connect_i(23, iarr)
+iarr[] = fillarray(27, 28)
+node_connect_i(24, iarr)
+node_connect_i(19, 29)
+node_connect_i(20, 30)
+node_connect_i(25, 31)
 endin
 schedule("Seed", 0, 0)              ;run instr for i-pass only
 
 
 
 instr Soil
+seed(420)
 ;generate 32 notes of a scale
 iScale ftgenonce 0,0,-32,-51, 7,2,cpspch(6),0,
-1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(11/12) ;harmonic minor
+1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12) ;natural minor
 icnt = 0
 while icnt < 32 do
     ;set first value of each node to frequency of each note in the scale
-    node_set_value_i(icnt, 0, table(random:i(0,31), iScale))
+    node_set_value_i(icnt, 0, table(random:i(0,32), iScale))
     icnt += 1
 od
 endin
@@ -63,14 +76,14 @@ instr Water
 ;gates for multiple triggers?
 kTrig metro $FRQ*4
 if kTrig == 1 then
-    ;kN = node_climb(1)
-    ;schedulek("Flower", 0, $BEAT/4, kN)  ;pass current node to instrument as p4
+    kN = node_climb(16)
+    schedulek("Leaf", 0, $BEAT/16, kN)  ;pass current node to instrument as p4
 endif
 
-kTrig metro $FRQ*1
+kTrig metro $FRQ*4
 if kTrig == 1 then
     kN = node_climb(0) ;beware when reusing nodes! the progress is global!
-    schedulek("Leaf", 0, $BEAT, kN)
+    schedulek("Leaf", 0, $BEAT/2, kN)
 endif
 endin
 schedule("Water", 0, 60)
@@ -80,13 +93,15 @@ schedule("Water", 0, 60)
 instr Leaf
 aEnv  = linseg(1,p3,0)
 kFrq  = node_get_value_k(p4, 0)    ;get value stored at index 0 of node p4
-aSig  = vco2(1, kFrq, 10)
+aSig  = vco2(1, kFrq/2, 10)
+aSig  += vco2(1, kFrq/4, 10)
 aSig  = chebyshevpoly(aSig, 3,2,9,0,3,8,4,4)
-;aNois = random:a(-1, 1)
-;aSig  *= aNois+.8
-aSig  *= aEnv^2
+aNois = random:a(0, 2)
+aSig  *= aNois
+aSig  *= aEnv^4
+aSig  = powershape(aSig, 17)
 aSig  *= db(-3)
-aSig  = diode_ladder(aSig, kFrq*32, 4, 1, 280)
+aSig  = diode_ladder(aSig, limit(kFrq*16*aEnv, 0, sr/2), 18*aEnv, 1, 280)
 sbus_mix(0, aSig) 
 endin
 
@@ -98,7 +113,7 @@ kFrq = node_get_value_k(p4, 0)
 aSig = vco2(1, kFrq*8, 10)
 aSig *= aEnv^2
 aSig *= db(-12)
-aSig = diode_ladder(aSig, kFrq*16, 16, 1, 180)
+aSig = diode_ladder(aSig, limit(kFrq*16, 0, sr/2), 16, 1, 180)
 sbus_mix(1, aSig) 
 endin
 
