@@ -16,7 +16,8 @@ nchnls  =   2
 #define TEMPO #136#
 #define FRQ #($TEMPO/60)#
 #define BEAT #(1/$FRQ)#
-#include "../sequencers2.orc"
+#include "../taphy.orc"
+#include "../basma.orc"
 #include "../utils.orc"
 gay, gal, gar init 0
 
