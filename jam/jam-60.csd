@@ -63,7 +63,7 @@ iScale ftgenonce 0,0,-32,-51, 7,2,cpspch(6),0,
 1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12) ;natural minor
 icnt = 0
 while icnt < 32 do
-    ;set first value of each node to frequency of each note in the scale
+    ;set first value of each node to random note from the scale
     node_set_value_i(icnt, 0, table(random:i(0,32), iScale))
     icnt += 1
 od
@@ -137,60 +137,6 @@ aSig *= db(-12)
 aSig = diode_ladder(aSig, limit(kFrq*16, 0, sr/2), 16, 1, 180)
 sbus_mix(1, aSig) 
 endin
-
-
-/*
-instr Grain
-seed 113
-kGFrq = kP[kS]
-kGPhs = 0
-kFMD = randomi(0, 1, $FRQ/4)
-kPMD = 0
-kGDur = randomi($BEAT/p12, $BEAT/p13, $FRQ*p14)
-kGDens = randomi($FRQ*p15, $FRQ*p16, $FRQ*p17)
-iMaxOvr = 32
-iWav ftgenonce 0,0,2^14,9, 1,1,0, 2,.2,0, 3,.2,0
-iWin ftgenonce 0,0,2^14,20, 2, 1
-kFRPow, kPRPow = 1, 1
-aSig grain3 kGFrq,kGPhs, kFMD,kPMD, kGDur,kGDens, iMaxOvr,
-            iWav, iWin, kFRPow,kPRPow, getseed(), 16
-al, ar pan2 aSig*db(p4), p5
-endin
-*/
-
-
-instr Pdhalf
-;p4 = mixer channel to pdhalf
-;p5 = distortion amount
-ga_sbus[p4][0] pdhalf ga_sbus[p4][0], p5
-ga_sbus[p4][1] pdhalf ga_sbus[p4][1], p5
-endin
-
-
-
-instr Distort
-;p4 = mixer channel to distort
-;p5 = distortion amount
-iTanh ftgenonce 0,0,2^10+1,"tanh", -5, 5, 0
-ga_sbus[p4][0] distort ga_sbus[p4][0], p5, iTanh
-ga_sbus[p4][1] distort ga_sbus[p4][1], p5, iTanh
-endin
-
-
-
-instr Diode
-;p4 = mixer channel to filter
-;p5 = cutoff frequency
-;p6 = feedback
-;p7 = saturation
-ga_sbus[p4][0] diode_ladder ga_sbus[p4][0], limit(p5, 0, sr/2), p6, 1, p7
-ga_sbus[p4][1] diode_ladder ga_sbus[p4][1], limit(p5, 0, sr/2), p6, 1, p7
-endin
-
-
-
-;pluck env instr
-
 
 
 instr Out
