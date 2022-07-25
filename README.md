@@ -30,13 +30,13 @@ so lucky to have met you all 💜
 (for now jam-59 and above are using mycorrhiza, so that's where examples are at)
 
 #### jam/
-Music/sounds, check them out for examples.
+music/sounds, check them out for examples.
 
 #### utils.orc
 clock dividers, shift registers, 2d array utils, you name it! (they're a big flaming mess though)
 
 #### demon/
-Running csound in server mode for live coding
+running csound in server mode for live coding
 
 
 ---
@@ -50,11 +50,9 @@ Running csound in server mode for live coding
 5. make some noise and have fun
 
 ---
-in the discussions tab there's links to gravity break and soundcloud if you wanna check some of my jams
+in the discussions tab there's links to gravity break and soundcloud if you wanna check out some of my jams
 
-If you make something with these, I'd love love love to have a listen/look! Also if you find anything confusing please feel free to open a discussion or an issue 💜
+if you make something with these, i'd love love love to have a listen/look! also if you find anything confusing please feel free to open a discussion or an issue 💜
 
-###### Made using [Vim](https://www.vim.org/) and [Csound](https://csound.com/) installed on a [Fedora](https://fedoraproject.org/) ([Void](https://voidlinux.org/) now) proot on [Termux](https://termux.com/) on an android oreo phone, void of any analog warmth! [[setup recipe]](https://github.com/tomara-x/csound-proot-distro-recipe)
+###### made using [vim](https://www.vim.org/) and [csound](https://csound.com/) installed on a [void](https://voidlinux.org/) proot on [termux](https://termux.com/) on an android oreo phone, void of any analog warmth! [[setup recipe]](https://github.com/tomara-x/csound-proot-distro-recipe)
 
-
-💜
