@@ -10,8 +10,42 @@
 -odac -Lstdin -m231
 </CsOptions>
 <CsInstruments>
-ksmps   =   441
+ksmps = 441
 
+instr 1
+kfrq = 4
+karr[]=fillarray(2,1)
+ks init 0
+
+;here they're probimatic
+;kt1 = metro(kfrq)
+;kt2 = metro(kfrq*karr[ks])
+
+;switch frequency of kt2
+kt3 = metro(kfrq/4)
+if kt3 == 1 then
+    ks = (ks+1)%2
+endif
+
+;here they're less so?
+kt1 = metro(kfrq)
+kt2 = metro(kfrq*karr[ks])
+
+if kt1 + kt2 == 1 then ;only one trigger is high
+    if kt1 == 1 then
+        printks("#one at: %f\n", 0, timeinsts())
+    else
+        printks("#two at: %f\n", 0, timeinsts())
+    endif
+elseif kt1 + kt2 == 2 then ;both high
+    printks("both at: %f\n", 0, timeinsts())
+endif
+endin
+schedule(1, 0, 120)
+
+
+
+/*
 instr 1
 karr1[]=fillarray(1,2)
 karr2[]=fillarray(2,1)
@@ -41,7 +75,10 @@ if kt2 != 0 && kt3 != 0 then
     ks = ks % 2
 endif
 endin
-schedule(2, 0, 120)
+;schedule(2, 0, 120)
+*/
+
+
 
 </CsInstruments>
 </CsoundSynthesizer>
