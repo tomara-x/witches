@@ -10,24 +10,64 @@
 -odac -Lstdin -m231
 </CsOptions>
 <CsInstruments>
-ksmps = 441
+sr = 48000 ;same behaviour on 48000 and 44100
+ksmps = 480 ;same even at ksmps = 1
 
 instr 1
-kfrq = 4
-karr[]=fillarray(2,1)
-ks init 0
+;in sync
+;kt1 = metro(.5)
+;kt2 = metro(1)
 
-;here they're probimatic
-;kt1 = metro(kfrq)
-;kt2 = metro(kfrq*karr[ks])
+;outa sync after first cycle
+kt1 = metro(4)
+kt2 = metro(8)
+
+if kt1+kt2 == 2 then
+    printks("in sync at: %f\n", 0, timeinsts())
+elseif kt1 == 1 then ;second trig is usually one cycle off
+    printks("out of sync at: %f\n", 0, timeinsts())
+endif
+endin
+;schedule(1, 0, 120)
+
+
+
+instr 2
+;in sync
+kt1 = metro(.5)
+kt2 = metro(1)
+
+;outa sync after first cycle
+;kt1 = metro(4)
+;kt2 = metro(8)
+
+if kt1+kt2 == 2 then
+    printks("both at: %f\n", 0, timeinsts())
+else
+    if kt1 == 1 then
+        printks("#one at: %f\n", 0, timeinsts())
+    endif
+    if kt2 == 1 then
+        printks("#two at: %f\n", 0, timeinsts())
+    endif
+endif
+endin
+schedule(2, 0, 120)
+
+
+
+//messy example
+instr 3
+kfrq = 4 ;bad but 0.5 works
+karr[]=fillarray(2,1)
 
 ;switch frequency of kt2
+ks init 0
 kt3 = metro(kfrq/4)
 if kt3 == 1 then
     ks = (ks+1)%2
 endif
 
-;here they're less so?
 kt1 = metro(kfrq)
 kt2 = metro(kfrq*karr[ks])
 
@@ -41,7 +81,7 @@ elseif kt1 + kt2 == 2 then ;both high
     printks("both at: %f\n", 0, timeinsts())
 endif
 endin
-schedule(1, 0, 120)
+;schedule(3, 0, 120)
 
 
 
