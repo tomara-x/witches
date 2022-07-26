@@ -9,11 +9,25 @@
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
+;-n -Lstdin -m231
 </CsOptions>
 <CsInstruments>
 ;i know..
 sr = 65536
 ksmps = 64
+
+;with sr=2^16, ksmps = 64
+instr 4
+;will stay in sync
+kt1 = metro(4)
+kt2 = metro(12)
+if kt1+kt2 == 2 then
+    printks("in sync at: %f\n", 0, timeinsts())
+elseif kt1 == 1 then
+    printks("out of sync at: %f\n", 0, timeinsts())
+endif
+endin
+schedule(4, 0, 4*60)
 
 
 
@@ -59,10 +73,11 @@ elseif kt1 == 1 then ;second trig is usually a bit off
     printks("out of sync at: %f\n", 0, timeinsts())
 endif
 endin
-schedule(1, 0, 120)
+;schedule(1, 0, 120)
 
 
 
+;hadn't linked it to kr at that time
 instr 2
 ;in sync
 kt1 = metro(.5)
@@ -87,10 +102,11 @@ endin
 
 
 
+;it wasn't the switching of frequency
 //messy example
 instr 3
-kfrq = 4 ;bad but 0.5 works
-karr[]=fillarray(2,1)
+kfrq = 4
+karr[]=fillarray(3,1)
 
 ;switch frequency of kt2
 ks init 0
