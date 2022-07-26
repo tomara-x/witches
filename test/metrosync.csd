@@ -5,13 +5,17 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 //testing the sync of varying frequency metros
+;metro will increment phase by (cps * 1/kr) every cycle so...
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
 </CsOptions>
 <CsInstruments>
-sr = 48000 ;same behaviour on 48000 and 44100
-ksmps = 480 ;same even at ksmps = 1
+sr = 44100 ;same behaviour on 48000 and 44100
+ksmps = 1 ;same even at ksmps = 1
+
+;actually 4 and 8Hz for the metros will stay in sync
+;with sr=48000 and ksmps=1
 
 instr 1
 ;in sync
@@ -28,7 +32,7 @@ elseif kt1 == 1 then ;second trig is usually one cycle off
     printks("out of sync at: %f\n", 0, timeinsts())
 endif
 endin
-;schedule(1, 0, 120)
+schedule(1, 0, 120)
 
 
 
@@ -52,7 +56,7 @@ else
     endif
 endif
 endin
-schedule(2, 0, 120)
+;schedule(2, 0, 120)
 
 
 
