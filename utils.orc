@@ -144,3 +144,19 @@ endop
 ;xout (ip || iq) && !(ip && iq)
 ;endop
 
+
+
+opcode MyMetro, k, k
+kcps xin
+kphs init 1
+kflag = 0
+kphs += kcps/kr
+if kphs >= 1 then
+    kflag = 1
+    kphs = 0
+endif
+xout kflag
+endop
+
+
+

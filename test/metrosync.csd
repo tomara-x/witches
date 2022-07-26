@@ -5,18 +5,45 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 //testing the sync of varying frequency metros
-;metro will increment phase by (cps * 1/kr) every cycle so...
+//syncphasor?
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231
 </CsOptions>
 <CsInstruments>
-sr = 44100 ;same behaviour on 48000 and 44100
-ksmps = 1 ;same even at ksmps = 1
+;i know..
+sr = 65536
+ksmps = 64
 
-;actually 4 and 8Hz for the metros will stay in sync
-;with sr=48000 and ksmps=1
 
+
+opcode MyMetro, k, k
+kcps xin
+kphs init 1
+kflag = 0
+kphs += kcps/kr
+if kphs >= 1 then
+    kflag = 1
+    kphs = 0
+endif
+xout kflag
+endop
+
+instr mymetro
+kt1 = MyMetro(4)
+kt2 = MyMetro(8)
+if kt1+kt2 == 2 then
+    printks("in sync at: %f\n", 0, timeinsts())
+elseif kt1 == 1 then
+    printks("out of sync at: %f\n", 0, timeinsts())
+endif
+endin
+;schedule("mymetro", 0, 120)
+
+
+
+;sr=48k and ksmps = 1, 4Hz and 8Hz metros will stay in sync
+;sr=48k and ksmps = 32 works but an occasional OoS
 instr 1
 ;in sync
 ;kt1 = metro(.5)
@@ -28,7 +55,7 @@ kt2 = metro(8)
 
 if kt1+kt2 == 2 then
     printks("in sync at: %f\n", 0, timeinsts())
-elseif kt1 == 1 then ;second trig is usually one cycle off
+elseif kt1 == 1 then ;second trig is usually a bit off
     printks("out of sync at: %f\n", 0, timeinsts())
 endif
 endin
