@@ -17,7 +17,9 @@ nchnls  =   2
 #define FRQ #($TEMPO/60)#
 #define BEAT #(1/$FRQ)#
 #include "../taphy.orc"
-#include "../basma.orc"
+;if used "basma.orc" before july 27 2022 rename to tbasma.orc
+;and changebthe ipcode calls to tBasma
+#include "../tbasma.orc"
 #include "../utils.orc"
 gay, gal, gar init 0
 
@@ -35,7 +37,7 @@ kNote[]  fillarray 6, 2, 9, 1, 0, 7, 0, 4
 kTrans[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 kQueue[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 
-kBS, kBT[] Basma kTrig, kCount, 1, 3, kQueue
+kBS, kBT[] tBasma kTrig, kCount, 1, 3, kQueue
 kTS, kTP[], kTT[] Taphy kBT[kBS], kNote, kQueue, iScale
 
 if kBT[kBS] == 1 then
@@ -101,7 +103,7 @@ kNote[]  fillarray 6, 2, 9, 1, 0, 7, 0, 4
 kTrans[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 kQueue[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 
-kBS, kBT[] Basma kTrig, kCount, 1, 16, kQueue
+kBS, kBT[] tBasma kTrig, kCount, 1, 16, kQueue
 kTS, kTP[], kTT[] Taphy kBT[kBS], kNote, kQueue, iScale
 
 if kBT[kBS] == 1 then
@@ -277,7 +279,7 @@ kNote[]  fillarray 6, 2, 9, 1, 0, 7, 0, 4
 kTrans[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 kQueue[] fillarray 0, 0, 0, 0, 0, 0, 0, 0
 
-kBS, kBT[] Basma kTrig, kCount, 1, 16, kQueue
+kBS, kBT[] tBasma kTrig, kCount, 1, 16, kQueue
 kTS, kTP[], kTT[] Taphy kBT[kBS], kNote, kQueue, iScale
 
 if kBT[kBS] == 1 then

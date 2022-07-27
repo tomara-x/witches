@@ -5,7 +5,7 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 
-opcode Basma, kk[], kk[]k[]k[]k[]OO
+opcode tBasma, kk[], kk[]k[]k[]k[]OO
 /*
 Taphy's sister, she specializes in time magic
 (The idea of Aria's MSR applied to rhythm)
@@ -15,10 +15,10 @@ with some ideas from the Laundry Soup sequencer by computerscare
 [https://github.com/freddyz]
 
 Syntax:
-kActiveStep, kTrigArr[] Basma kTrig, kCount[], kMin[], kMax[], kQArr[]
+kActiveStep, kTrigArr[] tBasma kTrig, kCount[], kMin[], kMax[], kQArr[]
     [, kStepMode] [, kLmtMode]
 
-kActiveStep, kTrigArr[] Basma kTrig, kCount[], kMin, kMax, kQArr[]
+kActiveStep, kTrigArr[] tBasma kTrig, kCount[], kMin, kMax, kQArr[]
     [, kStepMode] [, kLmtMode]
 
 Performance:
@@ -115,30 +115,30 @@ endif
 xout kAS, kTrigArr
 endop
 ;overloads
-opcode Basma, kk[], kk[]kkk[]OO ;pass min and max as scalars
+opcode tBasma, kk[], kk[]kkk[]OO ;pass min and max as scalars
 kTrig, kCount[], kMin, kMax, kQArr[], kStepMode, kLmtMode xin
 ilen = lenarray(kCount)
 kMinArr[] init ilen
 kMaxArr[] init ilen
 kMinArr = kMin
 kMaxArr = kMax
-kAS,kT[] Basma kTrig,kCount,kMinArr,kMaxArr,kQArr,kStepMode,kLmtMode
+kAS,kT[] tBasma kTrig,kCount,kMinArr,kMaxArr,kQArr,kStepMode,kLmtMode
 xout kAS, kT
 endop
-opcode Basma, kk[], kk[]kk[]k[]OO ;only scaler min
+opcode tBasma, kk[], kk[]kk[]k[]OO ;only scaler min
 kTrig, kCount[], kMin, kMax[], kQArr[], kStepMode, kLmtMode xin
 ilen = lenarray(kCount)
 kMinArr[] init ilen
 kMinArr = kMin
-kAS,kT[] Basma kTrig,kCount,kMinArr,kMax,kQArr,kStepMode,kLmtMode
+kAS,kT[] tBasma kTrig,kCount,kMinArr,kMax,kQArr,kStepMode,kLmtMode
 xout kAS, kT
 endop
-opcode Basma, kk[], kk[]k[]kk[]OO ;scaler max
+opcode tBasma, kk[], kk[]k[]kk[]OO ;scaler max
 kTrig, kCount[], kMin[], kMax, kQArr[], kStepMode, kLmtMode xin
 ilen = lenarray(kCount)
 kMaxArr[] init ilen
 kMaxArr = kMax
-kAS,kT[] Basma kTrig,kCount,kMin,kMaxArr,kQArr,kStepMode,kLmtMode
+kAS,kT[] tBasma kTrig,kCount,kMin,kMaxArr,kQArr,kStepMode,kLmtMode
 xout kAS, kT
 endop
 
