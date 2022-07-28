@@ -81,6 +81,10 @@ schedule("Water", 0, 60)
 ;i'll introduce a third lizzard and see what happens!
 ;of course this can be avoided by using different nodes for different tasks
 
+;ANOTHER THING: i wasn't aware of metros going out of sync here so that must be playing
+;a part in how this happens (which climb gets incremented first)
+;for now, the only way i know to avoid this is to change to power-of-2 sr and ksmps
+
 
 
 instr Leaf
