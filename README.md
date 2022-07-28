@@ -8,19 +8,21 @@ now i'm learning magic:
 - things are never perfect
 - above all, have fun (someone on the csound discord had that as a status and i love it)
 
+
 #### taphath.orc
 tries to mimick Aria's MSR as much as possible, but it's missing the queue/teleport triggers. it's an arbitrary-length, self-modulating, pitch-quantized sequencer. (this is how it all started)
 
 #### basemath.orc
-is the same idea applied to rhythm, an arbitrary-length, self-modulating rhythm sequencer. (use `tBasemath` to avoid issue #15)
+is the same idea applied to rhythm, an arbitrary-length, self-modulating rhythm sequencer. (see issue #15)
 
 #### tbasemath.orc
 is an external-trigger-driven `Basemath`
 
 
-#### taphy.orc and basma.orc
-(modified Taphath and tBasemath) are new versions without the modulation array inputs. All control is done from the calling instrument. They're a bit more effecient, and allow for more control (actually they just force you to use a certain way of sequence modulation which gives more control!)
+#### taphy.orc basma.orc tbasma.orc
+new versions without the modulation array inputs. all control is done from the calling instrument. they're a bit more effecient, and allow for more control (actually they just force you to use a certain way of sequence modulation which gives more control)
 
+try to use those instead of the older ones. unless the modulation arrays are easier for the situation (but the idea is that they're doable from outside)
 
 #### mycorrhiza.orc
 recently seen a tweet by Mog and went: "hey i miss that cute sequencer!" and 20 days later, here we are! this one tries to mimick Mog's [Network](https://github.com/JustMog/Mog-VCV) sequencer
