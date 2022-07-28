@@ -1,0 +1,32 @@
+//trans rights
+//Copyright © 2022 Amy Universe
+//This work is free. You can redistribute it and/or modify it under the
+//terms of the Do What The Fuck You Want To Public License, Version 2,
+//as published by Sam Hocevar. See the COPYING file for more details.
+<CsoundSynthesizer>
+<CsOptions>
+-odac -Lstdin -m227 ;-m231
+</CsOptions>
+<CsInstruments>
+sr      =   2^15
+ksmps   =   64
+nchnls  =   1
+0dbfs   =   1
+
+;drag A minor on the spectrum
+instr 1
+kEnv = linseg(1,p3*.1,1,p3*.8,100,p3*.1,100)
+kFrq1, kFrq2, kFrq3 = 2.2, 2.2*2^(4/12), 2.2*2^(7/12)
+aSig1 = mpulse(.5, 1/(kFrq1*kEnv))
+aSig2 = mpulse(.5, 1/(kFrq2*kEnv))
+aSig3 = mpulse(.5, 1/(kFrq3*kEnv))
+aOut  = aSig1+aSig2+aSig3
+;aOut  = diode_ladder(aOut, 440*16, 1)
+out aOut
+endin
+schedule(1, 0, 60)
+
+</CsInstruments>
+</CsoundSynthesizer>
+
+
