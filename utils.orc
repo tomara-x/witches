@@ -138,6 +138,7 @@ endif
 xout kArr
 endop
 
+;need boolean type
 ;xor
 ;opcode Xor, i, ii
 ;ip, iq xin
@@ -145,7 +146,8 @@ endop
 ;endop
 
 
-
+/*
+;kinda the same problem
 opcode MyMetro, k, k
 kcps xin
 kphs init 1
@@ -157,6 +159,18 @@ if kphs >= 1 then
 endif
 xout kflag
 endop
+*/
 
+opcode MyMetro, k, k
+kcps xin
+kcnt init kr
+kflag = 0
+kcnt += kcps
+if kcnt >= kr then
+    kflag = 1
+    kcnt -= kr
+endif
+xout kflag
+endop
 
 
