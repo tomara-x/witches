@@ -8,8 +8,8 @@
 -odac -Lstdin -m227 ;-m231
 </CsOptions>
 <CsInstruments>
-sr      =   2^15
-ksmps   =   64
+sr      =   44100
+ksmps   =   42
 nchnls  =   1
 0dbfs   =   1
 
