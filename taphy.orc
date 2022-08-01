@@ -31,8 +31,7 @@ kInTrig: Trigger signal that runs the sequencer.(metro, metro2, seqtime, Basemat
         The sequencer advances one step every k-cycle where kInTrig != 0
         (direction determined by kStepMode)
 kNoteIndx[]: 1D array the length of which is the length of the sequence.
-        It contains index values of the kFn for every sequence
-        step before the sequencer starts to self-modulate.
+        It contains index values of the kFn for every sequence step.
         Those are not note values, they're the indexes to the values
         stored in the kFn
 kQueue[]: The queue inputs for each step. Queued steps take priority over
