@@ -31,11 +31,19 @@ so lucky to have met you all 💜
 
 (for now jam-59 and above are using mycorrhiza, so that's where examples are at)
 
+#### rainstorm.orc and perfuma.orc
+differnt way to sequence, you manually control how to move and what the steps store.
+
+perfuma is a rhythm sequencer, and rainstorm is a very stripped-down "value" sequencer
+
 #### jam/
 music/sounds, check them out for examples.
 
 #### utils.orc
 clock dividers, shift registers, 2d array utils, you name it! (they're a big flaming mess though)
+
+#### oscillators.orc
+phase modulation oscillator
 
 #### demon/
 running csound in server mode for live coding
