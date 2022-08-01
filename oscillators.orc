@@ -33,7 +33,7 @@ endop
 
 //Pmoscilx
 ;sample-by-sample feedback with a separate feedback parameter
-;don't feed the signal back anto the phase input, that's ksmps dependent
+;don't feed the signal back into the phase input, that's ksmps dependent
 ;instead use the feedback parameter which isn't limited by the way >:)
 
 ;syntax: aOut Pmoscilx kAmp, kFrq, aPhs [,kFB] [,iIntrp] [,iFn]
