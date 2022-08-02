@@ -35,8 +35,7 @@ node_connect_i(1, iarr)             ;connect nodes 5,6,7,8 as branches of 1
 iarr[] = fillarray(9, 10, 11)
 node_connect_i(2, iarr)             ;repeated twice
 node_connect_i(2, iarr)             ;2 will have 9,10,11,9,10,11 as branches
-iarr[] = fillarray(9, 10, 11)
-node_connect_i(3, 12)               ;connect node 12 as branch of 3)
+node_connect_i(3, 12)               ;connect node 12 as branch of 3
 iarr[] = fillarray(13, 14, 15)
 node_connect_i(12, iarr)            ;connect 13,14,15 as branches of 12
 

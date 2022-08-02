@@ -10,8 +10,8 @@
 -odac -Lstdin -m227 ;-m231
 </CsOptions>
 <CsInstruments>
-sr      =   44100
-ksmps   =   42
+sr      =   48000
+ksmps   =   64
 nchnls  =   2
 0dbfs   =   1
 
@@ -36,8 +36,7 @@ node_connect_i(1, iarr)             ;connect nodes 5,6,7,8 as branches of 1
 iarr[] = fillarray(9, 10, 11)
 node_connect_i(2, iarr)             ;repeated twice
 node_connect_i(2, iarr)             ;2 will have 9,10,11,9,10,11 as branches
-iarr[] = fillarray(9, 10, 11)
-node_connect_i(3, 12)               ;connect node 12 as branch of 3)
+node_connect_i(3, 12)               ;connect node 12 as branch of 3
 iarr[] = fillarray(13, 14, 15)
 node_connect_i(12, iarr)            ;connect 13,14,15 as branches of 12
 
@@ -83,10 +82,10 @@ kS += kTrig
 kS = wrap(kS, 0, 8)
 if kD[kS] != 0 then
     kN = node_climb(0)
-    schedulek("Leaf", 0, $BEAT/kDiv[kS], kN, 2)
+    schedulek("Leaf", 0, $BEAT/kDiv[kS], kN, 1)
 elseif kM[kS] != 0 then
     kN = node_climb(16)
-    schedulek("Leaf", 0, $BEAT/kMul[kS], kN, 0)
+    schedulek("Leaf", 0, $BEAT/kMul[kS], kN, 3)
 endif
 endin
 schedule("Water", 0, 60)
@@ -94,9 +93,16 @@ schedule("Water", 0, 60)
 
 
 instr Leaf
-aEnv = linseg(1,p3,0)
+aAmpEnv linseg .5,p3,0
+kFBEnv  linseg .8,p3,0
 iFrq = node_get_value_i(p4, 0)
-aSig = Pmoscilx(aEnv^2, iFrq, .5-k(aEnv))
+iFrq *= 2^p5
+;aSig = Pmoscilx(aAmpEnv^2, iFrq, linseg:a(-0.3,p3,0.2)) ;env as phase mod
+;aSig = Pmoscilx(aAmpEnv^2, iFrq, .2)
+;aSig = Pmoscilx(aAmpEnv^2, iFrq, .5-kFBEnv) ;feedback cute lil tail
+;aSig = Pmoscilx(aAmpEnv, iFrq, linseg:k(-0.5,p3,0))
+aSig = Pmoscilx(linseg:a(1,p3,0)^2, iFrq, .1)
+;multiply sig by env after if you wanna keep feedback
 sbus_mix(0, aSig) 
 endin
 

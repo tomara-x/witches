@@ -31,6 +31,9 @@ endop
 
 
 
+;TODO: hbout a feedback buffer length? (sample-by-sample is buffer length 1)
+;ranging from 1 to ksmps. and ksmps should be divisible by it
+
 //Pmoscilx
 ;sample-by-sample feedback with a separate feedback parameter
 ;don't feed the signal back into the phase input, that's ksmps dependent
