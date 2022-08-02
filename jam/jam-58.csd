@@ -18,7 +18,7 @@ nchnls  =   2
 #define BEAT #(1/$FRQ)#
 #include "../taphy.orc"
 ;if used "basma.orc" before july 27 2022 rename to tbasma.orc
-;and changebthe ipcode calls to tBasma
+;and change the opcode calls to tBasma
 #include "../tbasma.orc"
 #include "../utils.orc"
 gay, gal, gar init 0
@@ -343,9 +343,9 @@ endin
 i"Verb"   0 -1
 t 0 136
 i"Out"    0 [8*64]
-;i"Seq1"   0 [2*64]
+i"Seq1"   0 [2*64]
 ;i"Seq2"   0 [2*64]
-i"Scream" 0 [2*64]
+;i"Scream" 0 [2*64]
 </CsScore>
 </CsoundSynthesizer>
 
