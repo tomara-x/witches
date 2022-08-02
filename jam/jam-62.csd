@@ -51,12 +51,8 @@ node_connect_i(24, iarr)
 node_connect_i(19, 29)
 node_connect_i(20, 30)
 node_connect_i(25, 31)
-endin
-schedule("Seed", 0, 0)              ;run instr for i-pass only
 
 
-
-instr Soil
 seed(42)
 ;generate 2 octaves of a scale
 iScale ftgenonce 0,0,-2*7,-51, 7,2,110,0,
@@ -68,7 +64,7 @@ while icnt < 32 do
     icnt += 1
 od
 endin
-schedule("Soil", 0, 0)
+schedule("Seed", 0, 0)              ;run instr for i-pass only
 
 
 
@@ -76,14 +72,14 @@ instr Water
 kS, kR init -1
 kTrig = MyMetro($FRQ)
 kMul[] fillarray 8, 4,16, 8, 4, 8, 2, 1
-kDiv[] fillarray 1, 2, 4, 2, 1, 4, 1, 1
+kDiv[] fillarray 8, 2, 4, 2, 1, 4, 1, 1
 kM[], kD[] Perfuma $FRQ, kMul, kDiv
 kS += kTrig
 kR += kTrig
 kS = wrap(kS, 0, 8)
 if kD[kS] != 0 then
     gkN = node_climb(0)
-    schedulek("Leaf", 0, $BEAT/kDiv[kS], 1)
+    schedulek("Leaf", 0, $BEAT*kDiv[kS], 1)
 elseif kM[kS] != 0 then
     gkN = node_climb(16)
     schedulek("Leaf", 0, $BEAT/kMul[kS], 3)
@@ -117,8 +113,8 @@ kFrq *= 2^p5
 aSig1 Pmoscilx gaE1^2, kFrq, gaE3 ;env as phase mod
 aSig2 Pmoscilx gaE1^2, kFrq, .2
 aSig3 Pmoscilx gaE1^2, kFrq, .5-gkE2 ;feedback cute lil tail
-aSig4 Pmoscilx gaE1, kFrq, gkE4
-aSig5 Pmoscilx gaE5^2, kFrq, aSig4, .1
+aSig4 Pmoscilx gaE1, kFrq, gaE3
+aSig5 Pmoscilx gaE5^2, kFrq, aSig4*.9
 sbus_mix 0, aSig5
 endin
 schedule("Flower", 0, 60)
