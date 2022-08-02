@@ -10,8 +10,8 @@
 -odac -Lstdin -m227 ;-m231
 </CsOptions>
 <CsInstruments>
-sr      =   48000
-ksmps   =   64
+sr      =   44100
+ksmps   =   128
 nchnls  =   2
 0dbfs   =   1
 
@@ -78,11 +78,11 @@ kS += kTrig
 kR += kTrig
 kS = wrap(kS, 0, 8)
 if kD[kS] != 0 then
-    gkN = node_climb(0)
-    schedulek("Leaf", 0, $BEAT*kDiv[kS], 1)
+    kN = node_climb(0)
+    schedulek(nstrnum("Leaf")+0.1, 0, -1, $BEAT*kDiv[kS], kN, 1)
 elseif kM[kS] != 0 then
-    gkN = node_climb(16)
-    schedulek("Leaf", 0, $BEAT/kMul[kS], 3)
+    kN = node_climb(16)
+    schedulek(nstrnum("Leaf")+0.2, 0, -1, $BEAT/kMul[kS], kN, 3)
 endif
 
 if kR == 8 && kTrig == 1 then
@@ -100,24 +100,16 @@ schedule("Water", 0, 60)
 
 
 instr Leaf
-gaE1 linseg .5,p3,0
-gkE2 linseg .8,p3,0
-gaE3 linseg -0.3,p3,0.2
-gkE4 linseg -0.5,p3,0
-gaE5 linseg 1,p3,0
-endin
-
-instr Flower
-kFrq = node_get_value_k(gkN, 0)
-kFrq *= 2^p5
-aSig1 Pmoscilx gaE1^2, kFrq, gaE3 ;env as phase mod
-aSig2 Pmoscilx gaE1^2, kFrq, .2
-aSig3 Pmoscilx gaE1^2, kFrq, .5-gkE2 ;feedback cute lil tail
-aSig4 Pmoscilx gaE1, kFrq, gaE3
-aSig5 Pmoscilx gaE5^2, kFrq, aSig4*.9
+aE1 linseg .5,p4,0
+kE2 linseg .8,p4,0
+aE3 linseg -0.3,p4,0.2
+aE4 linseg 1,p4,0
+kFrq = node_get_value_k(p5, 0)
+kFrq *= 2^p6
+aSig4 Pmoscilx aE1, kFrq, aE3
+aSig5 Pmoscilx aE4^2, kFrq, aSig4*.9
 sbus_mix 0, aSig5
 endin
-schedule("Flower", 0, 60)
 
 
 instr Out
