@@ -59,8 +59,8 @@ schedule("Seed", 0, 0)              ;run instr for i-pass only
 instr Soil
 seed(42)
 ;generate 2 octaves of a scale
-iScale ftgenonce 0,0,-2*7,-51, 7,2,cpspch(6),0,
-1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(10/12) ;natural minor
+iScale ftgenonce 0,0,-2*7,-51, 7,2,110,0,
+1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(11/12) ;A harmonic minor
 icnt = 0
 while icnt < 32 do
     ;set first value of each node to random note from the scale
@@ -73,38 +73,55 @@ schedule("Soil", 0, 0)
 
 
 instr Water
-kS init -1
+kS, kR init -1
 kTrig = MyMetro($FRQ)
 kMul[] fillarray 8, 4,16, 8, 4, 8, 2, 1
 kDiv[] fillarray 1, 2, 4, 2, 1, 4, 1, 1
 kM[], kD[] Perfuma $FRQ, kMul, kDiv
 kS += kTrig
+kR += kTrig
 kS = wrap(kS, 0, 8)
 if kD[kS] != 0 then
-    kN = node_climb(0)
-    schedulek("Leaf", 0, $BEAT/kDiv[kS], kN, 1)
+    gkN = node_climb(0)
+    schedulek("Leaf", 0, $BEAT/kDiv[kS], 1)
 elseif kM[kS] != 0 then
-    kN = node_climb(16)
-    schedulek("Leaf", 0, $BEAT/kMul[kS], kN, 3)
+    gkN = node_climb(16)
+    schedulek("Leaf", 0, $BEAT/kMul[kS], 3)
+endif
+
+if kR == 8 && kTrig == 1 then
+    kMul /= 2
+    kDiv *= 2
+elseif kR == 24 && kTrig == 1 then
+    kMul *= 2
+    kDiv /= 2
+elseif kR == 32 && kTrig == 1 then
+    kMul /= 4
+    kDiv /= 2
 endif
 endin
 schedule("Water", 0, 60)
 
 
-
 instr Leaf
-aAmpEnv linseg .5,p3,0
-kFBEnv  linseg .8,p3,0
-iFrq = node_get_value_i(p4, 0)
-iFrq *= 2^p5
-;aSig = Pmoscilx(aAmpEnv^2, iFrq, linseg:a(-0.3,p3,0.2)) ;env as phase mod
-;aSig = Pmoscilx(aAmpEnv^2, iFrq, .2)
-;aSig = Pmoscilx(aAmpEnv^2, iFrq, .5-kFBEnv) ;feedback cute lil tail
-;aSig = Pmoscilx(aAmpEnv, iFrq, linseg:k(-0.5,p3,0))
-aSig = Pmoscilx(linseg:a(1,p3,0)^2, iFrq, .1)
-;multiply sig by env after if you wanna keep feedback
-sbus_mix(0, aSig) 
+gaE1 linseg .5,p3,0
+gkE2 linseg .8,p3,0
+gaE3 linseg -0.3,p3,0.2
+gkE4 linseg -0.5,p3,0
+gaE5 linseg 1,p3,0
 endin
+
+instr Flower
+kFrq = node_get_value_k(gkN, 0)
+kFrq *= 2^p5
+aSig1 Pmoscilx gaE1^2, kFrq, gaE3 ;env as phase mod
+aSig2 Pmoscilx gaE1^2, kFrq, .2
+aSig3 Pmoscilx gaE1^2, kFrq, .5-gkE2 ;feedback cute lil tail
+aSig4 Pmoscilx gaE1, kFrq, gkE4
+aSig5 Pmoscilx gaE5^2, kFrq, aSig4, .1
+sbus_mix 0, aSig5
+endin
+schedule("Flower", 0, 60)
 
 
 instr Out
