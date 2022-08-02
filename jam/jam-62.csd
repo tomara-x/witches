@@ -71,8 +71,8 @@ schedule("Seed", 0, 0)              ;run instr for i-pass only
 instr Water
 kS, kR init -1
 kTrig = MyMetro($FRQ)
-kMul[] fillarray 8, 4,16, 8, 4, 8, 2, 1
-kDiv[] fillarray 8, 2, 4, 2, 1, 4, 1, 1
+kMul[] fillarray 6, 4, 6, 8, 4, 8, 2, 1
+kDiv[] fillarray 2, 2, 4, 2, 1, 2, 1, 1
 kM[], kD[] Perfuma $FRQ, kMul, kDiv
 kS += kTrig
 kR += kTrig
@@ -100,15 +100,14 @@ schedule("Water", 0, 60)
 
 
 instr Leaf
-aE1 linseg .5,p4,0
-kE2 linseg .8,p4,0
-aE3 linseg -0.3,p4,0.2
-aE4 linseg 1,p4,0
+aE1 linseg .5,p4/2,0
+aE2 linseg .5,p4,0
+kE3 expseg .2,p4,0.01
 kFrq = node_get_value_k(p5, 0)
 kFrq *= 2^p6
-aSig4 Pmoscilx aE1, kFrq, aE3
-aSig5 Pmoscilx aE4^2, kFrq, aSig4*.9
-sbus_mix 0, aSig5
+aSig1 Pmoscilx aE1, kFrq/2
+aSig2 Pmoscilx aE2^2, kFrq, aSig1, kE3
+sbus_mix 0, aSig2
 endin
 
 
