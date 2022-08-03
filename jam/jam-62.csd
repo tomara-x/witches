@@ -15,7 +15,7 @@ ksmps   =   128
 nchnls  =   2
 0dbfs   =   1
 
-#define TEMPO #120#
+#define TEMPO #60#
 #define FRQ   #($TEMPO/60)#
 #define BEAT  #(60/$TEMPO)# ;1/$FRQ
 
@@ -71,7 +71,7 @@ schedule("Seed", 0, 0)              ;run instr for i-pass only
 instr Water
 kS, kR init -1
 kTrig = MyMetro($FRQ)
-kMul[] fillarray 6, 4, 6, 8, 4, 8, 2, 1
+kMul[] fillarray 6, 4, 6, 8, 5, 8, 2, 1
 kDiv[] fillarray 2, 2, 4, 2, 1, 2, 1, 1
 kM[], kD[] Perfuma $FRQ, kMul, kDiv
 kS += kTrig
@@ -79,10 +79,12 @@ kR += kTrig
 kS = wrap(kS, 0, 8)
 if kD[kS] != 0 then
     kN = node_climb(0)
-    schedulek(nstrnum("Leaf")+0.1, 0, -1, $BEAT*kDiv[kS], kN, 1)
-elseif kM[kS] != 0 then
+    ;tie notes, run fractional instance for every sequence, and pass duration as p4
+    schedulek(nstrnum("Leaf")+0.1, 0, -1, $BEAT*kDiv[kS], kN, 0, -2)
+endif
+if kM[kS] != 0 then
     kN = node_climb(16)
-    schedulek(nstrnum("Leaf")+0.2, 0, -1, $BEAT/kMul[kS], kN, 3)
+    schedulek(nstrnum("Leaf")+0.2, 0, -1, $BEAT/kMul[kS], kN, 1, 2)
 endif
 
 if kR == 8 && kTrig == 1 then
@@ -94,26 +96,32 @@ elseif kR == 24 && kTrig == 1 then
 elseif kR == 32 && kTrig == 1 then
     kMul /= 4
     kDiv /= 2
+elseif kR == 48 && kTrig == 1 then
+    kMul *= 2
+    kDiv *= 4
 endif
 endin
-schedule("Water", 0, 60)
+schedule("Water", 0, 120)
 
 
 instr Leaf
 aE1 linseg .5,p4/2,0
-aE2 linseg .5,p4,0
-kE3 expseg .2,p4,0.01
+aE2 linseg .5,p4,0.01
+kE3 expseg .3,p4,0.01
+aE4 linseg .5,p4/2,.5,p4/2,0
 kFrq = node_get_value_k(p5, 0)
 kFrq *= 2^p6
 aSig1 Pmoscilx aE1, kFrq/2
-aSig2 Pmoscilx aE2^2, kFrq, aSig1, kE3
-sbus_mix 0, aSig2
+aSig2 Pmoscilx aE4, kFrq/4
+aSig3 Pmoscilx aE2, kFrq/2, aSig1+aSig2, kE3
+al, ar hrtfstat aSig3, p7, 0, "test/hrtf/hrtf-44100-left.dat",
+                              "test/hrtf/hrtf-44100-right.dat"
+sbus_mix 0, al, ar
 endin
 
 
 instr Out
 aL, aR sbus_out
-;hrtf?
 aL clip aL, 0, 1
 aR clip aR, 0, 1
 outs aL, aR
@@ -121,7 +129,7 @@ sbus_clear_all
 endin
 </CsInstruments>
 <CsScore>
-i"Out" 0 60
+i"Out" 0 120
 e
 </CsScore>
 </CsoundSynthesizer>
