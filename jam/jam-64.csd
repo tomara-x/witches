@@ -49,7 +49,7 @@ node_connect_i(20, 30)
 
 seed(42)
 iScale ftgenonce 0,0,-32,-51, 5,2,110,0,
-1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(11/12) ;A natural minor
+1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(11/12) ;A harmonic minor
 icnt = 0
 while icnt < 32 do
     ;set first value of each node to each note from the scale
