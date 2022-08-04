@@ -58,7 +58,7 @@ iScale ftgenonce 0,0,-32,-51, 5,2,110,0,
 1,2^(2/12),2^(3/12),2^(8/12),2^(11/12) ;A harmonic minor
 icnt = 0
 while icnt < 32 do
-    ;set first value of each node to random note from the scale
+    ;set first value of each node to each note from the scale
     node_set_value_i(icnt, 0, table(icnt, iScale))
     icnt += 1
 od
