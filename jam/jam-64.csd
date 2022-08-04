@@ -64,22 +64,26 @@ schedule("Seed", 0, 0)              ;run instr for i-pass only
 instr Water
 kS, kR init -1
 kTrig = MyMetro($FRQ)
-kMul[] fillarray 6, 4,16, 8, 5, 8, 1, 7
-kDiv[] fillarray 2, 2, 4, 2, 1, 2, 1, 1
+kMul[] fillarray 6, 4,16, 8, 1, 8, 6, 1
+kDiv[] fillarray 2, 2, 4, 2, 1, 2, 3, 1
 kM[], kD[] Perfuma $FRQ, kMul, kDiv
 kS += kTrig
 kR += kTrig
 kS = wrap(kS, 0, 8)
-if kD[kS] != 0 then
+;tie notes, fractional instance for every sequence, pass duration as p4 (efficient)
+if kD[kS] != 0 && kR > 8 then
     kN = node_climb(0)
-    ;tie notes, run fractional instance for every sequence, and pass duration as p4
-    schedulek(nstrnum("Leaf")+0.1, 0, -1, $BEAT*kDiv[kS], kN, .3, -2)
+    ;this one is 3db louder
+    schedulek(nstrnum("Leaf")+0.1, 0, -1, $BEAT*kDiv[kS], kN, .2, 3, 1)
     kN = node_climb2(0)
-    schedulek(nstrnum("Leaf")+0.3, kMul[kS], -1, $BEAT*kDiv[kS], kN, .2, 0)
+    ;delayed version but with climb2 sequence instead
+    schedulek(nstrnum("Leaf")+0.3, kMul[kS], -1, $BEAT*kDiv[kS], kN, .3, 0, 1)
 endif
 if kM[kS] != 0 then
     kN = node_climb(16)
-    schedulek(nstrnum("Leaf")+0.2, 0, -1, $BEAT/kMul[kS], kN, 0.1, 2)
+    schedulek(nstrnum("Leaf")+0.2, 0, -1, $BEAT/kMul[kS], kN, 0.01, 0, 1)
+    ;half a sec delayed instance (carrier 3 octaves down)
+    schedulek(nstrnum("Leaf")+0.4, 0.5, -1, $BEAT/kMul[kS], kN, 0.05, 0, 3)
 endif
 endin
 schedule("Water", 0, 120)
@@ -87,29 +91,27 @@ schedule("Water", 0, 120)
 
 instr Leaf
 aE1 linseg .5,p4/2,0
-aE2 linseg .5,p4,0.01
+aE2 linseg .5,p4,0
 kE3 expseg p6,p4,0.01
 aE4 linseg .5,p4/2,.5,p4/2,0
 kFrq = node_get_value_k(p5, 0)
-aSig1 Pmoscilx aE1, kFrq/2
-aSig2 Pmoscilx aE4, kFrq/4, p6
-aSig3 Pmoscilx aE2, kFrq/2, aSig1+aSig2, kE3
-al, ar hrtfstat aSig3, p7, 0, "test/hrtf/hrtf-44100-left.dat",
-                              "test/hrtf/hrtf-44100-right.dat"
-sbus_mix 0, aSig3
+aMod1 Pmoscilx aE1, kFrq/2
+aMod2 Pmoscilx aE4, kFrq/4, p6
+aCar1 Pmoscilx aE2, kFrq/2^p8, aMod1+aMod2, kE3
+sbus_mix 0, aCar1*db(p7)
 endin
 
 
 instr Out
 aL, aR sbus_out
-aL clip aL, 0, .3
-aR clip aR, 0, .3
-outs aL, aR
+aL clip aL, 0, .5
+aR clip aR, 0, .5
+outs aL*db(-6), aR*db(-6)
 sbus_clear_all
 endin
 </CsInstruments>
 <CsScore>
-i"Out" 0 120
+i"Out" 0 122
 e
 </CsScore>
 </CsoundSynthesizer>
