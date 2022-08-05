@@ -32,7 +32,7 @@ tree_init(32, 8, 16)                ;32 nodes, 8 values and 16 branches each
 iarr[] = fillarray(1, 2, 3, 4)
 node_connect_i(0, iarr)             ;connect nodes 1,2,3,4 as branches of 0
 iarr[] = fillarray(9, 10, 11)
-node_connect_i(2, iarr)             ;repeated twice
+node_connect_i(2, iarr)             ;connect nodes 9, 10, 11 as branches of 2
 node_connect_i(3, 12)               ;connect node 12 as branch of 3
 iarr[] = fillarray(13, 14, 15)
 node_connect_i(12, iarr)            ;connect 13,14,15 as branches of 12
