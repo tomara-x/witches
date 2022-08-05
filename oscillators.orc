@@ -174,3 +174,52 @@ xout aSig*aAmp
 endop
 
 
+
+
+
+;optimizing
+opcode Pmoi, a, kkaOj
+kAmp, kFrq, aPhs, kFB, iFn xin
+aSig init 0
+aCar phasor kFrq
+kLastSamp init 0 ;last sample from previous k-cycle
+ki = 0
+while ki < ksmps do
+    ;add previous out sample to phase input
+    if ki == 0 then
+        aPhs[ki] = aPhs[ki] + kLastSamp*kFB
+    else
+        aPhs[ki] = aPhs[ki] + aSig[ki-1]*kFB
+    endif
+    ;oscillate
+    aSig[ki] tablei aCar[ki]+aPhs[ki], iFn, 1,0,1
+    ki += 1
+od
+;store last sample of output signal to use next cycle
+kLastSamp = aSig[ksmps-1]
+xout aSig*kAmp
+endop
+
+;no phase input
+opcode Pmoi, a, kkOj
+kAmp, kFrq, kFB, iFn xin
+aPhs = 0
+aSig init 0
+aCar phasor kFrq
+kLastSamp init 0 ;last sample from previous k-cycle
+ki = 0
+while ki < ksmps do
+    ;add previous out sample to phase input
+    if ki == 0 then
+        aPhs[ki] = aPhs[ki] + kLastSamp*kFB
+    else
+        aPhs[ki] = aPhs[ki] + aSig[ki-1]*kFB
+    endif
+    ;oscillate
+    aSig[ki] tablei aCar[ki]+aPhs[ki], iFn, 1,0,1
+    ki += 1
+od
+;store last sample of output signal to use next cycle
+kLastSamp = aSig[ksmps-1]
+xout aSig*kAmp
+endop
