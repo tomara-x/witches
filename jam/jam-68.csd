@@ -7,7 +7,7 @@
 //thank you, mog
 <CsoundSynthesizer>
 <CsOptions>
--odac -Lstdin -m227 ;-m231
+-odac -Lstdin -m231 ;-m227
 </CsOptions>
 <CsInstruments>
 sr      =   44100
@@ -48,8 +48,6 @@ node_connect_i(16, iarr)
 icnt = 0
 while icnt < 32 do
     node_set_value_i(icnt, 0, table(random:i(0,32), giScale))
-    node_set_value_i(icnt, 1, random:i(0, 2))
-    node_set_value_i(icnt, 2, random:i(0.01, .8))
     icnt += 1
 od
 endin
@@ -59,75 +57,27 @@ schedule("Soil", 0, 0)              ;run instr for i-pass only
 instr 1
 kS init -1
 kTrig = MyMetro($FRQ)
-kMul[] fillarray 4, 4, 1, 4
-kDiv[] fillarray 2, 1, 2, 2
-kM[], kD[] Perfuma $FRQ, kMul, kDiv
 kS += kTrig
 kS = wrap(kS, 0, 4)
 
-if kM[kS] != 0 then
-    kN = node_climb2(16)
+if kTrig != 0 then
+    kN = node_climb(16)
 endif
 
-if kN == 16 && kM[kS] == 1 then
-    node_set_value_k(19, 0, table:k(random:k(0,32), giScale))
-endif
-
-kGFrq = node_get_value_k(kN, 0)
-kGPhs = 0
-kFMD = node_get_value_k(kN, 1)
-kPMD = .0
-kGDur = node_get_value_k(kN, 2)
-kGDens = 8
-iMaxOvr = 20
-iWav ftgenonce 0,0,2^14,9, 1,1,0
-iWin ftgenonce 0,0,2^14,7, 1, 2^14, 0
-kFRPow, kPRPow = 1, 1
-aSig grain3 kGFrq,kGPhs, kFMD,kPMD, kGDur,kGDens, iMaxOvr,
-            iWav, iWin, kFRPow,kPRPow, 42, 16
-aSig *= db(linsegr(-24,4,-128))
-sbus_mix 0, aSig
-endin
-
-
-instr 2
-kS init -1
-kTrig = MyMetro($FRQ)
-kMul[] fillarray 4, 4, 1, 4
-kDiv[] fillarray 2, 1, 2, 2
-kM[], kD[] Perfuma $FRQ, kMul, kDiv
-kS += kTrig
-kS = wrap(kS, 0, 4)
-
-if kM[kS] != 0 then
-    kN = node_climb2(16)
-endif
-
-if kN == 16 && kM[kS] == 1 then
-    node_set_value_k(19, 0, table:k(random:k(0,32), giScale))
-endif
-
-kGFrq = node_get_value_k(kN, 0)
-kGPhs = 0
-kFMD = node_get_value_k(kN, 1)
-kPMD = .0
-kGDur = node_get_value_k(kN, 2)
-kGDens = 8
-iMaxOvr = 20
-iWav ftgenonce 0,0,2^14,9, 1,1,0
-iWin ftgenonce 0,0,2^14,7, 1, 2^14, 0
-kFRPow, kPRPow = 1, 1
-aSig grain3 kGFrq,kGPhs, kFMD,kPMD, kGDur,kGDens, iMaxOvr,
-            iWav, iWin, kFRPow,kPRPow, 42, 16
-aSig *= db(linsegr(-24,4,-128))
-sbus_mix 3, aSig
+;aSig *= db(linsegr(-24,4,-128))
+;sbus_mix 0, aSig
 endin
 
 
 instr 3
 kT = MyMetro($FRQ)
-schedkwhen(kT,0,0, "HatO", 0, 2, 0.1, -0.9)
-schedkwhen(kT,0,0, "HatC", 0.5, 0.2, 0.1, -0.9)
+;schedkwhen(kT,0,0, "Kick", 0, -1, .5, 230, 20, 1, 0)
+schedkwhen(kT,0,0, "HatO", 0, 0.8, .1, -.9)
+
+;schedkwhen(kT,0,0, "HatC", 0,    0.1,  .3, -0.9)
+schedkwhen(kT,0,0, "HatC", 0.5,  0.1,  .2, -0.9)
+schedkwhen(kT,0,0, "HatC", 4.25, 0.25, .1, -0.8)
+schedkwhen(kT,0,0, "HatC", 4.75, 0.25, .06, -0.8)
 endin
 
 
@@ -140,9 +90,8 @@ sbus_clear_all
 endin
 </CsInstruments>
 <CsScore>
-i"Out" 0 60 ;run output for a minute
+i"Out" 0 60
 ;i1     0 8
-;i2     8 55
 i3 0 60
 e
 </CsScore>

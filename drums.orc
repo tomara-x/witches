@@ -4,19 +4,21 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-;p3 (0.5) dur, p4 (230) IFrq, p5 (20) EFrq, p6 (1) amp
+;p4=dur, p5=IFrq, p6=EFrq, p7=amp, p8=distortion
+;schedulek("Kick", 0, -1, 0.5, 230, 20, 1, 0)
 ;hey alley, this will forever be my kick!
 instr Kick
-iifrq   =           p4
-iefrq   =           p5
-aaenv   expseg      p6+1,p3,1
+iifrq   =           p5
+iefrq   =           p6
+aaenv   expseg      p7+1,p4,1
 aaenv   -=          1
-afenv   expseg      iifrq,p3/10,iefrq
+afenv   expseg      iifrq,p4/10,iefrq
 asig    oscili      aaenv*.6, afenv
 itanh   ftgenonce   0,0,1024,"tanh", -5, 5, 0
 asig    distort     asig*2, 0.2, itanh
 asig    limit       asig, -0.5,0.5
 asig    +=          moogladder(asig, iifrq*2, .3)
+asig    =           pdhalf(asig, expseg(-(p8+1), p4, -1)+1)
 sbus_mix 15, asig
 endin
 
@@ -68,13 +70,18 @@ sbus_mix 14, amix
 endin
 
 
+;the beta affects the amp cause of the bp
+;need that initial hit before the hat itself? that collision sound
+;fixed (short) duration, use p4 amp, 
+;also maybe expose the frq?
 ;p4 amp, p5 noise beta
 instr HatO
 aSig noise    p4, p5
 aSig butterbp aSig, 8000, 1600
 aSig butterbr aSig, 7000, 100
-aEnv linseg   1, p3, 0
+aEnv linseg   2, p3, 0
 aSig *= aEnv
+aSig  clip     aSig, 2, p4
 sbus_mix 13, aSig
 endin
 
@@ -82,11 +89,13 @@ endin
 instr HatC
 ;turn off open hat (only matching fractional instances)
 turnoff2 nstrnum("HatO"), 4, 0
-aSig noise    p4, p5
-aSig butterbp aSig, 8000, 1600
-aSig butterbr aSig, 7000, 100
-aEnv expseg   2, p3, 1
-aSig *=       aEnv - 1
+aSig  noise    p4, p5
+aSig  butterbp aSig, 8000, 1600
+aSig  butterbr aSig, 7000, 100
+aEnv  expseg   4, p3, 2
+aEnv  -=       2
+aSig  *=       aEnv
+aSig  clip     aSig, 2, p4
 sbus_mix 12, aSig
 endin
 
