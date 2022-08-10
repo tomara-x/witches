@@ -25,6 +25,7 @@ asig    =           pdhalf(asig, expseg(-(p8+1), p4, -1)+1)
 endin
 
 
+
 ;edited version of a dseq instr [csoundjournal.com/issue8/dseq.html]
 ;AIM! STUDY THIS! (and make it smoller if possible)
 instr Snare
@@ -72,13 +73,10 @@ sbus_mix 14, amix
 endin
 
 
+
 ;the beta affects the amp cause of the bp
-;need that initial hit before the hat itself? that collision sound
-;fixed (short) duration, use p4 amp, 
-;also maybe expose the frq?
-;p4 amp, p5 noise beta
+;p4 amp, p5 noise beta, p6 verb send
 instr HatO
-;need resonant hp here
 aSig noise    p4, p5
 aSig butterbp aSig, 8000, 1600
 aSig butterbr aSig, 7000, 100
@@ -89,7 +87,6 @@ aSig clip     aSig, 2, p4
      vincr    gaVerbR, aSig*(p6)
      sbus_mix 13, aSig
 endin
-
 
 instr HatC
 ;turn off open hat (only matching fractional instances)
@@ -105,4 +102,45 @@ aSig clip     aSig, 2, p4
      vincr    gaVerbR, aSig*(p6)
      sbus_mix 12, aSig
 endin
+
+
+
+;p4=amp, p5=noiseBeta, p6=bellFrq, p7=bpFrq, p8=verbSnd
+;schedulek("HatO2", 0, .5, .1, -0.9, 9000, 8000, 0.0)
+instr HatO2
+aNois noise    p4, p5
+aSig1 butterbp aNois, p7, 1600
+aSig2 fmbell   p4, p6, .8, .5, .1, 2
+aEnv1 linseg   2, abs(p3), 0
+aEnv2 linseg   2, abs(p3/1.1), 0
+aClk  noise    p4, -0.9
+aClk  *=       linseg(1, 0.01, 0)
+aSig  =        aSig1*aEnv1+aSig2*aEnv2 + aClk
+aSig  clip     aSig, 2, p4
+      vincr    gaVerbL, aSig*(p8)
+      vincr    gaVerbR, aSig*(p8)
+      sbus_mix 13, aSig
+endin
+
+;schedulek("HatC2", 0, .1, .1, -0.9, 9000, 8000, 0.0)
+instr HatC2
+;turn off open hat (only matching fractional instances)
+turnoff2 nstrnum("HatO2"), 4, 0
+aNois noise    p4, p5
+aSig1 butterbp aNois, p7, 1600
+aSig2 fmbell   p4, p6, .8, .5, .1, 2
+aEnv1 expseg   4, abs(p3), 2
+aEnv2 expseg   4, abs(p3/1.1), 2
+aEnv1 -=       2
+aEnv2 -=       2
+aClk  noise    p4, -0.9
+aClk  *=       linseg(1, 0.01, 0)
+aSig  =        aSig1*aEnv1+aSig2*aEnv2 + aClk
+aSig  clip     aSig, 2, p4
+      vincr    gaVerbL, aSig*(p8)
+      vincr    gaVerbR, aSig*(p8)
+      sbus_mix 12, aSig
+endin
+
+;labels aren't real, a kick is a shitty snare, i am you, you are me
 
