@@ -5,6 +5,8 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 //thank you, mog
+
+;example of things going wrong
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231 ;-m227
@@ -48,6 +50,12 @@ od
 endin
 ;run instr for i-pass only
 schedule("Tree", 0, 0)
+;beware! running an instrument that sets up the tree like this means that it wont
+;be available for an instrument invoked from the score at time 0
+;and csound will freeze because of the node_climb udo getting stuck in a loop
+;read floss 3A
+;a way to avoid this is to set up the tree in the same instrument
+;or to invoke this set-up instrument from the score, or the sequencing instr from orc
 
 
 instr Terrain
@@ -63,6 +71,8 @@ endif
 ;aSig dcblock aSig
 ;sbus_mix 1, aSig
 endin
+;as oppose to the score, this one will work
+schedule("Terrain", 0, 60)
 
 
 instr Drums
@@ -101,8 +111,9 @@ schedule("Out", 0, -1)
 </CsInstruments>
 <CsScore>
 t           0       60
-;i"Drums"    0       60
-i"Terrain"  0       60
+i"Drums"    0       60
+;this will get stuck
+;i"Terrain"  0       60
 s           60
 e
 </CsScore>
