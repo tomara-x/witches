@@ -4,8 +4,8 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-;p4=dur, p5=IFrq, p6=EFrq, p7=amp, p8=distortion
-;schedulek("Kick", 0, -1, 0.5, 230, 20, 1, 0)
+;p4=dur, p5=IFrq, p6=EFrq, p7=amp, p8=distortion, p9=VrbSend
+;schedulek("Kick", 0, -1, 0.5, 230, 20, 1, 0, 0)
 ;hey alley, this will forever be my kick!
 instr Kick
 iifrq   =           p5
@@ -19,7 +19,9 @@ asig    distort     asig*2, 0.2, itanh
 asig    limit       asig, -0.5,0.5
 asig    +=          moogladder(asig, iifrq*2, .3)
 asig    =           pdhalf(asig, expseg(-(p8+1), p4, -1)+1)
-sbus_mix 15, asig
+        vincr       gaVerbL, asig*(p9)
+        vincr       gaVerbR, asig*(p9)
+        sbus_mix 15, asig
 endin
 
 
@@ -81,21 +83,25 @@ aSig butterbp aSig, 8000, 1600
 aSig butterbr aSig, 7000, 100
 aEnv linseg   2, p3, 0
 aSig *= aEnv
-aSig  clip     aSig, 2, p4
-sbus_mix 13, aSig
+aSig clip     aSig, 2, p4
+     vincr    gaVerbL, aSig*(p6)
+     vincr    gaVerbR, aSig*(p6)
+     sbus_mix 13, aSig
 endin
 
 
 instr HatC
 ;turn off open hat (only matching fractional instances)
 turnoff2 nstrnum("HatO"), 4, 0
-aSig  noise    p4, p5
-aSig  butterbp aSig, 8000, 1600
-aSig  butterbr aSig, 7000, 100
-aEnv  expseg   4, p3, 2
-aEnv  -=       2
-aSig  *=       aEnv
-aSig  clip     aSig, 2, p4
-sbus_mix 12, aSig
+aSig noise    p4, p5
+aSig butterbp aSig, 8000, 1600
+aSig butterbr aSig, 7000, 100
+aEnv expseg   4, p3, 2
+aEnv -=       2
+aSig *=       aEnv
+aSig clip     aSig, 2, p4
+     vincr    gaVerbL, aSig*(p6)
+     vincr    gaVerbR, aSig*(p6)
+     sbus_mix 12, aSig
 endin
 
