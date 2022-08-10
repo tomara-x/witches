@@ -4,24 +4,25 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
-;p4=dur, p5=IFrq, p6=EFrq, p7=amp, p8=distortion, p9=VrbSend
-;schedulek("Kick", 0, -1, 0.5, 230, 20, 1, 0, 0)
+;p4=IFrq, p5=EFrq, p6=amp, p7=distortion, p8=VrbSend
+;schedulek("Kick", 0, 0.5, 230, 20, 1, 0, 0)
 ;hey alley, this will forever be my kick!
 instr Kick
-iifrq   =           p5
-iefrq   =           p6
-aaenv   expseg      p7+1,p4,1
-aaenv   -=          1
-afenv   expseg      iifrq,p4/10,iefrq
-asig    oscili      aaenv*.6, afenv
-itanh   ftgenonce   0,0,1024,"tanh", -5, 5, 0
-asig    distort     asig*2, 0.2, itanh
-asig    limit       asig, -0.5,0.5
-asig    +=          moogladder(asig, iifrq*2, .3)
-asig    =           pdhalf(asig, expseg(-(p8+1), p4, -1)+1)
-        vincr       gaVerbL, asig*(p9)
-        vincr       gaVerbR, asig*(p9)
-        sbus_mix 15, asig
+iIFrq   =           p4
+iEFrq   =           p5
+aAEnv   expseg      p6+1,abs(p3),1
+aAEnv   -=          1
+aFEnv   expseg      iIFrq,abs(p3)/10,iEFrq
+aSig    oscili      aAEnv*.6, aFEnv
+iTanh   ftgenonce   0,0,1024,"tanh", -5, 5, 0
+aSig    distort     aSig*2, 0.2, iTanh
+aSig    limit       aSig, -0.5,0.5
+aSig    +=          moogladder(aSig, iIFrq*2, .3)
+aSig    =           pdhalf(aSig, expseg(-(p7+1), abs(p3), -1)+1)
+aSig    dcblock     aSig
+        vincr       gaVerbL, aSig*(p8)
+        vincr       gaVerbR, aSig*(p8)
+        sbus_mix    15, aSig
 endin
 
 
