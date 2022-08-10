@@ -78,6 +78,7 @@ endin
 ;also maybe expose the frq?
 ;p4 amp, p5 noise beta
 instr HatO
+;need resonant hp here
 aSig noise    p4, p5
 aSig butterbp aSig, 8000, 1600
 aSig butterbr aSig, 7000, 100

@@ -53,14 +53,15 @@ schedule("Tree", 0, 0)
 instr Terrain
 kTrig = MyMetro($FRQ)
 
-if kTrig != 0 then
+if kTrig == 1 then
     kN = node_climb(0)
+    printk 0, kN
 endif
 
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig sterrain 
-aSig dcblock aSig
-sbus_mix 1, aSig
+;aSig sterrain
+;aSig dcblock aSig
+;sbus_mix 1, aSig
 endin
 
 
@@ -100,7 +101,7 @@ schedule("Out", 0, -1)
 </CsInstruments>
 <CsScore>
 t           0       60
-i"Drums"    0       60
+;i"Drums"    0       60
 i"Terrain"  0       60
 s           60
 e
