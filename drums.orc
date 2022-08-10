@@ -13,7 +13,7 @@ iEFrq   =           p5
 aAEnv   expseg      p6+1,abs(p3),1
 aAEnv   -=          1
 aFEnv   expseg      iIFrq,abs(p3)/10,iEFrq
-aSig    oscili      aAEnv*.6, aFEnv
+aSig    oscili      aAEnv, aFEnv
 iTanh   ftgenonce   0,0,1024,"tanh", -5, 5, 0
 aSig    distort     aSig*2, 0.2, iTanh
 aSig    limit       aSig, -0.5,0.5

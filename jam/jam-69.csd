@@ -62,6 +62,8 @@ endif
 ;sbus_mix 1, aSig
 endin
 
+
+
 ;;like this
 ;instr Drums
 ;kT = MyMetro($FRQ)
@@ -76,7 +78,7 @@ schedkwhen(kT,0,0, "Kick", 0, .5, 230, 20, .1, 0, .1)
 ;schedkwhen(kT,0,0, "HatC2", 0.5,  0.1,  .2, -0.9, 0.5)
 ;schedkwhen(kT,0,0, "HatO2", 4.25, 0.35, .1, -0.8, 0.5)
 ;schedkwhen(kT,0,0, "HatC2", 4.75, 0.15, .06, -0.8, 0.5)
-schedkwhen(kT,0,0, "HatO2", 0,    .5, .1,  0.9, 4700, 6800, 0.5)
+schedkwhen(kT,0,0, "HatO2", 0,    .1, .1,  0.9, 4700, 6800, 0.5)
 schedkwhen(kT,0,0, "HatC2", 0.25, .1, .1, -0.9, 9000, 8000, 0.5)
 endin
 
