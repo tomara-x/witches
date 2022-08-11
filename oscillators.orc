@@ -227,6 +227,8 @@ endop
 
 
 
+;USE WITH CAUTION! attenuate AND limit output!
+;maybe use safe division (divz) here
 ;asig SuperFormula kcps, km1, km2, kn1, kn2, kn3, ka, kb
 opcode SuperFormula, a, kkkkkkkk
 kcps, km1, km2, kn1, kn2, kn3, ka, kb xin
