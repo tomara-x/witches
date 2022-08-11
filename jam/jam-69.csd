@@ -5,6 +5,8 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 //thank you, mog
+
+;;wip
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231 ;-m227
@@ -56,10 +58,18 @@ if kTrig == 1 then
     printk 0, kN
 endif
 
+;waves
+iRamp ftgenonce 0,0,2^14,7, -1,2^14,1
+iTanh ftgenonce 0,0,2^14,"tanh", -5, 5, 0
+iSaw  ftgenonce 0,0,2^14,7, 0,2^13,1,0,-1,2^13,0
+iSqur ftgenonce 0,0,2^14,7, 1,2^13,1,0,-1,2^13,-1
+iSin  ftgenonce 0,0,2^14,10, 1
+iCos  ftgenonce 0,0,2^14,11, 1
+
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-;aSig sterrain
-;aSig dcblock aSig
-;sbus_mix 1, aSig
+aSig sterrain 0.1, 55, .5,.5, .5,.5, 0, iSin, iCos, 3, 6, 4, 1,1,1,1, 0
+aSig dcblock aSig
+sbus_mix 1, aSig
 endin
 
 
@@ -79,6 +89,7 @@ schedkwhen(kT,0,0, "Kick", 0, .5, 230, 20, .1, 0, .1)
 ;schedkwhen(kT,0,0, "HatO2", 4.25, 0.35, .1, -0.8, 0.5)
 ;schedkwhen(kT,0,0, "HatC2", 4.75, 0.15, .06, -0.8, 0.5)
 schedkwhen(kT,0,0, "HatO2", 0,    .1, .1,  0.9, 4700, 6800, 0.5)
+schedkwhen(kT,0,0, "HatO2", 0.5,    .1, .1,  0.9, 4700, 6800, 0.5)
 schedkwhen(kT,0,0, "HatC2", 0.25, .1, .1, -0.9, 9000, 8000, 0.5)
 endin
 
@@ -115,5 +126,5 @@ s           60
 e
 </CsScore>
 </CsoundSynthesizer>
-;nice
 
+;nice
