@@ -51,7 +51,7 @@ endin
 
 
 instr Terrain
-kTrig = MyMetro($FRQ)
+kTrig = MyMetro($FRQ*4)
 
 if kTrig == 1 then
     kN = node_climb(0)
@@ -66,8 +66,10 @@ iSqur ftgenonce 0,0,2^14,7, 1,2^13,1,0,-1,2^13,-1
 iSin  ftgenonce 0,0,2^14,10, 1
 iCos  ftgenonce 0,0,2^14,11, 1
 
+kCps = node_get_value_k(kN, 0)
+kCps = lineto(kCps, .05)
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig sterrain 0.1, 55, .5,.5, .5,.5, 0, iSin, iCos, 3, 6, 4, 1,1,1,1, 0
+aSig sterrain 0.1, kCps, .5,.5, .5,.5, 0, iSin, iCos, 3, 6, 4, 1,1,1,1, 0
 aSig dcblock aSig
 sbus_mix 1, aSig
 endin
@@ -120,7 +122,7 @@ schedule("Out", 0, -1)
 <CsScore>
 i"Tree"     0       0
 t           0       60
-i"Drums"    0       60
+;i"Drums"    0       60
 i"Terrain"  0       60
 s           60
 e
