@@ -26,10 +26,12 @@ nchnls  =   2
 
 seed 42
 
-giScale1 ftgenonce 0,0,-32,-51, 5,2,cpspch(6.05),0,
+;not really, i was using the firat 5 tones of each
+;(change that 7 back to 5 for the same spund)
+giScale1 ftgenonce 0,0,-32,-51, 7,2,cpspch(6.05),0,
 1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(11/12) ;F harmonic minor
 
-giScale2 ftgenonce 0,0,-32,-51, 5,2,cpspch(5.02),0,
+giScale2 ftgenonce 0,0,-32,-51, 7,2,cpspch(5.02),0,
 1,2^(2/12),2^(4/12),2^(5/12),2^(7/12),2^(9/12),2^(11/12) ;D major
 
 

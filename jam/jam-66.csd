@@ -26,8 +26,9 @@ nchnls  =   2
 
 seed 42
 
+;error was using only 5 scale degrees (now 7)
 ;cpspch(6.05) = F2, is index 0 of scale
-giScale ftgenonce 0,0,-32,-51, 5,2,cpspch(6.05),0,
+giScale ftgenonce 0,0,-32,-51, 7,2,cpspch(6.05),0,
 1,2^(2/12),2^(3/12),2^(5/12),2^(7/12),2^(8/12),2^(11/12) ;F harmonic minor
 
 
