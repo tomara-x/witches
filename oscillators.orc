@@ -223,3 +223,17 @@ od
 kLastSamp = aSig[ksmps-1]
 xout aSig*kAmp
 endop
+
+
+
+
+;asig SuperFormula kcps, km1, km2, kn1, kn2, kn3, ka, kb
+opcode SuperFormula, a, kkkkkkkk
+kcps, km1, km2, kn1, kn2, kn3, ka, kb xin
+asig phasor kcps
+asig = (abs(cos((km1*asig)/4)/ka)^kn2 +
+        abs(sin((km2*asig)/4)/kb)^kn3)^-1/kn1
+xout asig
+endop
+
+
