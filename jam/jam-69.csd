@@ -17,7 +17,7 @@ ksmps   =   32
 nchnls  =   2
 0dbfs   =   1
 
-#define TEMPO #60#
+#define TEMPO #120#
 #define FRQ   #($TEMPO/60)#
 #define BEAT  #(60/$TEMPO)# ;1/$FRQ
 
@@ -29,9 +29,9 @@ gaVerbL,gaVerbR init 0
 #include "mixer.orc"
 #include "drums.orc"
 
-seed 42
+seed 105
 
-giScale ftgenonce 0,0,-32,-51, 5,2,cpspch(5.02),0,
+giScale ftgenonce 0,0,-32,-51, 7,2,cpspch(6.02),0,
 1,2^(2/12),2^(4/12),2^(5/12),2^(7/12),2^(9/12),2^(11/12) ;D major
 
 
@@ -39,7 +39,7 @@ instr Tree
 ;32 nodes, 8 values and 16 branches each
 tree_init(32, 8, 16)
 ;connections
-iarr[] = fillarray(1,2,3,4,5,6,7)
+iarr[] = fillarray(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15)
 node_connect_i(0, iarr)
 ;set values
 icnt = 0
@@ -55,7 +55,6 @@ kTrig = MyMetro($FRQ*4)
 
 if kTrig == 1 then
     kN = node_climb(0)
-    printk 0, kN
 endif
 
 ;waves
@@ -67,9 +66,9 @@ iSin  ftgenonce 0,0,2^14,10, 1
 iCos  ftgenonce 0,0,2^14,11, 1
 
 kCps = node_get_value_k(kN, 0)
-kCps = lineto(kCps, .05)
+kCps = lineto(kCps, .03)
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig sterrain 0.1, kCps, .5,.5, .5,.5, 0, iSin, iCos, 3, 6, 4, 1,1,1,1, 0
+aSig sterrain 0.1, kCps, .5,.5, .1,.7, 0, iSin, iSaw, 5, 4, 0.2, 1,1,1,1, 1
 aSig dcblock aSig
 sbus_mix 1, aSig
 endin
@@ -120,9 +119,9 @@ schedule("Out", 0, -1)
 
 </CsInstruments>
 <CsScore>
+t           0       120
 i"Tree"     0       0
-t           0       60
-;i"Drums"    0       60
+i"Drums"    16      60
 i"Terrain"  0       60
 s           60
 e
