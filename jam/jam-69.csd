@@ -127,6 +127,12 @@ endin
 ;endin
 instr Drums
 kT = MyMetro($FRQ)
+;this is weird, i forgot to use beats and doubled the tempo
+;now the kick is on the 1 (layered with that metalic sound) (HatO2)
+;then another delayed by 1/2 a sec (4 beats) (exactly on the next click)
+;so after the first trig, this sound is doubled (immediate and delayed ones)
+;(delayed by 1/4 of a sec (2 beats) is the closed hat sound)
+;remember to convert seconds to beats, kids
 schedkwhen(kT,0,0, "Kick",  0,    .5, 230, 20, .1, 0, .1)
 ;schedkwhen(kT,0,0, "HatC2", 0.5,  0.1,  .2, -0.9, 0.5)
 ;schedkwhen(kT,0,0, "HatO2", 4.25, 0.35, .1, -0.8, 0.5)
