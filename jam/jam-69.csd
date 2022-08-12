@@ -5,8 +5,6 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 //thank you, mog
-
-;;wip
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231 ;-m227
@@ -29,25 +27,24 @@ gaVerbL,gaVerbR init 0
 #include "mixer.orc"
 #include "drums.orc"
 
-seed 105
-
-giScale ftgenonce 0,0,-32,-51, 7,2,cpspch(6.02),0,
-1,2^(2/12),2^(4/12),2^(5/12),2^(7/12),2^(9/12),2^(11/12) ;D major
+seed 42
 
 
 instr Tree
-;32 nodes, 8 values and 16 branches each
-tree_init(32, 8, 16)
+;32 nodes, 4 values and 16 branches each
+tree_init(32, 4, 16)
 ;connections
-iarr[] = fillarray(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15)
+iarr[] = fillarray(1,2,3,4,5,6,7)
 node_connect_i(0, iarr)
 ;set values
+ival[] = fillarray(7.02, 5.02, 8.03, 6.05, 8.02, 5.00, 6.02, 7.00)
 icnt = 0
-while icnt < 32 do
-    node_set_value_i(icnt, 0, table(random:i(0,32), giScale))
+while icnt < 8 do
+    node_set_value_i(icnt, 0, ival[icnt])
     icnt += 1
 od
 endin
+
 
 
 instr Terrain
@@ -65,10 +62,43 @@ iSqur ftgenonce 0,0,2^14,7, 1,2^13,1,0,-1,2^13,-1
 iSin  ftgenonce 0,0,2^14,10, 1
 iCos  ftgenonce 0,0,2^14,11, 1
 
-kCps = node_get_value_k(kN, 0)
-kCps = lineto(kCps, .03)
+kCps = cpspch(node_get_value_k(kN, 0))
+kCps = lineto(kCps, .02)
+
+karr[][] init 8, 8
+karr fillarray 4, 5, 1, 6, 2, 7, 1, 1,
+               4, 7, 9, 2, 7, 3, 5, 1,
+               3, 1, 4, 5, 3, 1, 5, 1,
+               7, 2, 3, 3, 1, 2, 5, 1,
+               3, 1, 6, 4, 1, 8, 7, 1,
+               2, 1, 1, 5, 5, 2, 1, 1,
+               1, 9, 2, 7, 3, 3, 4, 1,
+               5, 8, 3, 8, 1, 5, 1, 1
+
+if ClkDiv(kTrig, 8) == 1 || timeinstk() == 1 then
+    km1, km2, kn1, kn2, kn3, ka, kb =
+    karr[random:k(0,8)][random:k(0, 8)]*01,
+    karr[random:k(0,8)][random:k(0, 8)]*08,
+    karr[random:k(0,8)][random:k(0, 8)]*04,
+    karr[random:k(0,8)][random:k(0, 8)]*02,
+    karr[random:k(0,8)][random:k(0, 8)]*16,
+    karr[random:k(0,8)][random:k(0, 8)]*08,
+    karr[random:k(0,8)][random:k(0, 8)]*02
+endif
+
+;slew limited versions (don't wanna overwrite them, weird effect)
+kM1, kM2, kN1, kN2, kN3, kA, kB =
+lineto(km1, 3.2),
+lineto(km2, 2.4),
+lineto(kn1, 2.9),
+lineto(kn2, 3.8),
+lineto(kn3, 3.3),
+lineto(ka,  2.6),
+lineto(kb,  2.9)
+
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig sterrain 0.1, kCps, .5,.5, .1,.7, 0, iSin, iSaw, 5, 4, 0.2, 1,1,1,1, 1
+aSig sterrain 0.1, kCps, .5,.5, .5,.5, 0, iSin, iSin,
+              kM1,kM2,kN1,kN2,kN3,kA,kB, 1
 aSig dcblock aSig
 sbus_mix 1, aSig
 endin
@@ -85,14 +115,15 @@ endin
 ;endin
 instr Drums
 kT = MyMetro($FRQ)
-schedkwhen(kT,0,0, "Kick", 0, .5, 230, 20, .1, 0, .1)
+schedkwhen(kT,0,0, "Kick",  0,    .5, 230, 20, .1, 0, .1)
 ;schedkwhen(kT,0,0, "HatC2", 0.5,  0.1,  .2, -0.9, 0.5)
 ;schedkwhen(kT,0,0, "HatO2", 4.25, 0.35, .1, -0.8, 0.5)
 ;schedkwhen(kT,0,0, "HatC2", 4.75, 0.15, .06, -0.8, 0.5)
 schedkwhen(kT,0,0, "HatO2", 0,    .1, .1,  0.9, 4700, 6800, 0.5)
-schedkwhen(kT,0,0, "HatO2", 0.5,    .1, .1,  0.9, 4700, 6800, 0.5)
+schedkwhen(kT,0,0, "HatO2", 0.5,  .1, .1,  0.9, 4700, 6800, 0.5)
 schedkwhen(kT,0,0, "HatC2", 0.25, .1, .1, -0.9, 9000, 8000, 0.5)
 endin
+
 
 
 instr Verb
@@ -107,6 +138,7 @@ endin
 schedule("Verb", 0, -1)
 
 
+
 instr Out
 aL, aR sbus_out
 aL clip aL, 0, 1
@@ -117,13 +149,13 @@ endin
 schedule("Out", 0, -1)
 
 
+
 </CsInstruments>
 <CsScore>
 t           0       120
 i"Tree"     0       0
-i"Drums"    16      60
-i"Terrain"  0       60
-s           60
+i"Drums"    16      [3*60]
+i"Terrain"  0       [4*60]
 e
 </CsScore>
 </CsoundSynthesizer>
