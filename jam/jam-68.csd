@@ -52,6 +52,7 @@ endin
 schedule("Tree", 0, 0)
 ;beware! running an instrument that sets up the tree like this means that it wont
 ;be available for an instrument invoked from the score at time 0
+;remember, all events scheduled from the orc are realtime events
 ;and csound will freeze because of the node_climb udo getting stuck in a loop
 ;read floss 3A
 ;a way to avoid this is to set up the tree in the same instrument
