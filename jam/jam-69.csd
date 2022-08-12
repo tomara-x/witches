@@ -27,7 +27,7 @@ gaVerbL,gaVerbR init 0
 #include "mixer.orc"
 #include "drums.orc"
 
-seed 42
+seed 48
 
 
 instr Tree
@@ -65,6 +65,8 @@ iCos  ftgenonce 0,0,2^14,11, 1
 kCps = cpspch(node_get_value_k(kN, 0))
 kCps = lineto(kCps, .02)
 
+;;babe, screw all this nonsense, use rspline
+/*
 karr[][] init 8, 8
 karr fillarray 4, 5, 1, 6, 2, 7, 1, 1,
                4, 7, 9, 2, 7, 3, 5, 1,
@@ -95,9 +97,19 @@ lineto(kn2, 3.8),
 lineto(kn3, 3.3),
 lineto(ka,  2.6),
 lineto(kb,  2.9)
+*/
+
+kM1, kM2, kN1, kN2, kN3, kA, kB =
+rspline(-3.0, 2, 0.05, 0.25),
+rspline(-3.0, 3, 0.01, 0.05),
+rspline(-3.0, 5, 0.80, 2.00),
+rspline(-3.0, 8, 0.01, 0.05),
+rspline(-3.0, 4, 0.01, 0.05),
+rspline(-3.0, 2, 0.01, 0.05),
+rspline(-3.0, 1, 0.01, 0.05)
 
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig sterrain 0.1, kCps, .5,.5, .5,.5, 0, iSin, iSin,
+aSig sterrain 0.1, kCps, .9,.5, .8,.8, 0, iSin, iSaw,
               kM1,kM2,kN1,kN2,kN3,kA,kB, 1
 aSig dcblock aSig
 sbus_mix 1, aSig
