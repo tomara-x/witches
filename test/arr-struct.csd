@@ -48,23 +48,20 @@ node_connect_i(1, 5)
 node_connect_i(2, 6)
 node_connect_i(6, 7)
 endin
+schedule(1, 0, 0)
 
 instr 2
-;kn = node_climb(0)
-;printk 0, kn
-;printarray gk_Tree
-kn init 0
-karr[] = node_get_branch_k(kn)
-printarray karr
-kn += 1
+kn = node_climb3(0)
+printk 0, kn
 endin
+schedule(2, 1, 0.3)
+
+instr 3
+printarray gk_Tree
+endin
+schedule(3, 0, 1/kr)
 
 </CsInstruments>
-<CsScore>
-i1 0 0.0
-i2 1 0.3
-e
-</CsScore>
 </CsoundSynthesizer>
 
 

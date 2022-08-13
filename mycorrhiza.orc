@@ -941,11 +941,69 @@ endop
 
 
 
+;same as node_climb but uses local progress, so every call is independent
+;syntax: kCurrentNode node_climb3 kNode [, kReset] [, kResetNodeProgress] [, kResetAllProgress]
+;
+;(all three resets default to 0)
+;kReset: when non-zero, sets the current node to input node, since this
+;        is assigned only at i-pass (changing input node needs this to take effect)
+;kResetNodeProgress: reset internal progress counter for the current node only
+;kResetAllProgress: reset entire progress array
+
+;Note: i think there are cases where mixing and matching resets can
+;cause weird (bad) things like getting stuck in a loop (crashing csound),
+;i havent's tested this stuff, maybe i should have just one reset?
+opcode node_climb3, k, kOOO
+knode, kreset, krstnod, krstall xin
+koutnode init i(knode)
+
+;alloc progress array and init to -1
+kp[] init gi_NumOfNodes
+icnt = 0
+while icnt < gi_NumOfNodes do
+    kp[icnt] = -1
+    icnt += 1
+od
+
+;resets
+if kreset != 0 then
+    koutnode = knode
+endif
+if krstnod != 0 then
+    kp[koutnode] = -1
+endif
+if krstall != 0 then
+    kp = -1
+endif
+
+if node_valid_k(koutnode) == 1 && node_isolated_k(koutnode) == 0 then
+    if node_has_branch_k(koutnode, kp[koutnode]) == 1 then
+        koutnode = node_get_branch_k(koutnode, kp[koutnode])
+    elseif kp[koutnode] > -1 then
+        until node_has_branch_k(koutnode, kp[koutnode]) == 1 do
+            kp[koutnode] = -1 ;reset node progress
+            if node_has_root_k(koutnode) == 1 && koutnode != knode then
+                koutnode = node_get_root_k(koutnode)
+            endif
+            kp[koutnode] = kp[koutnode] + 1
+        od
+        if !(koutnode == knode && kp[knode] == 0) then
+            koutnode = node_get_branch_k(koutnode, kp[koutnode])
+        endif
+    endif
+    if !(koutnode == knode && kp[knode] == 0) then
+        kp[koutnode] = kp[koutnode] + 1
+    endif
+endif
+xout koutnode
+endop
+
 
 ;testing
-opcode node_climb3, k, kO
+opcode node_climb4, k, kO
 knode, kreset xin
 if node_has_branch_k(knode, progress_get(knode)) == 1 then
+                ;lmao v (interesting!)
     knode = node_climb3(node_get_branch_k(knode, progress_get(knode)))
 elseif progress_get(knode) != -1 then
     progress_reset(knode)
@@ -953,6 +1011,7 @@ endif
 progress_add1(knode)
 xout knode
 endop
+
 
 
 ;drunk_climb?
