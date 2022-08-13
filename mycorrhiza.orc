@@ -50,8 +50,7 @@ node_get_root_i/k
 node_get_branch_i/k
 node_valid_i/k
 node_isolated_i/k
-node_climb
-node_climb2
+node_climb(2/3/4)
 
 (i-pass versions of the following have an extra "_i" to the name)
 progress_set
@@ -1068,6 +1067,14 @@ progress_add1(knode)
 xout knode
 endop
 
+
+
+;maybe i should change all those chacks against -1? some evil soul (me) might use
+;smaller negative numbers for branch/root values for whatever twisted reason
+;and then shit gonna blow up in her face!
+;it's like, to do or not to do! like i feel if i use custom weird shit, i'll be
+;checking manually for those values?
+;but still, branch -2 isn't a branch and has-branch shouldn't say it is...
 
 
 ;drunk_climb?
