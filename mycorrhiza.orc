@@ -882,6 +882,7 @@ endop
 ;from the example at the top, with 0 as input, every k-cycle the progress will be:
 ;0, 1, 4, 5, 2, 6, 7, 3, 0,...
 ;syntax: kCurrentNode node_climb kNode [, kReset]
+;reset only reassigns the current node to input node when non-zero
 opcode node_climb, k, kO
 knode, kreset xin
 koutnode init i(knode)
@@ -915,6 +916,7 @@ endop
 ;play root after every branch (no branch-to-branch hopping)
 ;from same example, progress is: 0,1,4,1,5,1,0,2,6,7,6,2,0,3,0...
 ;syntax: kCurrentNode node_climb2 kNode [, kReset]
+;reset only reassigns the current node to input node when non-zero
 opcode node_climb2, k, kO
 knode, kreset xin
 koutnode init i(knode)
@@ -943,7 +945,7 @@ endop
 
 ;same as node_climb but uses local progress, so every call is independent
 ;syntax: kCurrentNode node_climb3 kNode [, kReset] [, kResetNodeProgress] [, kResetAllProgress]
-;
+
 ;(all three resets default to 0)
 ;kReset: when non-zero, sets the current node to input node, since this
 ;        is assigned only at i-pass (changing input node needs this to take effect)
@@ -954,7 +956,7 @@ endop
 ;cause weird (bad) things like getting stuck in a loop (crashing csound),
 ;i havent's tested this stuff, maybe i should have just one reset?
 opcode node_climb3, k, kOOO
-knode, kreset, krstnod, krstall xin
+knode, kreset, kresetnode, kresetall xin
 koutnode init i(knode)
 
 ;alloc progress array and init to -1
@@ -969,10 +971,10 @@ od
 if kreset != 0 then
     koutnode = knode
 endif
-if krstnod != 0 then
+if kresetnode != 0 then
     kp[koutnode] = -1
 endif
-if krstall != 0 then
+if kresetall != 0 then
     kp = -1
 endif
 
@@ -999,8 +1001,62 @@ xout koutnode
 endop
 
 
+
+;same as node_climb2 but uses local progress
+;syntax: kCurrentNode node_climb4 kNode [, kReset] [, kResetNodeProgress] [, kResetAllProgress]
+
+;(all three resets default to 0)
+;kReset: when non-zero, sets the current node to input node, since this
+;        is assigned only at i-pass (changing input node needs this to take effect)
+;kResetNodeProgress: reset internal progress counter for the current node only
+;kResetAllProgress: reset entire progress array
+
+;note above doean't apply here i think? (you know by now how much you can trust me)
+opcode node_climb4, k, kOOO
+knode, kreset, kresetnode, kresetall xin
+koutnode init i(knode)
+
+;alloc progress array and init to -1
+kp[] init gi_NumOfNodes
+icnt = 0
+while icnt < gi_NumOfNodes do
+    kp[icnt] = -1
+    icnt += 1
+od
+
+;resets
+if kreset != 0 then
+    koutnode = knode
+endif
+if kresetnode != 0 then
+    kp[koutnode] = -1
+endif
+if kresetall != 0 then
+    kp = -1
+endif
+
+if node_valid_k(koutnode) == 1 && node_isolated_k(koutnode) == 0 then
+    if node_has_branch_k(koutnode, kp[koutnode]) == 1 then
+        koutnode = node_get_branch_k(koutnode, kp[koutnode])
+    else
+        kp[koutnode] = -1
+        if koutnode != knode then
+            koutnode = node_get_root_k(koutnode)
+        endif
+    endif
+    if node_has_branch_k(koutnode, kp[koutnode]+1) == 0 &&
+        koutnode == knode then ;at last branch of input node
+        kp[koutnode] = -1
+    endif
+    kp[koutnode] = kp[koutnode] + 1
+endif
+xout koutnode
+endop
+
+
+
 ;testing
-opcode node_climb4, k, kO
+opcode node_climb5, k, kO
 knode, kreset xin
 if node_has_branch_k(knode, progress_get(knode)) == 1 then
                 ;lmao v (interesting!)

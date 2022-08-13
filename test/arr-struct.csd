@@ -51,7 +51,7 @@ endin
 schedule(1, 0, 0)
 
 instr 2
-kn = node_climb3(0)
+kn = node_climb4(0)
 printk 0, kn
 endin
 schedule(2, 1, 0.3)
