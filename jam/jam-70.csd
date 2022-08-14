@@ -52,7 +52,7 @@ instr Terrain
 kTrig = MyMetro($FRQ*4)
 
 if kTrig == 1 then
-    kN = node_climb(0)
+    kN = node_climb4(0)
 endif
 
 iRamp ftgenonce 0,0,2^14,7, -1,2^14,1
@@ -61,22 +61,25 @@ iSaw  ftgenonce 0,0,2^14,7, 0,2^13,1,0,-1,2^13,0
 iSqur ftgenonce 0,0,2^14,7, 1,2^13,1,0,-1,2^13,-1
 iSin  ftgenonce 0,0,2^14,10, 1
 iCos  ftgenonce 0,0,2^14,11, 1
+iWav  ftgenonce 0,0,2^18,9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
+                            816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
 
 kCps = cpspch(node_get_value_k(kN, 0))
 kCps = lineto(kCps, .02)
 
 kM1, kM2, kN1, kN2, kN3, kA, kB =
-rspline(-3.0, 2, 0.05, 0.25),
-rspline(-3.0, 3, 0.01, 0.05),
-rspline(-3.0, 5, 0.80, 2.00),
-rspline(-3.0, 8, 0.01, 0.05),
-rspline(-3.0, 4, 0.01, 0.05),
-rspline(-3.0, 2, 0.01, 0.05),
-rspline(-3.0, 1, 0.01, 0.05)
+rspline(-43.00, -02.00, 01.05, 08.25),
+rspline(-02.00, +01.00, 00.01, 00.05),
+rspline(-01.00, +14.00, 00.80, 02.00),
+rspline(-01.00, +08.00, 00.01, 00.05),
+rspline(-01.00, +04.00, 00.01, 00.05),
+rspline(-03.00, +02.00, 00.01, 00.05),
+rspline(-01.00, +01.00, 00.01, 00.05)
+
+kX, kY, kRX, kRY = 0.5, 0.5, 0.2, 0.2
 
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig sterrain 0.1, kCps, .9,.5, .8,.8, 0, iSin, iSaw,
-              kM1,kM2,kN1,kN2,kN3,kA,kB, 1
+aSig sterrain 0.1, kCps, kX,kY, kRX,kRY, 0, iSin,iWav, kM1,kM2,kN1,kN2,kN3,kA,kB, 0
 aSig dcblock aSig
 sbus_mix 1, aSig
 endin
@@ -89,8 +92,7 @@ schedkwhen(kT,0,0, "Kick",  0,    .5, 230, 20, .1, 0, .1)
 ;schedkwhen(kT,0,0, "HatC2", 0.5,  0.1,  .2, -0.9, 0.5)
 ;schedkwhen(kT,0,0, "HatO2", 4.25, 0.35, .1, -0.8, 0.5)
 ;schedkwhen(kT,0,0, "HatC2", 4.75, 0.15, .06, -0.8, 0.5)
-schedkwhen(kT,0,0, "HatO2", 0,    .1, .1,  0.9, 4700, 6800, 0.5)
-schedkwhen(kT,0,0, "HatO2", 0.5,  .1, .1,  0.9, 4700, 6800, 0.5)
+schedkwhen(kT,0,0, "HatO2", 0,    .1, .2,  0.9, 4700, 6800, 0.5)
 schedkwhen(kT,0,0, "HatC2", 0.25, .1, .1, -0.9, 9000, 8000, 0.5)
 ;schedkwhen(kT,0,0, "HatC2", 0,   -.1, .1,  0.9, 9000, 1000, 0.5)
 ;schedkwhen(kT,0,0, "HatC2", 0.25, .1, .1, -0.9, 9000, 8000, 0.5)
@@ -113,8 +115,8 @@ schedule("Verb", 0, -1)
 
 instr Out
 aL, aR sbus_out
-aL clip aL, 0, 1
-aR clip aR, 0, 1
+aL clip aL, 0, db(-6)
+aR clip aR, 0, db(-6)
 outs aL, aR
 sbus_clear_all
 endin
@@ -126,7 +128,7 @@ schedule("Out", 0, -1)
 <CsScore>
 t           0       120
 i"Tree"     0       0
-i"Drums"    16      [3*60]
+;i"Drums"    16      [3*60]
 i"Terrain"  0       [4*60]
 e
 </CsScore>
