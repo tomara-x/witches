@@ -31,19 +31,13 @@ seed 105
 
 
 
+;talk about using an lgm to kill a fly
 instr Tree
 ;32 nodes, 4 values and 16 branches each
 tree_init(32, 4, 16)
 ;connections
 iarr[] = fillarray(1,2,3,4,5,6,7)
 node_connect_i(0, iarr)
-;set values
-ival[] = fillarray(7.02, 5.02, 8.03, 6.05, 8.02, 5.00, 6.02, 7.00)
-icnt = 0
-while icnt < 8 do
-    node_set_value_i(icnt, 0, ival[icnt])
-    icnt += 1
-od
 endin
 
 
@@ -64,22 +58,27 @@ iCos  ftgenonce 0,0,2^14,11, 1
 iWav  ftgenonce 0,0,2^18,9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
                             816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
 
-kCps = cpspch(node_get_value_k(kN, 0))
-kCps = lineto(kCps, .02)
+kval[] = fillarray(7.02, 5.02, 8.03, 6.05, 8.02, 5.00, 6.02, 7.00)
+kCps = cpspch(kval[kN])
+;kCps = lineto(kCps, .02)
+
+if ClkDiv(kTrig, 4*32) == 1 then
+    kval += 1
+endif
 
 kM1, kM2, kN1, kN2, kN3, kA, kB =
-rspline(-43.00, -02.00, 01.05, 08.25),
-rspline(-02.00, +01.00, 00.01, 00.05),
-rspline(-01.00, +14.00, 00.80, 02.00),
-rspline(-01.00, +08.00, 00.01, 00.05),
-rspline(-01.00, +04.00, 00.01, 00.05),
-rspline(-03.00, +02.00, 00.01, 00.05),
-rspline(-01.00, +01.00, 00.01, 00.05)
+rspline(-03.00, -22.00, 08.05, 16.25),
+rspline(-02.00, +21.00, 03.01, 07.05),
+rspline(-01.00, +04.00, 02.80, 03.00),
+rspline(-01.00, +01.00, 01.70, 04.00),
+rspline(-01.00, +01.00, 03.00, 14.00),
+rspline(-03.00, +02.00, 00.01, 10.05),
+rspline(-01.00, +01.00, 02.01, 30.05)
 
-kX, kY, kRX, kRY = 0.5, 0.5, 0.2, 0.2
+kX, kY, kRX, kRY = 0.5, 0.5, 0.5, 0.5
 
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig sterrain 0.1, kCps, kX,kY, kRX,kRY, 0, iSin,iWav, kM1,kM2,kN1,kN2,kN3,kA,kB, 0
+aSig sterrain 0.1, kCps, kX,kY, kRX,kRY, 0, iSin,iSin, kM1,kM2,kN1,kN2,kN3,kA,kB, 0
 aSig dcblock aSig
 sbus_mix 1, aSig
 endin
