@@ -80,6 +80,14 @@ kX, kY, kRX, kRY = 0.5, 0.5, 0.5, 0.5
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
 aSig sterrain 0.1, kCps, kX,kY, kRX,kRY, 0, iSin,iSin, kM1,kM2,kN1,kN2,kN3,kA,kB, 0
 aSig dcblock aSig
+
+;amplitude tracking and "compression" gone wild
+aKick, aKickR sbus_read 15
+kAmp rms aKick, 100
+if kAmp > .05 then
+    aSig *= 8
+endif
+
 sbus_mix 1, aSig
 endin
 
@@ -127,7 +135,7 @@ schedule("Out", 0, -1)
 <CsScore>
 t           0       120
 i"Tree"     0       0
-;i"Drums"    16      [3*60]
+i"Drums"    16      [3*60]
 i"Terrain"  0       [4*60]
 e
 </CsScore>
