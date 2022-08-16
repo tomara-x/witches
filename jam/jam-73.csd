@@ -41,20 +41,24 @@ node_connect_i(1, 3)
 node_connect_i(1, 4)
 node_connect_i(2, 5)
 node_connect_i(3, 6)
-node_connect_i(5, 7)
+;node_connect_i(5, 7)
 endin
 
 
 
 instr Terrain
-kTrig1 = MyMetro($FRQ*4)
-kTrig2 = MyMetro($FRQ/4)
+kTrig1 = MyMetro($FRQ/4)
+kTrig2 = MyMetro($FRQ/8)
+kTrig3 = MyMetro($FRQ*4)
 
 if kTrig1 == 1 then
     kAN1 = node_climb3(0)
 endif
 if kTrig2 == 1 then
     kAN2 = node_climb3(0)
+endif
+if kTrig3 == 1 then
+    kAN3 = node_climb3(0)
 endif
 
 iRamp ftgenonce 0,0,2^14,7, -1,2^14,1
@@ -66,16 +70,13 @@ iCos  ftgenonce 0,0,2^14,11, 1
 iWav  ftgenonce 0,0,2^18,9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
                             816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
 
-kPch[] = fillarray(7.03, 7.03, 8.04, 6.05, 8.03, 6.01, 6.03, 7.00)
-kCps = cpspch(kPch[kAN1])
+kPch1[] = fillarray(7.00, 7.03, 8.01, 8.05, 8.08, 9.01, 6.03, 7.03)
+kPch2[] = fillarray(7.03, 7.07, 8.05, 8.08, 9.01, 9.05, 6.07, 7.07)
+kPch3[] = fillarray(7.07, 8.00, 8.08, 9.01, 9.05, 9.08, 6.08, 7.10)
+kCps1 = cpspch(kPch1[kAN1])
+kCps2 = cpspch(kPch2[kAN1])
+kCps3 = cpspch(kPch3[kAN1])
 ;kCps = lineto(kCps, .02)
-
-if ClkDiv(kTrig1, 64) == 1 then
-    kPch += int(random:k(-1,8))
-    if kPch[0] > 6 then
-        kPch -= 2
-    endif
-endif
 
 kM1[] = fillarray(8, 6, 4, 1, 1, 1, 2, 3)
 kM2[] = fillarray(1, 1, 1, 1, 1, 1, 1, 2)
@@ -88,9 +89,14 @@ kB[]  = fillarray(1, 1, 1, 1, 1, 1, 1, 1)
 kX, kY, kRX, kRY = 0.5, 0.5, 0.5, 0.5
 
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig sterrain 0.1, kCps, kX,kY, kRX,kRY, 0, iSin,iWav,
-              kM1[kAN2],kM2[kAN2],kN1[kAN2],kN2[kAN2],kN3[kAN2],kA[kAN2],kB[kAN2], 0
-aSig clip aSig, 0, db(-24)
+aSig1 sterrain 0.9, kCps1, kX,kY, kRX,kRY, 0, iSin,iSaw,
+              kM1[kAN3],kM2[kAN3],kN1[kAN3],kN2[kAN3],kN3[kAN3],kA[kAN3],kB[kAN3], 0
+aSig2 sterrain 0.9, kCps2, kX,kY, kRX,kRY, 0, iSin,iSaw,
+              kM1[kAN3],kM2[kAN3],kN1[kAN3],kN2[kAN3],kN3[kAN3],kA[kAN3],kB[kAN3], 0
+aSig3 sterrain 0.9, kCps3, kX,kY, kRX,kRY, 0, iSin,iSaw,
+              kM1[kAN3],kM2[kAN3],kN1[kAN3],kN2[kAN3],kN3[kAN3],kA[kAN3],kB[kAN3], 0
+aSig = (aSig1+aSig2+aSig3)/3
+aSig clip aSig, 0, db(-6)
 aSig dcblock aSig
 
 ;amplitude tracking and "compression" gone wild
@@ -156,7 +162,7 @@ schedule("Out", 0, -1)
 <CsScore>
 t           0       120
 i"Tree"     0       0
-i"Drums"    16      [3*60]
+i"Drums"    [3*60]  [3*60]
 i"Terrain"  0       [4*60]
 e
 </CsScore>
