@@ -47,11 +47,15 @@ endin
 
 
 instr Terrain
-kTrig = MyMetro($FRQ*4)
+kTrig1 = MyMetro($FRQ*4)
+kTrig2 = MyMetro($FRQ/4)
 
-if kTrig == 1 then
-    kN = node_climb3(0)
+if kTrig1 == 1 then
+    kAN1 = node_climb3(0)
 endif
+if kTrig2 == 1 then
+    kAN2 = node_climb3(0)
+endif 
 
 iRamp ftgenonce 0,0,2^14,7, -1,2^14,1
 iTanh ftgenonce 0,0,2^14,"tanh", -5, 5, 0
@@ -63,10 +67,10 @@ iWav  ftgenonce 0,0,2^18,9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
                             816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
 
 kPch[] = fillarray(7.03, 7.03, 8.04, 6.05, 8.03, 6.01, 6.03, 7.00)
-kCps = cpspch(kPch[kN])
+kCps = cpspch(kPch[kAN1])
 ;kCps = lineto(kCps, .02)
 
-if ClkDiv(kTrig, 64) == 1 then
+if ClkDiv(kTrig1, 64) == 1 then
     kPch += int(random:k(-1,8))
     if kPch[0] > 6 then
         kPch -= 2
@@ -85,7 +89,7 @@ kX, kY, kRX, kRY = 0.5, 0.5, 0.5, 0.5
 
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
 aSig sterrain 0.1, kCps, kX,kY, kRX,kRY, 0, iSin,iWav,
-              kM1[kN],kM2[kN],kN1[kN],kN2[kN],kN3[kN],kA[kN],kB[kN], 0
+              kM1[kAN2],kM2[kAN2],kN1[kAN2],kN2[kAN2],kN3[kAN2],kA[kAN2],kB[kAN2], 0
 aSig clip aSig, 0, db(-24)
 aSig dcblock aSig
 
