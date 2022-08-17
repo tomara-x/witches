@@ -100,8 +100,8 @@ lineto(kB[kAN3] , 0.03)
 aSig1 sterrain 0.5, kCps1, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig2 sterrain 0.5, kCps2, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig3 sterrain 0.5, kCps3, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
-aSig4 sterrain 0.9, kCps2/2, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
-aSig = (aSig1+aSig2+aSig3+aSig4)/4
+aSig4 sterrain 0.9, kCps1/4, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
+aSig = (aSig1+aSig2+aSig3)/3
 ;aSig clip aSig, 0, db(-6)
 aSig dcblock aSig
 
@@ -110,6 +110,7 @@ if timeinsts() > 40 then
     kNois rspline 0, 1, 0.01, 2
     kTrig trigger kAmp+kNois, .8, 0
     schedkwhen(kTrig,0,1, "Kick", 0, 0.2, 230, 20, 0.3, 1, 0.1)
+aSig = (aSig1+aSig2+aSig3+aSig4)/4
 endif
 
 vincr gaVerbL, aSig*db(-18)
@@ -155,7 +156,7 @@ endin
 instr Verb
 gaVerbL dcblock gaVerbL
 gaVerbR dcblock gaVerbR
-kRoomSize  init  0.85 ; room size (range 0 to 1)
+kRoomSize  init  0.99 ; room size (range 0 to 1)
 kHFDamp    init  0.8  ; high freq. damping (range 0 to 1)
 al,ar freeverb gaVerbL,gaVerbR,kRoomSize,kHFDamp, 44100, 1
 sbus_mix 0, al, ar
@@ -182,11 +183,11 @@ i"Tree"     0       0
 i"Terrain"  0       [4*60]
 i"Guns"     60      16
 
-i"Kick" [4*60] 0.2 130 20 0.3 1 0.3
-i"Kick" +      0.5 130 20 0.3 1 0.5
-i"Kick" +      0.5 130 20 0.3 1 0.7
+i"Kick" [4*60] 0.2 230 20 0.3 1 0.1
+i"Kick" +      0.5 230 20 0.3 1 0.3
+i"Kick" +      0.5 230 20 0.3 1 0.5
 
-s 244
+s 264
 e
 </CsScore>
 </CsoundSynthesizer>
