@@ -116,6 +116,12 @@ if timeinsts() > 40 then
 aSig = (aSig1+aSig2+aSig3+aSig4)/4
 endif
 
+if timeinsts() > 60 then
+    kTrig4 = MyMetro($FRQ*4)
+    kEnv = triglinseg(kTrig4, 1, $BEAT/4, 0)
+    aSig *= kEnv
+endif
+
 aSig dcblock aSig
 vincr gaVerbL, aSig*db(-18)
 vincr gaVerbR, aSig*db(-18)
