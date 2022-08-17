@@ -97,19 +97,20 @@ lineto(kA[kAN3] , 0.03),
 lineto(kB[kAN3] , 0.03)
 
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig1 sterrain 0.5, kCps1, kX,kY, kRX,kRY, 0, iSin,iWav,
-                km1,km2,kn1,kn2,kn3,ka,kb,0
-aSig2 sterrain 0.5, kCps2, kX,kY, kRX,kRY, 0, iWav,iWav,
-                km1,km2,kn1,kn2,kn3,ka,kb,0
-aSig3 sterrain 0.5, kCps3, kX,kY, kRX,kRY, 0, iWav,iWav,
-                km1,km2,kn1,kn2,kn3,ka,kb,0
-aSig4 sterrain 0.9, kCps2/2, kX,kY, kRX,kRY, 0, iWav,iWav,
-                km1,km2,kn1,kn2,kn3,ka,kb,0
+aSig1 sterrain 0.5, kCps1, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
+aSig2 sterrain 0.5, kCps2, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
+aSig3 sterrain 0.5, kCps3, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
+aSig4 sterrain 0.9, kCps2/2, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig = (aSig1+aSig2+aSig3+aSig4)/4
 ;aSig clip aSig, 0, db(-6)
 aSig dcblock aSig
 
-;threshold sched
+if timeinsts() > 40 then
+    kAmp rms aSig
+    kNois rspline 0, 1, 0.01, 2
+    kTrig trigger kAmp+kNois, .8, 0
+    schedkwhen(kTrig,0,1, "Kick", 0, 0.2, 230, 20, 0.3, 1, 0.1)
+endif
 
 vincr gaVerbL, aSig*db(-18)
 vincr gaVerbR, aSig*db(-18)
