@@ -50,6 +50,7 @@ kTrig1 = MyMetro($FRQ/4)
 kTrig2 = MyMetro($FRQ/8)
 kTrig3 = MyMetro($FRQ*1)
 
+;different climbs for different melodies
 if kTrig1 == 1 then
     kAN1 = node_climb3(0)
 endif
@@ -60,6 +61,7 @@ if kTrig3 == 1 then
     kAN3 = node_climb3(0)
 endif
 
+;waves
 iRamp ftgenonce 0,0,2^14,7, -1,2^14,1
 iTanh ftgenonce 0,0,2^14,"tanh", -5, 5, 0
 iSaw  ftgenonce 0,0,2^14,7, 0,2^13,1,0,-1,2^13,0
@@ -69,24 +71,25 @@ iCos  ftgenonce 0,0,2^14,11, 1
 iWav  ftgenonce 0,0,2^18,9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
                             816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
 
+;pitch of every step
 kPch1[] = fillarray(7.00, 7.03, 8.01, 8.05, 8.08, 9.01, 6.03, 7.03)
 kPch2[] = fillarray(7.03, 7.07, 8.05, 8.08, 9.01, 9.05, 6.07, 7.07)
 kPch3[] = fillarray(7.07, 8.00, 8.08, 9.01, 9.05, 9.08, 6.08, 7.10)
+;slew them
 kCps1 = lineto(cpspch(kPch1[kAN1]), 0.2)
 kCps2 = lineto(cpspch(kPch2[kAN2]), 0.2)
 kCps3 = lineto(cpspch(kPch3[kAN1]), 0.2)
-;kCps = lineto(kCps, .02)
 
+;superformula parameters of every step
 kM1[] = fillarray(+02.00, +41.00, +02.00, +02.00, +02.00, +02.00, +02.00, +02.00)
 kM2[] = fillarray(+02.00, +41.00, +02.00, +02.00, +02.00, +02.00, +02.00, +02.00)
-kN1[] = fillarray(+00.20, +00.20, +00.20, +00.20, +04.00, +00.20, +00.20, +00.20)
+kN1[] = fillarray(+00.20, +00.20, +00.20, +00.20, +04.00, +04.00, +00.20, +00.20)
 kN2[] = fillarray(+01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00)
 kN3[] = fillarray(+01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00)
 kA[]  = fillarray(+01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00)
 kB[]  = fillarray(+01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00)
 
-kX, kY, kRX, kRY = 0.5, 0.5, 0.05, 0.05
-
+;slew limit them
 km1,km2,kn1,kn2,kn3,ka,kb =
 lineto(kM1[kAN3], 0.03),
 lineto(kM2[kAN3], 0.03),
@@ -96,14 +99,14 @@ lineto(kN3[kAN3], 0.03),
 lineto(kA[kAN3] , 0.03),
 lineto(kB[kAN3] , 0.03)
 
+kX, kY, kRX, kRY = 0.5, 0.5, 0.05, 0.05
+
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
 aSig1 sterrain 0.5, kCps1, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig2 sterrain 0.5, kCps2, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig3 sterrain 0.5, kCps3, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
-aSig4 sterrain 0.9, kCps1/4, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
+aSig4 sterrain 0.9, kCps1/4, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig = (aSig1+aSig2+aSig3)/3
-;aSig clip aSig, 0, db(-6)
-aSig dcblock aSig
 
 if timeinsts() > 40 then
     kAmp rms aSig
@@ -113,6 +116,7 @@ if timeinsts() > 40 then
 aSig = (aSig1+aSig2+aSig3+aSig4)/4
 endif
 
+aSig dcblock aSig
 vincr gaVerbL, aSig*db(-18)
 vincr gaVerbR, aSig*db(-18)
 sbus_mix 1, aSig
@@ -156,8 +160,11 @@ endin
 instr Verb
 gaVerbL dcblock gaVerbL
 gaVerbR dcblock gaVerbR
-kRoomSize  init  0.99 ; room size (range 0 to 1)
+kRoomSize  init  0.69 ; room size (range 0 to 1)
 kHFDamp    init  0.8  ; high freq. damping (range 0 to 1)
+if timeinsts() > 40 then
+    kRoomSize = 0.99
+endif
 al,ar freeverb gaVerbL,gaVerbR,kRoomSize,kHFDamp, 44100, 1
 sbus_mix 0, al, ar
 ;outs al, ar
