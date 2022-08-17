@@ -48,11 +48,11 @@ endin
 instr Terrain
 kTrig1 = MyMetro($FRQ/4)
 kTrig2 = MyMetro($FRQ/8)
-kTrig3 = MyMetro($FRQ*1)
+kTrig3 = MyMetro($FRQ*2)
 
 ;different climbs for different melodies
 if kTrig1 == 1 then
-    kAN1 = node_climb3(0)
+    kAN1 = node_climb4(0)
 endif
 if kTrig2 == 1 then
     kAN2 = node_climb3(0)
@@ -95,26 +95,27 @@ lineto(kM1[kAN3], 0.03),
 lineto(kM2[kAN3], 0.03),
 lineto(kN1[kAN3], 0.03),
 lineto(kN2[kAN3], 0.03),
-lineto(kN3[kAN3], 0.80),
+lineto(kN3[kAN2], 0.80),
 lineto(kA[kAN3] , 0.03),
 lineto(kB[kAN3] , 0.03)
 
-kX, kY, kRX, kRY = 0.5, 0.5, 0.05, 0.05
+kX, kY, kRX, kRY = 0.5, 0.5, 0.15, 0.05
 
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
 aSig1 sterrain 0.5, kCps1, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig2 sterrain 0.5, kCps2, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig3 sterrain 0.5, kCps3, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig4 sterrain 0.9, kCps1/4, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
-aSig = (aSig1+aSig2+aSig3)/3
+aSig = (aSig1+aSig2+aSig3+aSig4)/4
 
 if timeinsts() > 40 then
-    kAmp rms aSig
-    kNois rspline 0, 1, 0.01, 2
-    kPan rspline 0, 1, 0.01, 2
-    kTrig trigger kAmp+kNois, .8, 0
-    schedkwhen(kTrig,0,1, "Kick", 0, 0.2, 230, 20, 0.3, 1, 0.1, kPan)
-aSig = (aSig1+aSig2+aSig3+aSig4)/4
+    kPan rspline 0, 1, 2, 4
+
+    aBand butbp aSig, 12515, 100
+    kAmp rms aBand, 400
+    kTrig trigger kAmp, 0.04, 0
+    schedkwhen(kTrig,0.06,0, "Kick", 0, 0.5, 230, 20, 0.2, 1, 0.1, kPan)
+    schedkwhen(kTrig,0.06,0, "HatO2",.07, 0.1, .2,  0.9, 4777, 6800, 0.8, kPan)
 endif
 
 if timeinsts() > 60 then
@@ -153,26 +154,30 @@ al,ar   pan2        aSig, p9
 endin
 
 
-instr Guns
-kS init -1
-kT = MyMetro($FRQ/2)
-kMul[] fillarray 6, 4, 6, 8, 5, 8, 3, 1
-kDiv[] fillarray 2, 2, 4, 2, 1, 2, 1, 1
-kM[], kD[] Perfuma $FRQ, kMul, kDiv
-kS += kT
-kS = wrap(kS, 0, 8)
-schedkwhen(kM[kS],0,0, "Kick", 0, 0.2, 230, 20, 0.3, 1, 0.1, 0.5)
+;p4=amp, p5=noiseBeta, p6=bellFrq, p7=bpFrq, p8=verbSnd, p9=pan
+;schedulek("HatO2", 0, .5, .1, -0.9, 9000, 8000, 0.0)
+instr HatO2
+aNois noise    p4, p5
+aSig1 butterbp aNois, p7, 1600
+aSig2 fmbell   p4, p6, .8, .5, .1, 2
+aEnv1 linseg   2, abs(p3), 0
+aEnv2 linseg   2, abs(p3/1.1), 0
+aClk  noise    p4, -0.9
+aClk  *=       linseg(1, 0.01, 0)
+aSig  =        aSig1*aEnv1+aSig2*aEnv2 + aClk
+aSig  clip     aSig, 2, p4
+al,ar pan2     aSig, p9
+      vincr    gaVerbL, aSig*(p8)
+      vincr    gaVerbR, aSig*(p8)
+      sbus_mix 13, aSig
 endin
 
 
 instr Verb
 gaVerbL dcblock gaVerbL
 gaVerbR dcblock gaVerbR
-kRoomSize  init  0.69 ; room size (range 0 to 1)
-kHFDamp    init  0.8  ; high freq. damping (range 0 to 1)
-if timeinsts() > 40 then
-    kRoomSize = 0.99
-endif
+kRoomSize  init  0.80 ; room size (range 0 to 1)
+kHFDamp    init  0.80  ; high freq. damping (range 0 to 1)
 al,ar freeverb gaVerbL,gaVerbR,kRoomSize,kHFDamp, 44100, 1
 sbus_mix 0, al, ar
 ;outs al, ar
@@ -196,13 +201,15 @@ schedule("Out", 0, -1)
 t           0       120
 i"Tree"     0       0
 i"Terrain"  0       [4*60]
-;i"Guns"     60      16
 
-i"Kick" [4*60] 0.2 230 20 0.3 1 0.1 0.5
-i"Kick" +      0.5 230 20 0.3 1 0.3 0.5
-i"Kick" +      0.5 230 20 0.3 1 0.5 0.5
+;i"Kick"  [4*60] 0.2 230 20 0.2 1 0.1 0.5
+;i"HatO2" ^+.07  0.1 0.2 0.9 4777 6800 0.8 0.5
+;i"Kick"  +      0.4 230 20 0.2 1 0.1 0.5
+;i"HatO2" ^+.07  0.1 0.2 0.9 4777 6800 0.8 0.5
+;i"Kick"  +      0.2 230 20 0.2 1 0.1 0.5
+;i"HatO2" ^+.07  0.1 0.2 0.9 4777 6800 0.8 0.5
 
-s 270
+s 250
 e
 </CsScore>
 </CsoundSynthesizer>
