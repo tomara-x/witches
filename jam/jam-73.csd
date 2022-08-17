@@ -5,6 +5,8 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 //thank you, mog
+
+//CW: GUNSHOT SOUNDS AT BEAT 30
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231 ;-m227
@@ -25,10 +27,8 @@ gaVerbL,gaVerbR init 0
 #include "perfuma.orc"
 #include "utils.orc"
 #include "mixer.orc"
-#include "drums.orc"
 
 seed 105
-
 
 
 instr Tree
@@ -45,11 +45,10 @@ node_connect_i(3, 6)
 endin
 
 
-
 instr Terrain
 kTrig1 = MyMetro($FRQ/4)
 kTrig2 = MyMetro($FRQ/8)
-kTrig3 = MyMetro($FRQ*4)
+kTrig3 = MyMetro($FRQ*1)
 
 if kTrig1 == 1 then
     kAN1 = node_climb3(0)
@@ -73,70 +72,89 @@ iWav  ftgenonce 0,0,2^18,9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
 kPch1[] = fillarray(7.00, 7.03, 8.01, 8.05, 8.08, 9.01, 6.03, 7.03)
 kPch2[] = fillarray(7.03, 7.07, 8.05, 8.08, 9.01, 9.05, 6.07, 7.07)
 kPch3[] = fillarray(7.07, 8.00, 8.08, 9.01, 9.05, 9.08, 6.08, 7.10)
-kCps1 = cpspch(kPch1[kAN1])
-kCps2 = cpspch(kPch2[kAN1])
-kCps3 = cpspch(kPch3[kAN1])
+kCps1 = lineto(cpspch(kPch1[kAN1]), 0.2)
+kCps2 = lineto(cpspch(kPch2[kAN2]), 0.2)
+kCps3 = lineto(cpspch(kPch3[kAN1]), 0.2)
 ;kCps = lineto(kCps, .02)
 
-kM1[] = fillarray(8, 6, 4, 1, 1, 1, 2, 3)
-kM2[] = fillarray(1, 1, 1, 1, 1, 1, 1, 2)
-kN1[] = fillarray(3, 4, 2, 1, 8, 4, 2, 1)
-kN2[] = fillarray(1, 1, 1, 1, 1, 1, 1, 1)
-kN3[] = fillarray(1, 1, 1, 1, 1, 1, 1, 1)
-kA[]  = fillarray(1, 1, 1, 1, 1, 1, 1, 1)
-kB[]  = fillarray(1, 1, 1, 1, 1, 1, 1, 1)
+kM1[] = fillarray(+02.00, +41.00, +02.00, +02.00, +02.00, +02.00, +02.00, +02.00)
+kM2[] = fillarray(+02.00, +41.00, +02.00, +02.00, +02.00, +02.00, +02.00, +02.00)
+kN1[] = fillarray(+00.20, +00.20, +00.20, +00.20, +04.00, +00.20, +00.20, +00.20)
+kN2[] = fillarray(+01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00)
+kN3[] = fillarray(+01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00)
+kA[]  = fillarray(+01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00)
+kB[]  = fillarray(+01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00)
 
-kX, kY, kRX, kRY = 0.5, 0.5, 0.5, 0.5
+kX, kY, kRX, kRY = 0.5, 0.5, 0.05, 0.05
+
+km1,km2,kn1,kn2,kn3,ka,kb =
+lineto(kM1[kAN3], 0.03),
+lineto(kM2[kAN3], 0.03),
+lineto(kN1[kAN3], 0.03),
+lineto(kN2[kAN3], 0.03),
+lineto(kN3[kAN3], 0.03),
+lineto(kA[kAN3] , 0.03),
+lineto(kB[kAN3] , 0.03)
 
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig1 sterrain 0.9, kCps1, kX,kY, kRX,kRY, 0, iSin,iSaw,
-              kM1[kAN3],kM2[kAN3],kN1[kAN3],kN2[kAN3],kN3[kAN3],kA[kAN3],kB[kAN3], 0
-aSig2 sterrain 0.9, kCps2, kX,kY, kRX,kRY, 0, iSin,iSaw,
-              kM1[kAN3],kM2[kAN3],kN1[kAN3],kN2[kAN3],kN3[kAN3],kA[kAN3],kB[kAN3], 0
-aSig3 sterrain 0.9, kCps3, kX,kY, kRX,kRY, 0, iSin,iSaw,
-              kM1[kAN3],kM2[kAN3],kN1[kAN3],kN2[kAN3],kN3[kAN3],kA[kAN3],kB[kAN3], 0
-aSig = (aSig1+aSig2+aSig3)/3
-aSig clip aSig, 0, db(-6)
+aSig1 sterrain 0.5, kCps1, kX,kY, kRX,kRY, 0, iSin,iWav,
+                km1,km2,kn1,kn2,kn3,ka,kb,0
+aSig2 sterrain 0.5, kCps2, kX,kY, kRX,kRY, 0, iWav,iWav,
+                km1,km2,kn1,kn2,kn3,ka,kb,0
+aSig3 sterrain 0.5, kCps3, kX,kY, kRX,kRY, 0, iWav,iWav,
+                km1,km2,kn1,kn2,kn3,ka,kb,0
+aSig4 sterrain 0.9, kCps2/2, kX,kY, kRX,kRY, 0, iWav,iWav,
+                km1,km2,kn1,kn2,kn3,ka,kb,0
+aSig = (aSig1+aSig2+aSig3+aSig4)/4
+;aSig clip aSig, 0, db(-6)
 aSig dcblock aSig
 
-;amplitude tracking and "compression" gone wild
-aKick = ga_sbus[15][0]
-kAmp rms aKick
-if kAmp > db(-24) then
-    aSig *= db(-48)
-endif
+;threshold sched
 
+vincr gaVerbL, aSig*db(-18)
+vincr gaVerbR, aSig*db(-18)
 sbus_mix 1, aSig
 endin
 
 
-
-instr Drums
-kT = MyMetro($FRQ/2)
-;somewhere on the kick/gun spectrum
-;schedkwhen(kT,0,0, "Kick",  0,    .5, 230, 20, .3, 1, .1)
-
-;metamorphic mages
-;schedkwhen(kT,0,0, "Kick",  0,    .5, 130, 20, .3, .994, .7)
-;schedkwhen(kT,0,0, "Kick",  0,    .5, 100, 20, .3, 1, .7)
-
-;plucky
-;schedkwhen(kT,0,0, "Kick",  0,    .9, 80, 80, .01, 1, .1)
-
-schedkwhen(kT,0,0, "Kick",  0,    .5, 230, 20, .1, 0, .1)
-;schedkwhen(kT,0,0, "HatO2", 0.5,   .9, .1, -0.9, 8323, 9783, 0.0)
-;schedkwhen(kT,0,0, "HatC2", 0.75,  .1, .1, -0.9, 8323, 9783, 0.0)
-schedkwhen(kT,0,0, "HatC2", 0,   -.1, .02,  0.9, 9000, 1000, 0.5)
-;schedkwhen(kT,0,0, "HatC2", 0.25,-.1, .1, -0.9, 9000, 8000, 0.5)
-schedkwhen(kT,0,0, "HatC2", 0.5,  .1, .1, -0.9, 9000, 1000, 0.5)
+;p4=IFrq, p5=EFrq, p6=amp, p7=distortion, p8=VrbSend
+;schedulek("Kick", 0, 0.5, 230, 20, 1, 0, 0)
+;hey alley, this will forever be my kick!
+instr Kick
+iIFrq   =           p4
+iEFrq   =           p5
+aAEnv   expseg      p6+1,abs(p3),1
+aAEnv   -=          1
+aFEnv   expseg      iIFrq,abs(p3)/10,iEFrq
+aSig    oscili      aAEnv, aFEnv
+iTanh   ftgenonce   0,0,1024,"tanh", -5, 5, 0
+aSig    distort     aSig*2, 0.2, iTanh
+aSig    limit       aSig, -0.5,0.5
+aSig    +=          moogladder(aSig, iIFrq*2, .3)
+aSig    =           pdhalf(aSig, expseg(-(p7+1), abs(p3), -1)+1)
+aSig    dcblock     aSig
+        vincr       gaVerbL, aSig*(p8)
+        vincr       gaVerbR, aSig*(p8)
+        sbus_mix    2, aSig
 endin
 
+
+instr Guns
+kS init -1
+kT = MyMetro($FRQ/2)
+kMul[] fillarray 6, 4, 6, 8, 5, 8, 3, 1
+kDiv[] fillarray 2, 2, 4, 2, 1, 2, 1, 1
+kM[], kD[] Perfuma $FRQ, kMul, kDiv
+kS += kT
+kS = wrap(kS, 0, 8)
+schedkwhen(kM[kS],0,0, "Kick", 0, 0.2, 230, 20, 0.3, 1, 0.1)
+endin
 
 
 instr Verb
 gaVerbL dcblock gaVerbL
 gaVerbR dcblock gaVerbR
-kRoomSize  init  0.65 ; room size (range 0 to 1)
+kRoomSize  init  0.85 ; room size (range 0 to 1)
 kHFDamp    init  0.8  ; high freq. damping (range 0 to 1)
 al,ar freeverb gaVerbL,gaVerbR,kRoomSize,kHFDamp, 44100, 1
 sbus_mix 0, al, ar
@@ -144,7 +162,6 @@ sbus_mix 0, al, ar
 clear gaVerbL,gaVerbR
 endin
 schedule("Verb", 0, -1)
-
 
 
 instr Out
@@ -157,13 +174,18 @@ endin
 schedule("Out", 0, -1)
 
 
-
 </CsInstruments>
 <CsScore>
 t           0       120
 i"Tree"     0       0
-i"Drums"    [3*60]  [3*60]
 i"Terrain"  0       [4*60]
+i"Guns"     60      16
+
+i"Kick" [4*60] 0.2 130 20 0.3 1 0.3
+i"Kick" +      0.5 130 20 0.3 1 0.5
+i"Kick" +      0.5 130 20 0.3 1 0.7
+
+s 244
 e
 </CsScore>
 </CsoundSynthesizer>
