@@ -5,8 +5,6 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 //thank you, mog
-
-//CW: GUNSHOT SOUNDS AT BEAT 30
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231 ;-m227
