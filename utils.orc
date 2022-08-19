@@ -4,12 +4,11 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
+
+;clock divider. outputs 1 on the nth time the in-signal is non-zero
+;this opcode is quite handy with the ladies!
+;syntax: kout ClkDiv ksig, kn
 opcode ClkDiv, k, kk
-/*
-Clock divider. Outputs 1 on the nth time the in-signal is non-zero.
-This opcode is quite handy with the ladies!
-Syntax: kout ClkDiv ksig, kn
-*/
 ksig, kn xin
 kcount init 0
 kout = 0
@@ -23,12 +22,9 @@ endif
 xout kout
 endop
 
-// this can be improved. also steven has audio-rate clock dividers
+;clock divider with phase input (counter offset)
+;syntax: kout ClkDivp ksig, kn [, iphase] (0 <= iphase < kn)
 opcode ClkDivp, k, kko
-/*
-Clock divider with phase input.
-Syntax: kout ClkDiv ksig, kn [, iphase] (0 <= iphase < kn)
-*/
 ksig, kn, iphs xin
 kcount init iphs
 kout = 0
@@ -42,7 +38,44 @@ endif
 xout kout
 endop
 
-;FIX: use lenarray with dimension option
+
+;clock divider but for audio-rate waves
+;outputs 1 every Nth time aIN is < kLo and goes higher than kHi
+;(out is unipolar)
+;syntax: aOut SubOct aIn, kN, kHi, kLo
+opcode SubOct, a, akkk
+aIn, kN, kHi, kLo xin
+kGate,kLast init 0
+aOut init 0
+kCnt init 0
+kn = 0
+while kn < ksmps do
+    ;threshold gate
+    if aIn[kn] > kHi then
+        kGate = 1
+    elseif aIn[kn] < kLo then
+        kGate = 0
+    endif
+    ;sense change and increment counter
+    if kLast == 0 && kGate == 1 then
+        kLast = 1
+        kCnt = (kCnt + 1) % kN
+    elseif kLast == 1 && kGate == 0 then
+        kLast = 0
+    endif
+    ;output Nth wave
+    if kCnt == 0 then
+        aOut[kn] = kGate
+    endif
+    kn += 1
+od
+xout aOut
+endop
+;thanks for the inspiration girl <3
+
+
+
+;FIX: use lenarray with dimension option. and maybe i-pass versions
 ;array operations (those work at k-time)
 ;set row to scalar
 opcode SetRow, k[], k[]kk
@@ -88,6 +121,9 @@ while kcnt < irowlen do
 od
 xout kArr
 endop
+
+
+
 ;set 2d array to scalar
 opcode ScalarSet, k[], k[]k
 kArr[], kn xin
@@ -104,6 +140,9 @@ while krow < irows do
 od
 xout kArr
 endop
+;i-pass one?
+
+
 
 ;array shift register right
 ;shifts all elements to the right and insert input at index 0 when triggered
@@ -138,29 +177,10 @@ endif
 xout kArr
 endop
 
-;need boolean type
-;xor
-;opcode Xor, i, ii
-;ip, iq xin
-;xout (ip || iq) && !(ip && iq)
-;endop
 
 
-/*
-;kinda the same problem
-opcode MyMetro, k, k
-kcps xin
-kphs init 1
-kflag = 0
-kphs += kcps/kr
-if kphs >= 1 then
-    kflag = 1
-    kphs = 0
-endif
-xout kflag
-endop
-*/
-
+;metro that avoids division. it increments by cps
+;every k-cycle and checks if counter is higher than kr
 opcode MyMetro, k, k
 kcps xin
 kcnt init kr
