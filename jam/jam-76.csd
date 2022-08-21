@@ -75,13 +75,13 @@ kTrig3 = MyMetro($FRQ*2)
 
 ;different climbs for different melodies
 if kTrig1 == 1 then
-    kAN1 = node_climb4(0)
+    kAN1 = node_climb3(0)
 endif
 if kTrig2 == 1 then
-    kAN2 = node_climb4(0)
+    kAN2 = node_climb3(0)
 endif
 if kTrig3 == 1 then
-    kAN3 = node_climb4(0)
+    kAN3 = node_climb3(0)
 endif
 
 ;waves
@@ -114,8 +114,8 @@ aSig1 sterrain 0.5, kCps1, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,
 aSig2 sterrain 0.5, kCps2, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig3 sterrain 0.5, kCps3, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig4 sterrain 0.9, kCps1/4, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
-;aSig = (aSig1+aSig2+aSig3+aSig4)/4
-aSig = aSig1
+aSig = (aSig1+aSig2+aSig3+aSig4)/4
+;aSig = aSig1
 
 ;kTrig4 = MyMetro($FRQ*3)
 ;kEnv = triglinseg(kTrig4, 2, $BEAT/3, 0)
@@ -162,7 +162,7 @@ schedule("Out", 0, -1)
 <CsScore>
 t           0       140
 i"Tree"     0       0
-i"Terrain"  0       [60*4]
+i"Terrain"  0       [140*2]
 e
 </CsScore>
 </CsoundSynthesizer>
