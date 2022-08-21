@@ -34,8 +34,8 @@ seed 105
 
 
 instr Tree
-;16 nodes, 0 values and 4 branches each
-tree_init(16, 0, 4)
+;16 nodes, 16 values and 4 branches each
+tree_init(16, 16, 4)
 ;connections
 node_connect_i(0, 1)
 node_connect_i(0, 3)
@@ -48,10 +48,22 @@ node_connect_i(2, 8)
 node_connect_i(6, 9)
 node_connect_i(6,10)
 node_connect_i(7,11)
-;node_connect_i(8,12)
+node_connect_i(8,12)
 node_set_root_i(3, 8)
 
-;$NODEFILL(0'2,2,0.2,1,1,1,1)
+;             mel1   mel2   mel3   m1      m2      n1      n2      n3      a       b
+$NODEFILL(00' 07.00, 07.03, 07.07, +02.00, +02.00, +00.20, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(01' 07.03, 07.07, 08.00, +16.00, +16.00, +00.20, +01.00, -04.00, +01.00, +01.00)
+$NODEFILL(02' 08.01, 08.05, 08.08, +16.00, +16.00, +00.20, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(03' 08.05, 08.08, 09.01, +02.00, +02.00, +00.20, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(04' 08.08, 09.01, 09.05, +02.00, +02.00, +00.40, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(05' 09.01, 09.05, 09.08, +02.00, +02.00, +00.40, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(06' 06.03, 06.07, 06.08, +02.00, +02.00, +00.20, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(07' 07.03, 07.07, 07.10, +02.00, +02.00, +00.20, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(08' 08.00, 08.00, 08.00, +02.00, +02.00, +01.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(09' 08.00, 08.00, 08.00, +02.00, +02.00, +01.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(10' 08.00, 08.00, 08.00, +02.00, +02.00, +01.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(11' 08.00, 08.00, 08.00, +02.00, +02.00, +01.00, +01.00, +01.00, +01.00, +01.00)
 endin
 
 
@@ -81,33 +93,18 @@ iCos  ftgenonce 0,0,2^14,11, 1
 iWav  ftgenonce 0,0,2^18,9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
                             816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
 
-;pitch of every step
-kPch1[] = fillarray(7.00, 7.03, 8.01, 8.05, 8.08, 9.01, 6.03, 7.03, 7.04, 8.09, 7.01, 6.06)
-kPch2[] = fillarray(7.03, 7.07, 8.05, 8.08, 9.01, 9.05, 6.07, 7.07, 7.08, 6.04, 7.01, 9.02)
-kPch3[] = fillarray(7.07, 8.00, 8.08, 9.01, 9.05, 9.08, 6.08, 7.10, 6.09, 7.09, 7.03, 9.03)
-;slew them
-kCps1 = lineto(cpspch(kPch1[kAN1]), 0.5)
-kCps2 = lineto(cpspch(kPch2[kAN2]), 0.7)
-kCps3 = lineto(cpspch(kPch3[kAN1]), 0.2)
+kCps1 = lineto(cpspch(node_get_value_k(kAN1,0)), 0.5)
+kCps2 = lineto(cpspch(node_get_value_k(kAN2,1)), 0.7)
+kCps3 = lineto(cpspch(node_get_value_k(kAN1,2)), 0.2)
 
-;superformula parameters of every step
-kM1[] = fillarray(+02.00, +16.00, +02.00, +02.00, +02.00, +02.00, +02.00, +02.00,2,2,2,2)
-kM2[] = fillarray(+02.00, +16.00, +02.00, +02.00, +02.00, +02.00, +02.00, +02.00,2,2,2,2)
-kN1[] = fillarray(+00.20, +00.20, +00.20, +00.20, +04.00, +04.00, +00.20, +00.20,1,1,1,1)
-kN2[] = fillarray(+01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00,1,1,1,1)
-kN3[] = fillarray(+01.00, -04.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00,1,1,1,1)
-kA[]  = fillarray(+01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00,1,1,1,1)
-kB[]  = fillarray(+01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00, +01.00,1,1,1,1)
-
-;slew limit them
 km1,km2,kn1,kn2,kn3,ka,kb =
-lineto(kM1[kAN3], 0.03),
-lineto(kM2[kAN3], 0.03),
-lineto(kN1[kAN3], 0.03),
-lineto(kN2[kAN3], 0.03),
-lineto(kN3[kAN2], 0.80),
-lineto(kA[kAN3] , 0.03),
-lineto(kB[kAN3] , 0.03)
+lineto(node_get_value_k(kAN3,3), 0.03),
+lineto(node_get_value_k(kAN3,4), 0.03),
+lineto(node_get_value_k(kAN3,5), 0.03),
+lineto(node_get_value_k(kAN3,6), 0.03),
+lineto(node_get_value_k(kAN2,7), 0.00),
+lineto(node_get_value_k(kAN3,8), 0.03),
+lineto(node_get_value_k(kAN3,9), 0.03)
 
 kX, kY, kRX, kRY = 0.5, 0.5, 0.15, rspline(0.05, 0.5, 0.5, 2)
 
@@ -116,7 +113,8 @@ aSig1 sterrain 0.5, kCps1, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,
 aSig2 sterrain 0.5, kCps2, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig3 sterrain 0.5, kCps3, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
 aSig4 sterrain 0.9, kCps1/4, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
-aSig = (aSig1+aSig2+aSig3+aSig4)/4
+;aSig = (aSig1+aSig2+aSig3+aSig4)/4
+aSig = aSig1
 
 ;kTrig4 = MyMetro($FRQ*3)
 ;kEnv = triglinseg(kTrig4, 2, $BEAT/3, 0)
