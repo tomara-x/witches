@@ -51,7 +51,7 @@ node_connect_i(7,11)
 node_connect_i(8,12)
 node_set_root_i(3, 8)
 
-;             mel1   mel2   mel3   m1      m2      n1      n2      n3      a       b
+;         N#  mel1   mel2   mel3   m1      m2      n1      n2      n3      a       b
 $NODEFILL(00' 07.00, 07.03, 07.07, +02.00, +02.00, +00.20, +01.00, +01.00, +01.00, +01.00)
 $NODEFILL(01' 07.03, 07.07, 08.00, +16.00, +16.00, +00.20, +01.00, -04.00, +01.00, +01.00)
 $NODEFILL(02' 08.01, 08.05, 08.08, +16.00, +16.00, +00.20, +01.00, +01.00, +01.00, +01.00)
@@ -70,7 +70,7 @@ endin
 instr Terrain
 kTrig1 = MyMetro($FRQ/5)
 kTrig2 = MyMetro($FRQ/8)
-kTrig3 = MyMetro($FRQ*3)
+kTrig3 = MyMetro($FRQ*2)
 
 ;different climbs for different melodies
 if kTrig1 == 1 then
@@ -121,8 +121,8 @@ aSig = aSig1
 ;aSig *= kEnv
 
 aSig dcblock aSig
-vincr gaVerbL, aSig*db(-18)
-vincr gaVerbR, aSig*db(-18)
+vincr gaVerbL, aSig*db(-12)
+vincr gaVerbR, aSig*db(-12)
 sbus_mix 1, aSig
 endin
 
