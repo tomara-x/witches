@@ -4,6 +4,19 @@
 //terms of the Do What The Fuck You Want To Public License, Version 2,
 //as published by Sam Hocevar. See the COPYING file for more details.
 
+
+/*
+iRamp ftgenonce 0,0,2^14,7, -1,2^14,1
+iTanh ftgenonce 0,0,2^14,"tanh", -5, 5, 0
+iSaw  ftgenonce 0,0,2^14,7, 0,2^13,1,0,-1,2^13,0
+iSqur ftgenonce 0,0,2^14,7, 1,2^13,1,0,-1,2^13,-1
+iSin  ftgenonce 0,0,2^14,10, 1
+iCos  ftgenonce 0,0,2^14,11, 1
+iWav  ftgenonce 0,0,2^18,9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
+                            816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
+*/
+
+
 ;dorian #4 (ukrainian dorian)
 iscaledegrees   = 7
 itotalsize      = iscaledegrees*7
