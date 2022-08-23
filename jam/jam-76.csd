@@ -5,6 +5,10 @@
 //as published by Sam Hocevar. See the COPYING file for more details.
 
 //thank you, mog
+
+;always feel like my stuff isn't worth writing a dedication but fuck that!
+;i can't name all of you, sometimes it's only an indirect, fleeting interaction.
+;but i'm very grateful for you all. it's an honor and a joy to know you <3
 <CsoundSynthesizer>
 <CsOptions>
 -odac -Lstdin -m231 ;-m227
