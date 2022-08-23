@@ -15,7 +15,7 @@ ksmps   =   32
 nchnls  =   2
 0dbfs   =   1
 
-#define TEMPO #80#
+#define TEMPO #70#
 #define FRQ   #($TEMPO/60)#
 #define BEAT  #(60/$TEMPO)# ;1/$FRQ
 
@@ -29,6 +29,7 @@ gaVerbL,gaVerbR init 0
 #include "mycorrhiza.orc"
 #include "utils.orc"
 #include "mixer.orc"
+#include "perfuma.orc"
 
 seed 105
 
@@ -52,26 +53,34 @@ node_connect_i(8,12)
 node_set_root_i(3, 8)
 
 ;         N#  mel1   mel2   mel3   m1      m2      n1      n2      n3      a       b
-$NODEFILL(00' 07.00, 07.03, 07.07, +02.00, +02.00, +00.20, +01.00, +01.00, +01.00, +01.00)
-$NODEFILL(01' 07.02, 07.05, 07.08, +16.00, +16.00, +00.20, +01.00, -04.00, +01.00, +01.00)
-$NODEFILL(02' 08.05, 08.08, 09.00, +16.00, +16.00, +00.20, +01.00, +01.00, +01.00, +01.00)
-$NODEFILL(03' 08.00, 08.05, 08.07, +02.00, +02.00, +00.20, +01.00, +01.00, +01.00, +01.00)
-$NODEFILL(04' 07.00, 07.03, 07.07, +02.00, +02.00, +00.40, +01.00, +01.00, +01.00, +01.00)
-$NODEFILL(05' 07.02, 07.05, 07.08, +02.00, +02.00, +00.40, +01.00, +01.00, +01.00, +01.00)
-$NODEFILL(06' 08.05, 08.08, 09.00, +02.00, +02.00, +00.20, +01.00, +01.00, +01.00, +01.00)
-$NODEFILL(07' 08.00, 08.05, 08.07, +02.00, +02.00, +00.20, +01.00, +01.00, +01.00, +01.00)
-$NODEFILL(08' 07.00, 07.03, 07.07, +02.00, +02.00, +01.00, +01.00, +01.00, +01.00, +01.00)
-$NODEFILL(09' 07.02, 07.05, 07.08, +02.00, +02.00, +01.00, +01.00, +01.00, +01.00, +01.00)
-$NODEFILL(10' 08.05, 08.08, 09.00, +02.00, +02.00, +01.00, +01.00, +01.00, +01.00, +01.00)
-$NODEFILL(11' 08.00, 08.05, 08.07, +02.00, +02.00, +01.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(00' 07.00, 07.04, 07.06, +02.00, +02.00, +08.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(01' 07.02, 08.04, 07.07, +02.00, +02.00, +08.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(02' 08.06, 08.09, 09.11, +04.00, +04.00, +08.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(03' 08.00, 08.04, 08.09, +02.00, +02.00, +08.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(04' 06.11, 07.02, 07.09, +02.00, +02.00, +08.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(05' 07.02, 07.04, 07.07, +02.00, +02.00, +08.00, +01.00, +04.00, +01.00, +01.00)
+$NODEFILL(06' 08.04, 08.07, 09.00, +02.00, +02.00, +08.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(07' 08.00, 07.11, 08.07, +02.00, +02.00, +08.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(08' 07.00, 07.03, 07.07, +02.00, +02.00, +08.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(09' 07.02, 07.04, 07.09, +02.00, +02.00, +08.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(10' 08.04, 08.09, 09.02, +02.00, +02.00, +08.00, +01.00, +01.00, +01.00, +01.00)
+$NODEFILL(11' 08.00, 08.06, 08.07, +02.00, +02.00, +08.00, +01.00, +01.00, +01.00, +01.00)
 endin
 
 
 instr Terrain
-;get perfuma in here
-kTrig1 = MyMetro($FRQ)
-kTrig2 = MyMetro($FRQ/4)
-kTrig3 = MyMetro($FRQ*4)
+kS init -1
+kTrig = MyMetro($FRQ)
+kMul[] fillarray 2, 4, 8, 4, 1, 8, 6, 1
+kDiv[] fillarray 2, 1, 2, 2, 1, 3, 3, 1
+kM[], kD[] Perfuma $FRQ, kMul, kDiv
+kS += kTrig
+kS = wrap(kS, 0, 8)
+
+kTrig1 = kM[wrap(kS+0,0,8)]
+kTrig2 = kD[wrap(kS+1,0,8)]
+kTrig3 = kM[wrap(kS+2,0,8)]
+kTrig4 = kD[wrap(kS+3,0,8)]
 
 ;different climbs for different melodies
 if kTrig1 == 1 then
@@ -82,6 +91,9 @@ if kTrig2 == 1 then
 endif
 if kTrig3 == 1 then
     kAN3 = node_climb3(0)
+endif
+if kTrig4 == 1 then
+    kAN4 = node_climb3(0)
 endif
 
 ;waves
@@ -94,28 +106,28 @@ iCos  ftgenonce 0,0,2^14,11, 1
 iWav  ftgenonce 0,0,2^18,9, 100,1.000,0, 278,0.500,0, 518,0.250,0,
                             816,0.125,0, 1166,0.062,0, 1564,0.031,0, 1910,0.016,0
 
-kCps1 = lineto(cpspch(node_get_value_k(kAN3,0)), 0.00)
-kCps2 = lineto(cpspch(node_get_value_k(kAN1,1)), 0.00)
-kCps3 = lineto(cpspch(node_get_value_k(kAN3,2)), 0.00)
+kCps1 = portk(cpspch(node_get_value_k(kAN3,0)), 0.00)
+kCps2 = portk(cpspch(node_get_value_k(kAN1,1)), 0.00)
+kCps3 = portk(cpspch(node_get_value_k(kAN4,2)), 0.00)
 
 km1,km2,kn1,kn2,kn3,ka,kb =
-lineto(node_get_value_k(kAN2,3), 0.00),
-lineto(node_get_value_k(kAN2,4), 0.00),
-lineto(node_get_value_k(kAN2,5), 0.00),
-lineto(node_get_value_k(kAN2,6), 0.00),
-lineto(node_get_value_k(kAN2,7), 0.00),
-lineto(node_get_value_k(kAN2,8), 0.00),
-lineto(node_get_value_k(kAN2,9), 0.00)
+portk(node_get_value_k(kAN2,3), 0.01),
+portk(node_get_value_k(kAN2,4), 0.01),
+portk(node_get_value_k(kAN2,5), 0.01),
+portk(node_get_value_k(kAN2,6), 0.01),
+portk(node_get_value_k(kAN2,7), 0.01),
+portk(node_get_value_k(kAN2,8), 0.01),
+portk(node_get_value_k(kAN2,9), 0.01)
 
-kX, kY, kRX, kRY = 0.5, 0.5, 0.15, rspline(0.05, 0.15, 0.5, 2)
+kX, kY, kRX, kRY = 0.5, 0.5, 0.15, 0.15
 
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig1 sterrain 0.5, kCps1, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
-aSig2 sterrain 0.5, kCps2, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
-aSig3 sterrain 0.5, kCps3, kX,kY, kRX,kRY, 0, iWav,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
-aSig4 sterrain 0.9, kCps1/4, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,kb,0
+aSig1 sterrain 0.5, kCps1, kX,kY, kRX,kRY, 0, iSin,iSin, km1,km2,kn1,kn2,kn3,ka,kb,1
+aSig2 sterrain 0.5, kCps2, kX,kY, kRX,kRY, 0, iWav,iSin, km1,km2,kn1,kn2,kn3,ka,kb,1
+aSig3 sterrain 0.5, kCps3, kX,kY, kRX,kRY, 0, iWav,iSin, km1,km2,kn1,kn2,kn3,ka,kb,1
+aSig4 sterrain 0.9, kCps1/4, kX,kY, kRX,kRY, 0, iSin,iSin, km1,km2,kn1,kn2,kn3,ka,kb,1
 aSig = (aSig1+aSig2+aSig3+aSig4)/4
-;aSig = aSig1
+;aSig = aSig3
 
 ;kTrig4 = MyMetro($FRQ*4)
 ;kEnv = triglinseg(kTrig4, 1, $BEAT/4, 0)
@@ -124,7 +136,7 @@ aSig = (aSig1+aSig2+aSig3+aSig4)/4
 aSig dcblock aSig
 vincr gaVerbL, aSig*db(-12)
 vincr gaVerbR, aSig*db(-12)
-aSig butlp aSig, 9000
+;aSig butlp aSig, 9000
 sbus_mix 1, aSig
 endin
 
