@@ -98,9 +98,8 @@ kCps1 = cpspch(node_get_value_k(kAN1,0))
 kCps2 = cpspch(node_get_value_k(kAN2,1))
 kCps3 = cpspch(node_get_value_k(kAN3,2))
 
-km1,km2,kn1,kn2,kn3,ka,kb =
-node_get_value_k(kAN2,3),
-node_get_value_k(kAN2,4), 8,1,1,1,1
+km1,km2,kn1,kn2,kn3,ka,kb = node_get_value_k(kAN2,3),
+                            node_get_value_k(kAN2,4), 8,1,1,1,1
 
 kX, kY, kRX, kRY = 0.5, 0.5, 0.15, 0.15
 
@@ -111,11 +110,11 @@ aSig3 sterrain 0.5, kCps3, kX,kY, kRX,kRY, 0, iWav,iSin, km1,km2,kn1,kn2,kn3,ka,
 aSig4 sterrain 0.9, kCps1, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,kb,4
 aSig = (aSig1+aSig2+aSig3+aSig4)/4
 
-aSig dcblock aSig
+;aSig dcblock aSig ;comment this for evil stuff
 aSig butlp aSig, 6000
-aSig flanger aSig, a(.04), 0.5
-vincr gaVerbL, aSig*db(0)
-vincr gaVerbR, aSig*db(0)
+aSig flanger aSig, a(.04), 0.8
+vincr gaVerbL, aSig*db(-12)
+vincr gaVerbR, aSig*db(-12)
 sbus_mix 1, aSig
 endin
 schedule("Terrain", 0, $BEAT*128)
