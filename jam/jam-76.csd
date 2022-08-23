@@ -55,6 +55,7 @@ node_connect_i(7,11)
 node_connect_i(8,12)
 node_set_root_i(3, 8)
 
+;lydian
 ;         N#  mel1   mel2   mel3   m1   m2    
 $NODEFILL(00' 07.00, 07.04, 07.06, +02, +02)
 $NODEFILL(01' 07.02, 08.04, 07.07, +02, +02)
@@ -114,9 +115,9 @@ aSig3 sterrain 0.5, kCps3, kX,kY, kRX,kRY, 0, iWav,iSin, km1,km2,kn1,kn2,kn3,ka,
 aSig4 sterrain 0.9, kCps1, kX,kY, kRX,kRY, 0, iSin,iWav, km1,km2,kn1,kn2,kn3,ka,kb,4
 aSig = (aSig1+aSig2+aSig3+aSig4)/4
 
-;aSig dcblock aSig ;comment this for evil stuff
-aSig butlp aSig, 6000
-aSig flanger aSig, a(.04), 0.8
+;aSig dcblock aSig
+aSig wguide1 aSig, 40, 20000, 0.8
+;aSig wguide1 aSig, 100, 8000, 0.8
 vincr gaVerbL, aSig*db(-12)
 vincr gaVerbR, aSig*db(-12)
 sbus_mix 1, aSig
