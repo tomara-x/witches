@@ -26,6 +26,11 @@ gaVerbL,gaVerbR init 0
 #define FRQ   #($TEMPO/60)#
 #define BEAT  #(60/$TEMPO)# ;1/$FRQ
 
+;i love sinning
+#define NODECON(n'x)
+#itmpmacroarr[] = fillarray($x)
+node_connect_i($n, itmpmacroarr)#
+
 seed 666
 
 giSin  ftgen 0,0,2^18,10, 1
@@ -36,40 +41,26 @@ giScal ftgen 0,0,-7*3,-51, 7,2,cpspch(6),0,
 
 
 instr Tree
-;64 nodes, 16 values and 4 branches each
-tree_init(64, 16, 4)
+;64 nodes, 1 value and 8 branches each
+tree_init(64, 1, 8)
 
 ;connect
 node_connect_i(0, 1)
-node_connect_i(1, 2)
-node_connect_i(1, 3)
-node_connect_i(2, 4)
-node_connect_i(2, 5)
+$NODECON(1'2,3)
+$NODECON(2'4,5)
 node_connect_i(3, 6)
 node_connect_i(4, 7)
+
+node_connect_i(8, 9)
+$NODECON(9'10,11)
+node_connect_i(10,12)
+$NODECON(11'13,14)
+node_connect_i(12,15)
 
 ;values
 icnt = 0
 while icnt < 64 do
-    node_set_value_i(icnt, 0, nstrnum("Terrain"))
-    node_set_value_i(icnt, 1, 0)
-    node_set_value_i(icnt, 2, 0.1)
-    node_set_value_i(icnt, 3, 0.1)
-    node_set_value_i(icnt, 4, random(0, 7*3))
-    ;x, y, rx, ry
-    node_set_value_i(icnt, 5, 0.5)
-    node_set_value_i(icnt, 6, 0.5)
-    node_set_value_i(icnt, 7, 0.5)
-    node_set_value_i(icnt, 8, 0.5)
-    ;m1, m2, n1, n2, n3, a, b
-    iNum = int(random(-8, 8))*2 ;random even integer
-    node_set_value_i(icnt, 9, iNum)
-    node_set_value_i(icnt, 10, iNum)
-    node_set_value_i(icnt, 11, 8)
-    node_set_value_i(icnt, 12, 1)
-    node_set_value_i(icnt, 13, 1)
-    node_set_value_i(icnt, 14, 1)
-    node_set_value_i(icnt, 15, 1)
+    node_set_value_i(icnt, 0, random(0, 7*3))
     icnt += 1
 od
 endin
@@ -78,28 +69,36 @@ schedule("Tree", 0, 0)
 
 instr Seq
 kS init -1
-kTrig = MyMetro($FRQ)
-kMul[] fillarray 2, 4, 3, 4, 1, 5, 6, 1
-kDiv[] fillarray 2, 1, 2, 2, 1, 2, 3, 1
+kMul[] fillarray 1, 4, 3, 4, 1, 5, 6, 1
+kDiv[] fillarray 4, 1, 2, 2, 1, 2, 3, 1
 kM[], kD[] Perfuma $FRQ, kMul, kDiv
-kS += kTrig
+kS += kM[0]
 
-if kTrig == 1 then
-    kN = node_climb3(0)
-    karr[] = node_get_value_k(kN)
-    schedulek karr
+kSwitch init 1 ;avoid initial switch (starting at state 1 feels wrong)
+kSwitch = (kSwitch+kD[0])%2
+if kM[1] == 1 then
+    if kSwitch == 0 then
+        kN = node_climb3(0)
+        kcps = table(node_get_value_k(kN, 0), giScal)
+        kNum = int(random(-8,8))*2
+        schedulek "Terrain", 0, 0.1, 0.1, kcps, 0.5,0.5,0.5,0.5, kNum,kNum,8,4,1,1,1
+    else
+        kN = node_climb3(8)
+        kNum = int(random:k(-4,4))*2
+        kcps = table(node_get_value_k(kN, 0), giScal)
+        schedulek "Terrain", 0, 0.1, 0.1, kcps, 0.5,0.5,0.5,0.5, kNum,kNum,4,1,1,1,1
+    endif
 endif
 endin
-schedule("Seq", 0, 128)
+schedule("Seq", 0, $BEAT*128)
 
 
 gaTerrain init 0
 instr Terrain
 iX,iY,iRX,iRY passign 6
 iM1,iM2,iN1,iN2,iN3,iA,iB passign 10
-iFrq table p5, giScal
 //amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig sterrain p4, iFrq, iX,iY, iRX,iRY, 0, giSin,giWav, iM1,iM2,iN1,iN2,iN3,iA,iB,1
+aSig sterrain p4, p5, iX,iY, iRX,iRY, 0, giSin,giWav, iM1,iM2,iN1,iN2,iN3,iA,iB,1
 aEnv linseg 1, p3, 0
 aSig *= aEnv
 gaTerrain += aSig
@@ -107,6 +106,8 @@ endin
 instr TerrainP
 aSig = gaTerrain
 aSig dcblock aSig
+;aSig pdhalf aSig, -0.9
+;aSig limit aSig, -0.1, 0.1
 aSig wguide1 aSig, 40, 20000, 0.8
 aSig wguide1 aSig, 100, 8000, 0.8
 vincr gaVerbL, aSig*db(-12)
