@@ -50,7 +50,6 @@ node_connect_i(2, 6)
 node_connect_i(6, 7)
 endin
 schedule(1, 0, 0)
-*/
 
 instr 1
 tree_init(16, 0, 4)
@@ -69,9 +68,62 @@ node_connect_i(8,12)
 node_set_root_i(3, 8)
 endin
 schedule(1, 0, 0)
+*/
+
+instr A1
+tree_init(4, 0, 4)
+node_connect_i(0,1)
+node_connect_i(1,2)
+node_connect_i(2,3)
+endin
+;schedule("A1", 0, 0)
+
+instr A2
+tree_init(4, 0, 4)
+node_connect_i(0,1)
+node_set_branch_i(1, 3, 0)
+node_connect_i(1,2)
+node_connect_i(2,3)
+node_set_branch_i(0, 2, 1)
+endin
+;schedule("A2", 0, 0)
+
+instr B1
+tree_init(4, 0, 4)
+node_connect_i(0,1)
+node_connect_i(0,2)
+node_connect_i(1,3)
+endin
+;schedule("B1", 0, 0)
+
+instr B2
+tree_init(4, 0, 4)
+node_connect_i(0,1)
+node_connect_i(0,2)
+node_connect_i(1,3)
+node_set_branch_i(2, 1, 0)
+endin
+;schedule("B2", 0, 0)
+
+instr C1
+tree_init(4, 0, 4)
+node_connect_i(0,1)
+node_connect_i(0,2)
+node_connect_i(0,3)
+endin
+;schedule("C1", 0, 0)
+
+instr C2
+tree_init(4, 0, 4)
+node_connect_i(0,1)
+node_connect_i(0,2)
+node_connect_i(0,3)
+node_set_branch_i(3, 2, 0)
+endin
+schedule("C2", 0, 0)
 
 instr 2
-kn = node_climb3(0)
+kn = node_climb4(0)
 printk 0, kn
 endin
 schedule(2, 1, 50/kr)
