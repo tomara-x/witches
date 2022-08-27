@@ -28,10 +28,6 @@ gaVerbL,gaVerbR init 0
 
 seed 666
 
-giSin  ftgen 0,0,2^18,10, 1
-giWav  ftgen 0,0,2^18,9, 100,1.000,0, 278,0.500,0, 518,0.250,0, 816,0.125,0,
-                         1166,0.062,0, 1564,0.031,0, 1910,0.016,0
-
 instr Tree
 ;16 nodes, 1 value and 4 branches each
 tree_init(16, 1, 4)
@@ -64,23 +60,19 @@ od
 endin
 schedule("Tree", 0, 0)
 
-instr PrintTree
-    printarray gk_Tree
-endin
-schedule("PrintTree", 0, 1/kr)
 
 
 instr Call
 kCnt init 0
-kTrig MyMetro $FRQ*1
+kTrig MyMetro $FRQ*4
 if kTrig == 1 then
-    kN = node_climb(0)
+    kN = node_climb3(0)
     kcps = cpspch(node_get_value_k(kN, 0))
-    schedulek "Terrain", 0, .1, .1, kcps, .5,.5,.5,.5, 2,2,8,4,1,1,1
+    schedulek "String", 0, 0.1, 0.1, kcps, 0.2, 0.8, 0.8
     kCnt += 1
 endif
 if kCnt == 4 then
-    schedulek "Response", 2*$BEAT, -1
+    schedulek "Response", 1*$BEAT, -1
     turnoff
 endif
 endin
@@ -89,13 +81,13 @@ instr Response
 kCnt init 0
 kTrig MyMetro $FRQ*1
 if kTrig == 1 then
-    kN = node_climb(8)
+    kN = node_climb3(8)
     kcps = cpspch(node_get_value_k(kN, 0))
-    schedulek "Terrain", 0, .1, .1, kcps, .5,.5,.5,.5, 8,8,8,1,1,1,1
+    schedulek "String", 0, 0.8, 0.1, kcps, 0.2, 0.95, 0.3
     kCnt += 1
 endif
 if kCnt == 4 then
-    schedulek "Call", 2*$BEAT, -1
+    schedulek "Call", 1*$BEAT, -1
     turnoff
 endif
 endin
@@ -103,29 +95,30 @@ schedule("Call", 0, -1)
 
 
 
-gaTerrain init 0
-instr Terrain
-iX,iY,iRX,iRY passign 6
-iM1,iM2,iN1,iN2,iN3,iA,iB passign 10
-//amp,cps,x,y,rx,ry,rot,tab0,tab1,m1,m2,n1,n2,n3,a,b,period
-aSig sterrain p4, p5, iX,iY, iRX,iRY, 0, giSin,giWav, iM1,iM2,iN1,iN2,iN3,iA,iB,1
-aEnv linseg 1, p3, 0
-;aSig *= aEnv
-gaTerrain += aSig
+gaString init 0
+instr String
+iPlk  =        p6 ;(0 to 1)
+iAmp  =        p4
+iCps  =        p5
+kPick init     p7 ;pickup point
+kRefl init     p8 ;rate of decay ]0,1[
+aSig  wgpluck2 iPlk,iAmp,iCps,kPick,kRefl
+aEnv  linsegr  0,0.005,1,p3-0.01,1,0.005,0 ;declick
+gaString += aSig*aEnv
 endin
-instr TerrainP
-aSig = gaTerrain
-aSig dcblock aSig
-;aSig pdhalf aSig, -0.9
-;aSig limit aSig, -0.1, 0.1
+instr StringP
+aSig = gaString
+aSig pdhalf aSig, -0.9
+aSig limit aSig, -0.1, 0.1
+aSig rbjeq aSig, 200, 2, 0, 8, 10
 aSig wguide1 aSig, 40, 8000, 0.8
 aSig wguide1 aSig, 3, 10000, 0.82
 vincr gaVerbL, aSig*db(-12)
 vincr gaVerbR, aSig*db(-12)
 sbus_mix 1, aSig
-clear gaTerrain
+clear gaString
 endin
-schedule("TerrainP", 0, -1)
+schedule("StringP", 0, -1)
 
 
 instr Verb
