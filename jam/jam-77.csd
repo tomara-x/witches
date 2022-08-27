@@ -51,7 +51,7 @@ node_connect_i(12,15)
 
 ;values
 iPch[] fillarray 6.00, 6.02, 6.04, 6.06, 6.07, 6.09, 6.11, 7.00,
-                 9.00, 9.02, 9.04, 9.06, 9.07, 9.09, 9.11, 10.00
+                 8.00, 9.02, 9.04, 9.06, 9.07, 9.09, 9.11, 10.00
 icnt = 0
 while icnt < 16 do
     node_set_value_i(icnt, 0, iPch[icnt])
@@ -64,15 +64,15 @@ schedule("Tree", 0, 0)
 
 instr Call
 kCnt init 0
-kTrig MyMetro $FRQ*4
+kTrig MyMetro $FRQ*1
 if kTrig == 1 then
     kN = node_climb3(0)
     kcps = cpspch(node_get_value_k(kN, 0))
-    schedulek "String", 0, 0.1, 0.1, kcps, 0.2, 0.8, 0.8
+    schedulek "String",0,$BEAT, 0.1, kcps, 0.2, 0.8, 0.9
     kCnt += 1
 endif
-if kCnt == 4 then
-    schedulek "Response", 1*$BEAT, -1
+if kCnt == 16 then
+    schedulek "Response", $BEAT, -1
     turnoff
 endif
 endin
@@ -83,11 +83,11 @@ kTrig MyMetro $FRQ*1
 if kTrig == 1 then
     kN = node_climb3(8)
     kcps = cpspch(node_get_value_k(kN, 0))
-    schedulek "String", 0, 0.8, 0.1, kcps, 0.2, 0.95, 0.3
+    schedulek "String",0,$BEAT, 0.1, kcps, 0.2, 0.5, 0.2
     kCnt += 1
 endif
 if kCnt == 4 then
-    schedulek "Call", 1*$BEAT, -1
+    schedulek "Call", $BEAT, -1
     turnoff
 endif
 endin
@@ -108,11 +108,11 @@ gaString += aSig*aEnv
 endin
 instr StringP
 aSig = gaString
-aSig pdhalf aSig, -0.9
-aSig limit aSig, -0.1, 0.1
-aSig rbjeq aSig, 200, 2, 0, 8, 10
-aSig wguide1 aSig, 40, 8000, 0.8
-aSig wguide1 aSig, 3, 10000, 0.82
+;aSig pdhalf aSig, -0.9
+;aSig clip aSig, 1, 0.1
+;aSig rbjeq aSig, 200, 2, 0, 8, 10
+aSig wguide2 aSig, 40, 60, 8000, 10000, 0.23, 0.2
+aSig wguide2 aSig, 37, 23, 9400, 12000, 0.13, 0.3
 vincr gaVerbL, aSig*db(-12)
 vincr gaVerbR, aSig*db(-12)
 sbus_mix 1, aSig
