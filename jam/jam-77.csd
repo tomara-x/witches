@@ -52,6 +52,18 @@ endin
 schedule("Tree", 0, 0)
 
 
+instr aaeee
+aSig poscil 0.1, cpspch(p4)
+aEnv expseg 1, p3, 0.01
+sbus_mix 0, aSig*aEnv
+endin
+schedule "aaeee", 0.0, 0.5, 8.09
+schedule "aaeee", 0.5, 0.5, 8.09
+schedule "aaeee", 1.0, 0.5, 8.04
+schedule "aaeee", 1.5, 0.5, 8.04
+schedule "aaeee", 2.0, 0.5, 8.04
+
+
 instr Arr
 gkPch1[] fillarray 6.00, 6.02, 6.06, 6.09, 6.07, 6.09, 6.11, 7.00,
                    9.00, 9.02, 9.04, 9.06, 9.07, 9.09, 9.11, 10.00
@@ -63,6 +75,7 @@ endin
 schedule("Arr", 0, 1/kr)
 
 
+;no! don't complicate it! you're studying something here!
 instr Call
 kCnt init 0
 kTrig MyMetro $FRQ*1
@@ -95,7 +108,7 @@ if kCnt == 4 then
     turnoff
 endif
 endin
-schedule("Call", 0, -1)
+;schedule("Call", 0, -1)
 
 
 
