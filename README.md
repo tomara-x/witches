@@ -1,7 +1,7 @@
-king solomon was punk rock awesome. but at the end of 2019 i met [someone](https://github.com/AriaSalvatrice) much more magic. she programmed (among many other cool things) the [Modulus Salomonis Regis](https://aria.dog/modules/). its powers were infinite, its possibilities endless, but the platform on which it ran.. ah, that's a long story...
+> [!IMPORTANT]  
+> this repo is no longer maintained
 
-
-now i'm learning magic:
+i'm learning magic:
 
 - i try to follow the csound backwards compatibility philosophy here, so newer things are added without breaking old code
 - there's usually a documentation string with each opcode's definition
